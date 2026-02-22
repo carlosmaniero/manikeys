@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   push:
@@ -7,11 +7,20 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install PythonSCAD
+        run: |
+          wget -qO - https://repos.pythonscad.org/apt/pythonscad-archive-keyring.gpg | \
+          sudo gpg --dearmor -o /usr/share/keyrings/pythonscad-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/pythonscad-archive-keyring.gpg] https://repos.pythonscad.org/apt $(lsb_release -sc) main" | \
+          sudo tee /etc/apt/sources.list.d/pythonscad.list
+          sudo apt update
+          sudo apt install -y pythonscad
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -24,8 +33,20 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Install dependencies
+      - name: Install Project Dependencies
         run: uv sync --all-groups
 
-      - name: Run tests
-        run: uv run pytest
+      - name: Run Linter
+        run: make lint
+
+      - name: Run Tests
+        run: make test
+
+      - name: Build STL
+        run: make build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyboard-stl
+          path: build/keyboard.stl

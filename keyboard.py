@@ -1,7 +1,5 @@
 from sphere_projection import SphereProjection
 from collections import namedtuple
-from data.layout import layout
-from cap import cap
 import openscad as osc
 
 fn = 200
@@ -53,4 +51,5 @@ def body():
     return obj.intersection(body_mask())
 
 
-body().show()
+def assembly():
+    return body()

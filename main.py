@@ -1,6 +1,6 @@
-def main():
-    print("Hello from python-version!")
+from keyboard import assembly
 
+fn = 200
 
 if __name__ == "__main__":
-    main()
+    assembly().show()
