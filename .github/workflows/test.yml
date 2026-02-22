@@ -9,6 +9,8 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +22,7 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/pythonscad-archive-keyring.gpg] https://repos.pythonscad.org/apt $(lsb_release -sc) main" | \
           sudo tee /etc/apt/sources.list.d/pythonscad.list
           sudo apt update
-          sudo apt install -y pythonscad
+          sudo apt install -y pythonscad xvfb libgl1-mesa-dri
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -45,8 +47,23 @@ jobs:
       - name: Build STL
         run: make build
 
+      - name: Generate PNG
+        run: xvfb-run --auto-servernum make render
+
+      - name: Deploy Assets
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: assets
+          force_orphan: true
+          keep_files: true
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: keyboard-stl
-          path: build/keyboard.stl
+          name: keyboard-assets
+          path: |
+            build/keyboard.stl
+            build/keyboard.png

@@ -1,8 +1,12 @@
-.PHONY: build test lint clean
+.PHONY: build test lint render clean
 
 build:
 	mkdir -p build
 	pythonscad main.py --trust-python -o build/keyboard.stl
+
+render:
+	mkdir -p build
+	pythonscad main.py --trust-python -o build/keyboard.png
 
 test:
 	uv run pytest
