@@ -2,8 +2,6 @@ from sphere_projection import SphereProjection
 from collections import namedtuple
 import openscad as osc
 
-fn = 200
-
 body_radius = osc.add_parameter("body_radius", 300)
 body_diameter = body_radius * 2
 
