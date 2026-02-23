@@ -1,4 +1,4 @@
-from keyboard import assembly
+from cad.keyboard import assembly
 
 fn = 200
 
