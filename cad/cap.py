@@ -1,5 +1,5 @@
 import openscad as osc
-from sphere_projection import SphereProjection
+from models.projection import SphereProjection
 from data.parameters import parameters
 from data.layout import layout
 

@@ -1,4 +1,4 @@
-from sphere_projection import SphereProjection
+from models.projection import SphereProjection
 import openscad as osc
 from data.parameters import parameters
 from cad.cap import assembly_grid

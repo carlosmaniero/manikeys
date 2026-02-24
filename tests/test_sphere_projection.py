@@ -1,5 +1,5 @@
 import math
-from sphere_projection import SphereProjection
+from models.projection import SphereProjection
 
 
 def test_move_constant_x():
