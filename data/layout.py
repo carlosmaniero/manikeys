@@ -1,4 +1,8 @@
 from models.layout import Layout, LayoutColumn
+from data.parameters import parameters
+from models.projection import SphereProjection
+
+projection = SphereProjection(parameters.body.radius)
 
 layout = Layout(
     columns=[
@@ -9,5 +13,7 @@ layout = Layout(
         LayoutColumn(keys=5, offsetY=0.5),
         LayoutColumn(keys=5, offsetY=0.25),
         LayoutColumn(keys=5, offsetY=0),
-    ]
+    ],
+    projection=projection,
+    parameters=parameters,
 )

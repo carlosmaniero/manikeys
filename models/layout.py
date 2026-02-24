@@ -1,15 +1,21 @@
+from typing import Optional
+
+
 class Key:
-    def __init__(self, col: int, row: int, offsetY: int = 0):
+    def __init__(
+        self, col: int, row: int, position: list[float], offsetY: float = 0
+    ):
         self.col = col
         self.row = row
         self.offsetY = offsetY
+        self.position: list[float] = position
 
     def __repr__(self):
-        return f"Key(col={self.col}, row={self.row}, offsetY={self.offsetY})"
+        return f"Key(col={self.col}, row={self.row}, offsetY={self.offsetY}, position={self.position})"
 
 
 class LayoutColumn:
-    def __init__(self, keys: int, offsetY: int = 0):
+    def __init__(self, keys: int, offsetY: float = 0):
         self.keys = keys
         self.offsetY = offsetY
 
@@ -18,22 +24,52 @@ class LayoutColumn:
 
 
 class Layout:
-    def __init__(self, columns: list[LayoutColumn]):
+    def __init__(self, columns: list[LayoutColumn], projection, parameters):
         self.columns = columns
+        self._grid = self._compute_grid(projection, parameters)
 
-    def all_keys(self) -> list[Key]:
-        for col_index, column in enumerate(reversed(self.columns)):
+    def _compute_grid(self, projection, parameters):
+        length = parameters.caps.size + parameters.caps.gap
+        initial_column_position = [0, 0, -projection.radius]
+
+        grid = []
+
+        for col_index, column in enumerate(self.columns):
+            keys_in_col = []
+            position = initial_column_position
+
             for row_index in range(column.keys):
-                yield Key(col=col_index, row=row_index, offsetY=column.offsetY)
+                if row_index == 0:
+                    position = projection.move_constant_x(
+                        position,
+                        (column.offsetY - self.columns[0].offsetY)
+                        * parameters.caps.size,
+                        direction=1,
+                    )
 
-    def _grid_rows(self, col_index: int) -> list[int]:
-        column = self.columns[col_index]
-        for row_index in range(column.keys):
-            yield Key(col=col_index, row=row_index, offsetY=column.offsetY)
+                key = Key(
+                    col=col_index,
+                    row=row_index,
+                    position=position,
+                    offsetY=column.offsetY,
+                )
 
-    def grid(self) -> list[list[Key]]:
-        for col_index in range(len(self.columns)):
-            yield self._grid_rows(col_index)
+                keys_in_col.append(key)
+
+                position = projection.move_constant_x(
+                    position, length, direction=1
+                )
+
+            grid.append(keys_in_col)
+
+            initial_column_position = projection.move_constant_y(
+                initial_column_position, length, direction=1
+            )
+
+        return grid
+
+    def grid(self):
+        return self._grid
 
     def __repr__(self):
         return f"Layout(columns={self.columns})"

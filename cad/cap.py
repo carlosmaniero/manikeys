@@ -42,32 +42,16 @@ def cap():
 
 
 def assembly_grid(projection: SphereProjection):
-    length = parameters.caps.size + parameters.caps.gap
-
     grid = []
-    initial_column_position = [0, 0, -projection.radius]
 
     for column in layout.grid():
-        position = initial_column_position
-        for index, key in enumerate(column):
-            if index == 0:
-                position = projection.move_constant_x(
-                    position,
-                    (key.offsetY - layout.columns[0].offsetY)
-                    * parameters.caps.size,
-                    direction=1,
-                )
-
-            rotation = projection.project_rotation(position)
+        for key in column:
+            rotation = projection.project_rotation(key.position)
 
             grid.append(
-                cap().rotate(rotation) + position + [0, 0, projection.radius]
+                cap().rotate(rotation)
+                + key.position
+                + [0, 0, projection.radius]
             )
-
-            position = projection.move_constant_x(position, length, direction=1)
-
-        initial_column_position = projection.move_constant_y(
-            initial_column_position, length, direction=1
-        )
 
     return osc.union(*grid)
