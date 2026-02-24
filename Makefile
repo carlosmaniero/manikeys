@@ -6,7 +6,7 @@ build:
 
 render:
 	mkdir -p build
-	pythonscad main.py --trust-python -o build/keyboard.png
+	pythonscad main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render -o build/keyboard.png
 
 test:
 	uv run pytest
