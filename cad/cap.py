@@ -1,5 +1,4 @@
 import openscad as osc
-from models.projection import SphereProjection
 from data.parameters import parameters
 from data.layout import layout
 
@@ -41,17 +40,11 @@ def cap():
     return body - obj
 
 
-def assembly_grid(projection: SphereProjection):
+def assembly_grid():
     grid = []
 
     for column in layout.grid:
         for key in column:
-            rotation = projection.project_rotation(key.position)
-
-            grid.append(
-                cap().rotate(rotation)
-                + key.position
-                + [0, 0, projection.radius]
-            )
+            grid.append(cap().rotate(key.rotation) + key.position)
 
     return osc.union(*grid)

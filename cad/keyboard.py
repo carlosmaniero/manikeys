@@ -46,4 +46,4 @@ def body():
 
 
 def assembly():
-    return assembly_grid(projection)
+    return assembly_grid()

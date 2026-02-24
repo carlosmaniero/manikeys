@@ -30,16 +30,21 @@ def test_layout_grid():
     col0 = list(grid[0])
     assert len(col0) == 2
 
-    # Key(0,0) - should be at initial position because (10-10)*size = 0
+    # Key(0,0) - should be at initial position [0, 0, -radius] + [0, 0, radius] = [0, 0, 0]
     assert col0[0].col == 0
     assert col0[0].row == 0
     assert col0[0].offsetY == 10
-    assert_pos_equal(col0[0].position, [0, 0, -radius])
+    assert_pos_equal(col0[0].position, [0, 0, 0])
+    assert_pos_equal(
+        col0[0].rotation, projection.project_rotation([0, 0, -radius])
+    )
 
     # Key(0,1) - should be moved by length (size + gap) in X
     length = parameters.caps.size + parameters.caps.gap
-    expected_pos_0_1 = projection.move_constant_x([0, 0, -radius], length, 1)
+    raw_pos_0_1 = projection.move_constant_x([0, 0, -radius], length, 1)
+    expected_pos_0_1 = [raw_pos_0_1[0], raw_pos_0_1[1], raw_pos_0_1[2] + radius]
     assert_pos_equal(col0[1].position, expected_pos_0_1)
+    assert_pos_equal(col0[1].rotation, projection.project_rotation(raw_pos_0_1))
 
     # Second column
     col1 = list(grid[1])
@@ -51,7 +56,9 @@ def test_layout_grid():
     # Key(1,0) - started at move_constant_y([0,0,-radius], length)
     # Then move_constant_x by (0 - 10) * size
     initial_col_1 = projection.move_constant_y([0, 0, -radius], length, 1)
-    expected_pos_1_0 = projection.move_constant_x(
+    raw_pos_1_0 = projection.move_constant_x(
         initial_col_1, (0 - 10) * parameters.caps.size, 1
     )
+    expected_pos_1_0 = [raw_pos_1_0[0], raw_pos_1_0[1], raw_pos_1_0[2] + radius]
     assert_pos_equal(col1[0].position, expected_pos_1_0)
+    assert_pos_equal(col1[0].rotation, projection.project_rotation(raw_pos_1_0))

@@ -9,6 +9,7 @@ class Key:
     col: int
     row: int
     position: List[float]
+    rotation: List[float]
     offsetY: float = 0
 
 
@@ -48,10 +49,17 @@ class Layout:
                         direction=1,
                     )
 
+                rotation = projection.project_rotation(position)
+
                 key = Key(
                     col=col_index,
                     row=row_index,
-                    position=position,
+                    position=[
+                        position[0],
+                        position[1],
+                        position[2] + projection.radius,
+                    ],
+                    rotation=rotation,
                     offsetY=column.offsetY,
                 )
 
