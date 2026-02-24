@@ -1,6 +1,4 @@
 import openscad as osc
-from models.layout import Key
-from models.projection import Projection
 from sphere_projection import SphereProjection
 from data.parameters import parameters
 from data.layout import layout
@@ -43,29 +41,6 @@ def cap():
     return body - obj
 
 
-def get_key_position(key: Key):
-    return [
-        key.col * (parameters.caps.size + parameters.caps.gap * 2)
-        + (parameters.caps.size + parameters.caps.gap * 2) / 2,
-        key.row * (parameters.caps.size + parameters.caps.gap * 2)
-        + key.offsetY * parameters.caps.size
-        + (parameters.caps.size + parameters.caps.gap * 2) / 2,
-        0,
-    ]
-
-
-def cap_on_grid(key: Key, projection: Projection):
-    [position, rotation] = projection.project_with_rotation(
-        get_key_position(key)
-    )
-
-    obj = cap()
-    obj = obj.rotate(rotation)
-    obj = obj.translate(position)
-
-    return obj
-
-
 def assembly_grid(projection: SphereProjection):
     length = parameters.caps.size + parameters.caps.gap
 
@@ -74,7 +49,15 @@ def assembly_grid(projection: SphereProjection):
 
     for column in layout.grid():
         position = initial_column_position
-        for key in column:
+        for index, key in enumerate(column):
+            if index == 0:
+                position = projection.move_constant_x(
+                    position,
+                    (key.offsetY - layout.columns[0].offsetY)
+                    * parameters.caps.size,
+                    direction=1,
+                )
+
             rotation = projection.project_rotation(position)
 
             grid.append(

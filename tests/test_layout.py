@@ -1,25 +1,30 @@
 from models.layout import LayoutColumn, Layout
 
 
-def test_layout_all_keys():
+def test_layout_grid():
     columns = [
-        LayoutColumn(keys=2, offsetY=0),
-        LayoutColumn(keys=1, offsetY=10),
+        LayoutColumn(keys=2, offsetY=10),
+        LayoutColumn(keys=1, offsetY=0),
     ]
     layout = Layout(columns=columns)
 
-    keys = list(layout.all_keys())
+    grid = list(layout.grid())
 
-    assert len(keys) == 3
+    assert len(grid) == 2
 
-    assert keys[0].col == 0
-    assert keys[0].row == 0
-    assert keys[0].offsetY == 0
+    # First column
+    col0 = list(grid[0])
+    assert len(col0) == 2
+    assert col0[0].col == 0
+    assert col0[0].row == 0
+    assert col0[0].offsetY == 10
+    assert col0[1].col == 0
+    assert col0[1].row == 1
+    assert col0[1].offsetY == 10
 
-    assert keys[1].col == 0
-    assert keys[1].row == 1
-    assert keys[1].offsetY == 0
-
-    assert keys[2].col == 1
-    assert keys[2].row == 0
-    assert keys[2].offsetY == 10
+    # Second column
+    col1 = list(grid[1])
+    assert len(col1) == 1
+    assert col1[0].col == 1
+    assert col1[0].row == 0
+    assert col1[0].offsetY == 0
