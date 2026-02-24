@@ -44,7 +44,7 @@ def cap():
 def assembly_grid(projection: SphereProjection):
     grid = []
 
-    for column in layout.grid():
+    for column in layout.grid:
         for key in column:
             rotation = projection.project_rotation(key.position)
 

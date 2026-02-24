@@ -4,7 +4,7 @@ from models.projection import SphereProjection
 
 projection = SphereProjection(parameters.body.radius)
 
-layout = Layout(
+layout = Layout.from_spherical_projection(
     columns=[
         LayoutColumn(keys=3, offsetY=2),
         LayoutColumn(keys=4, offsetY=1),

@@ -18,11 +18,11 @@ def test_layout_grid():
     radius = 100.0
     projection = SphereProjection(radius)
 
-    layout = Layout(
+    layout = Layout.from_spherical_projection(
         columns=columns, projection=projection, parameters=parameters
     )
 
-    grid = list(layout.grid())
+    grid = list(layout.grid)
 
     assert len(grid) == 2
 

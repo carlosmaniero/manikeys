@@ -1,40 +1,41 @@
-from typing import Optional
+from dataclasses import dataclass
+from typing import List
+from .projection import SphereProjection
+from .parameters import Parameters
 
 
+@dataclass
 class Key:
-    def __init__(
-        self, col: int, row: int, position: list[float], offsetY: float = 0
-    ):
-        self.col = col
-        self.row = row
-        self.offsetY = offsetY
-        self.position: list[float] = position
-
-    def __repr__(self):
-        return f"Key(col={self.col}, row={self.row}, offsetY={self.offsetY}, position={self.position})"
+    col: int
+    row: int
+    position: List[float]
+    offsetY: float = 0
 
 
+@dataclass
 class LayoutColumn:
-    def __init__(self, keys: int, offsetY: float = 0):
-        self.keys = keys
-        self.offsetY = offsetY
-
-    def __repr__(self):
-        return f"LayoutColumn(keys={self.keys}, offsetY={self.offsetY})"
+    keys: int
+    offsetY: float = 0
 
 
+@dataclass
 class Layout:
-    def __init__(self, columns: list[LayoutColumn], projection, parameters):
-        self.columns = columns
-        self._grid = self._compute_grid(projection, parameters)
+    columns: List[LayoutColumn]
+    grid: List[List[Key]]
 
-    def _compute_grid(self, projection, parameters):
+    @classmethod
+    def from_spherical_projection(
+        cls,
+        columns: List[LayoutColumn],
+        projection: SphereProjection,
+        parameters: Parameters,
+    ) -> "Layout":
         length = parameters.caps.size + parameters.caps.gap
         initial_column_position = [0, 0, -projection.radius]
 
         grid = []
 
-        for col_index, column in enumerate(self.columns):
+        for col_index, column in enumerate(columns):
             keys_in_col = []
             position = initial_column_position
 
@@ -42,7 +43,7 @@ class Layout:
                 if row_index == 0:
                     position = projection.move_constant_x(
                         position,
-                        (column.offsetY - self.columns[0].offsetY)
+                        (column.offsetY - columns[0].offsetY)
                         * parameters.caps.size,
                         direction=1,
                     )
@@ -66,10 +67,4 @@ class Layout:
                 initial_column_position, length, direction=1
             )
 
-        return grid
-
-    def grid(self):
-        return self._grid
-
-    def __repr__(self):
-        return f"Layout(columns={self.columns})"
+        return cls(columns=columns, grid=grid)
