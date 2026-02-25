@@ -51,7 +51,7 @@ jobs:
         run: make build
 
       - name: Generate PNG
-        run: xvfb-run --auto-servernum make render
+        run: make render
 
       - name: Deploy Assets
         uses: peaceiris/actions-gh-pages@v4

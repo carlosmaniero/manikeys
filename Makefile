@@ -2,11 +2,11 @@
 
 build:
 	mkdir -p build
-	pythonscad src/main.py --trust-python -o build/keyboard.stl
+	uv run pythonscad src/main.py --trust-python -o build/keyboard.stl
 
 render:
 	mkdir -p build
-	pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render -o build/keyboard.png
+	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render -o build/keyboard.png
 
 test:
 	uv run pytest
