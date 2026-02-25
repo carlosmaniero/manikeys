@@ -15,30 +15,18 @@ class KeyboardCAD:
     cap_cad: CapCAD
     layout: Layout
 
-    def cap_body_mask_hole(self):
-        return osc.cube(
-            [
-                self.parameters.caps.size,
-                self.parameters.caps.size,
-                self.parameters.body.thickness
-                + self.parameters.globals.diff_offset * 2,
-            ],
-            center=True,
-        )
-
     def cap_body_mask(self):
         return osc.cube(
             [
                 self.parameters.caps.size + self.parameters.caps.gap * 2,
                 self.parameters.caps.size + self.parameters.caps.gap * 2,
-                self.parameters.body.thickness
+                self.parameters.body.thickness * 2
                 + self.parameters.globals.diff_offset,
             ],
             center=True,
         )
 
     def body_mask(self):
-        holes = []
         masks = []
 
         for column in self.layout.grid:
@@ -47,11 +35,7 @@ class KeyboardCAD:
                 mask = mask.rotate(key.rotation) + key.position
                 masks.append(mask)
 
-                hole = self.cap_body_mask_hole()
-                hole = hole.rotate(key.rotation) + key.position
-                holes.append(hole)
-
-        return osc.union(*masks) - osc.union(*holes)
+        return osc.union(*masks)
 
     def body(self):
         p = self.parameters
@@ -61,7 +45,12 @@ class KeyboardCAD:
         internal_radius = p.body.radius
         obj -= osc.sphere(internal_radius) + [0, 0, p.body.radius]
 
-        return obj.intersection(self.body_mask())
+        return self.colorize(obj.intersection(self.body_mask()))
+
+    def colorize(self, obj):
+        return osc.color(obj, "#333333")
 
     def assembly(self):
-        return self.cap_cad.assembly_grid() | self.body()
+        return (
+            self.body() | self.cap_cad.assembly_grid()
+        ) - self.cap_cad.cap_holes()
