@@ -21,7 +21,7 @@ jobs:
           sudo gpg --dearmor -o /usr/share/keyrings/pythonscad-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/pythonscad-archive-keyring.gpg] https://repos.pythonscad.org/apt $(lsb_release -sc) main" | \
           sudo tee /etc/apt/sources.list.d/pythonscad.list
-          sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/pythonscad.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+          sudo apt-get update -qq
           sudo apt-get install -y -qq pythonscad xvfb libgl1-mesa-dri
 
       - name: Install uv
