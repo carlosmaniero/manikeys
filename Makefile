@@ -6,7 +6,9 @@ build:
 
 render:
 	mkdir -p build
-	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render -o build/keyboard.png
+	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render --viewall -o build/keyboard.png
+	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render --viewall --camera 0,0,0,0,0,0,0 -o build/keyboard_top.png
+	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Tomorrow Night" --imgsize 2048,2048 --render --viewall --camera 0,0,0,90,0,90,0 -o build/keyboard_side.png
 
 test:
 	uv run pytest

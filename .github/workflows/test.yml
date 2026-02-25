@@ -69,4 +69,4 @@ jobs:
           name: keyboard-assets
           path: |
             build/keyboard.stl
-            build/keyboard.png
+            build/keyboard*.png
