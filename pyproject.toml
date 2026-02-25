@@ -15,10 +15,11 @@ dev = [
 ]
 
 [tool.setuptools]
+package-dir = {"" = "src"}
 packages = ["cad", "data", "models"]
 
 [tool.ruff]
 line-length = 80
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = ["src"]

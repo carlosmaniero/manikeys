@@ -36,7 +36,9 @@ jobs:
           python-version-file: ".python-version"
 
       - name: Install Project Dependencies
-        run: uv sync --all-groups --system-site-packages
+        run: |
+          uv sync --all-groups --system-site-packages
+          uv pip install -e .
 
       - name: Run Linter
         run: make lint
