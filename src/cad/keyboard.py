@@ -3,6 +3,7 @@ import openscad as osc
 from injector import inject
 from models.projection import SphereProjection
 from models.parameters import Parameters
+from models.layout import Layout
 from .cap import CapCAD
 
 
@@ -12,33 +13,45 @@ class KeyboardCAD:
     projection: SphereProjection
     parameters: Parameters
     cap_cad: CapCAD
+    layout: Layout
 
-    def body_mask(self):
-        p = self.parameters
-        center = [
-            p.body.width / 2,
-            p.body.depth / 2,
-            p.body.thickness,
-        ]
-
-        [position, rotation] = self.projection.project_with_rotation(center)
-
-        obj = osc.cube(
+    def cap_body_mask_hole(self):
+        return osc.cube(
             [
-                p.body.width,
-                p.body.depth,
-                p.body.radius,
+                self.parameters.caps.size,
+                self.parameters.caps.size,
+                self.parameters.body.thickness
+                + self.parameters.globals.diff_offset * 2,
             ],
             center=True,
         )
 
-        obj += [0, 0, p.body.thickness / 2]
-        obj = osc.color(obj, "red")
+    def cap_body_mask(self):
+        return osc.cube(
+            [
+                self.parameters.caps.size + self.parameters.caps.gap * 2,
+                self.parameters.caps.size + self.parameters.caps.gap * 2,
+                self.parameters.body.thickness
+                + self.parameters.globals.diff_offset,
+            ],
+            center=True,
+        )
 
-        obj = obj.rotate(rotation)
-        obj = obj.translate(position)
+    def body_mask(self):
+        holes = []
+        masks = []
 
-        return obj
+        for column in self.layout.grid:
+            for key in column:
+                mask = self.cap_body_mask()
+                mask = mask.rotate(key.rotation) + key.position
+                masks.append(mask)
+
+                hole = self.cap_body_mask_hole()
+                hole = hole.rotate(key.rotation) + key.position
+                holes.append(hole)
+
+        return osc.union(*masks) - osc.union(*holes)
 
     def body(self):
         p = self.parameters
@@ -51,4 +64,4 @@ class KeyboardCAD:
         return obj.intersection(self.body_mask())
 
     def assembly(self):
-        return self.cap_cad.assembly_grid()
+        return self.cap_cad.assembly_grid() | self.body()

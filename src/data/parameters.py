@@ -16,7 +16,7 @@ class ParametersModule(Module):
             caps=CapsParameters(
                 size=14,
                 thickness=5,
-                border=0.5,
+                border=1,
                 gap=2.5,
                 outer=CapsOuterParameters(thickness=1.5),
             ),
