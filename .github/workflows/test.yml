@@ -37,7 +37,8 @@ jobs:
 
       - name: Install Project Dependencies
         run: |
-          uv sync --all-groups --system-site-packages
+          uv venv --system-site-packages
+          uv sync --all-groups --active
           uv pip install -e .
 
       - name: Run Linter
