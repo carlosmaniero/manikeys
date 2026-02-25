@@ -1,7 +1,8 @@
-from cad.keyboard import assembly
+from context import injector
+from cad.keyboard import KeyboardCAD
 
 
 fn = 200
 
 if __name__ == "__main__":
-    assembly().show()
+    injector.get(KeyboardCAD).assembly().show()

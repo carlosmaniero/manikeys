@@ -1,7 +1,7 @@
 import math
 from models.layout import LayoutColumn, Layout
 from models.projection import SphereProjection
-from data.parameters import parameters
+from models.parameters import CapsParameters
 
 
 def assert_pos_equal(pos1, pos2):
@@ -11,6 +11,9 @@ def assert_pos_equal(pos1, pos2):
 
 
 def test_layout_grid():
+    caps = CapsParameters(
+        size=14.0, thickness=5.0, border=0.5, gap=2.5, outer=None
+    )
     columns = [
         LayoutColumn(keys=2, offsetY=10),
         LayoutColumn(keys=1, offsetY=0),
@@ -19,7 +22,7 @@ def test_layout_grid():
     projection = SphereProjection(radius)
 
     layout = Layout.from_spherical_projection(
-        columns=columns, projection=projection, cap=parameters.caps
+        columns=columns, projection=projection, cap=caps
     )
 
     grid = list(layout.grid)
@@ -40,7 +43,7 @@ def test_layout_grid():
     )
 
     # Key(0,1) - should be moved by length (size + gap) in X
-    length = parameters.caps.size + parameters.caps.gap
+    length = caps.size + caps.gap
     raw_pos_0_1 = projection.move_constant_x([0, 0, -radius], length, 1)
     expected_pos_0_1 = [raw_pos_0_1[0], raw_pos_0_1[1], raw_pos_0_1[2] + radius]
     assert_pos_equal(col0[1].position, expected_pos_0_1)
@@ -57,7 +60,7 @@ def test_layout_grid():
     # Then move_constant_x by (0 - 10) * size
     initial_col_1 = projection.move_constant_y([0, 0, -radius], length, 1)
     raw_pos_1_0 = projection.move_constant_x(
-        initial_col_1, (0 - 10) * parameters.caps.size, 1
+        initial_col_1, (0 - 10) * caps.size, 1
     )
     expected_pos_1_0 = [raw_pos_1_0[0], raw_pos_1_0[1], raw_pos_1_0[2] + radius]
     assert_pos_equal(col1[0].position, expected_pos_1_0)

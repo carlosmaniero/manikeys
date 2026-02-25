@@ -1,49 +1,54 @@
-from models.projection import SphereProjection
+from dataclasses import dataclass
 import openscad as osc
-from data.parameters import parameters
-from cad.cap import assembly_grid
-
-projection = SphereProjection(parameters.body.radius)
-
-
-center = [
-    parameters.body.width / 2,
-    parameters.body.depth / 2,
-    parameters.body.thickness,
-]
+from injector import inject
+from models.projection import SphereProjection
+from models.parameters import Parameters
+from .cap import CapCAD
 
 
-def body_mask():
+@inject
+@dataclass
+class KeyboardCAD:
+    projection: SphereProjection
+    parameters: Parameters
+    cap_cad: CapCAD
 
-    [position, rotation] = projection.project_with_rotation(center)
+    def body_mask(self):
+        p = self.parameters
+        center = [
+            p.body.width / 2,
+            p.body.depth / 2,
+            p.body.thickness,
+        ]
 
-    obj = osc.cube(
-        [
-            parameters.body.width,
-            parameters.body.depth,
-            parameters.body.radius,
-        ],
-        center=True,
-    )
+        [position, rotation] = self.projection.project_with_rotation(center)
 
-    obj += [0, 0, parameters.body.thickness / 2]
-    obj = osc.color(obj, "red")
+        obj = osc.cube(
+            [
+                p.body.width,
+                p.body.depth,
+                p.body.radius,
+            ],
+            center=True,
+        )
 
-    obj = obj.rotate(rotation)
-    obj = obj.translate(position)
+        obj += [0, 0, p.body.thickness / 2]
+        obj = osc.color(obj, "red")
 
-    return obj
+        obj = obj.rotate(rotation)
+        obj = obj.translate(position)
 
+        return obj
 
-def body():
-    obj = osc.sphere(parameters.body.radius)
-    obj += [0, 0, parameters.body.radius - parameters.body.thickness]
+    def body(self):
+        p = self.parameters
+        obj = osc.sphere(p.body.radius)
+        obj += [0, 0, p.body.radius - p.body.thickness]
 
-    internal_radius = parameters.body.radius
-    obj -= osc.sphere(internal_radius) + [0, 0, parameters.body.radius]
+        internal_radius = p.body.radius
+        obj -= osc.sphere(internal_radius) + [0, 0, p.body.radius]
 
-    return obj.intersection(body_mask())
+        return obj.intersection(self.body_mask())
 
-
-def assembly():
-    return assembly_grid()
+    def assembly(self):
+        return self.cap_cad.assembly_grid()

@@ -1,50 +1,57 @@
+from dataclasses import dataclass, field
 import openscad as osc
-from data.parameters import parameters
-from data.layout import layout
-
-fn = 20
-
-
-def outer():
-    obj = osc.cube(
-        [
-            parameters.caps.size + parameters.caps.border * 2,
-            parameters.caps.size + parameters.caps.border * 2,
-            parameters.caps.outer.thickness,
-        ],
-        center=True,
-    )
-
-    obj += [0, 0, parameters.caps.outer.thickness / 2]
-    obj = osc.color(obj, "blue")
-    obj = obj.fillet(parameters.caps.border / 4, fn=fn)
-
-    return obj
+from injector import inject
+from models.layout import Layout
+from models.parameters import Parameters
 
 
-def cap():
-    body = outer()
+@inject
+@dataclass
+class CapCAD:
+    layout: Layout
+    parameters: Parameters
+    fn: int = field(default=20, init=False)
 
-    obj = osc.cube(
-        [
-            parameters.caps.size,
-            parameters.caps.size,
-            parameters.caps.thickness + parameters.globals.diff_offset,
-        ],
-        center=True,
-    )
+    def outer(self):
+        p = self.parameters
+        obj = osc.cube(
+            [
+                p.caps.size + p.caps.border * 2,
+                p.caps.size + p.caps.border * 2,
+                p.caps.outer.thickness,
+            ],
+            center=True,
+        )
 
-    obj += [0, 0, parameters.caps.thickness / 2]
-    obj = osc.color(obj, "red")
+        obj += [0, 0, p.caps.outer.thickness / 2]
+        obj = osc.color(obj, "blue")
+        obj = obj.fillet(p.caps.border / 4, fn=self.fn)
 
-    return body - obj
+        return obj
 
+    def cap(self):
+        p = self.parameters
+        body = self.outer()
 
-def assembly_grid():
-    grid = []
+        obj = osc.cube(
+            [
+                p.caps.size,
+                p.caps.size,
+                p.caps.thickness + p.globals.diff_offset,
+            ],
+            center=True,
+        )
 
-    for column in layout.grid:
-        for key in column:
-            grid.append(cap().rotate(key.rotation) + key.position)
+        obj += [0, 0, p.caps.thickness / 2]
+        obj = osc.color(obj, "red")
 
-    return osc.union(*grid)
+        return body - obj
+
+    def assembly_grid(self):
+        grid = []
+
+        for column in self.layout.grid:
+            for key in column:
+                grid.append(self.cap().rotate(key.rotation) + key.position)
+
+        return osc.union(*grid)
