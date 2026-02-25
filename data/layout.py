@@ -15,5 +15,5 @@ layout = Layout.from_spherical_projection(
         LayoutColumn(keys=5, offsetY=0),
     ],
     projection=projection,
-    parameters=parameters,
+    cap=parameters.caps,
 )

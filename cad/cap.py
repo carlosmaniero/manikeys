@@ -15,8 +15,7 @@ def outer():
         center=True,
     )
 
-    obj += [0, 0, parameters.caps.thickness]
-    obj -= [0, 0, parameters.caps.outer.thickness]
+    obj += [0, 0, parameters.caps.outer.thickness / 2]
     obj = osc.color(obj, "blue")
     obj = obj.fillet(parameters.caps.border / 4, fn=fn)
 
@@ -34,6 +33,7 @@ def cap():
         ],
         center=True,
     )
+
     obj += [0, 0, parameters.caps.thickness / 2]
     obj = osc.color(obj, "red")
 

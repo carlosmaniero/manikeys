@@ -19,7 +19,7 @@ def test_layout_grid():
     projection = SphereProjection(radius)
 
     layout = Layout.from_spherical_projection(
-        columns=columns, projection=projection, parameters=parameters
+        columns=columns, projection=projection, cap=parameters.caps
     )
 
     grid = list(layout.grid)

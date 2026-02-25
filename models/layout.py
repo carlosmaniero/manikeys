@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Protocol
 from .projection import SphereProjection
-from .parameters import Parameters
 
 
 @dataclass
@@ -19,6 +18,11 @@ class LayoutColumn:
     offsetY: float = 0
 
 
+class CapSize(Protocol):
+    size: float
+    gap: float
+
+
 @dataclass
 class Layout:
     columns: List[LayoutColumn]
@@ -29,9 +33,9 @@ class Layout:
         cls,
         columns: List[LayoutColumn],
         projection: SphereProjection,
-        parameters: Parameters,
+        cap: CapSize,
     ) -> "Layout":
-        length = parameters.caps.size + parameters.caps.gap
+        length = cap.size + cap.gap
         initial_column_position = [0, 0, -projection.radius]
 
         grid = []
@@ -44,8 +48,7 @@ class Layout:
                 if row_index == 0:
                     position = projection.move_constant_x(
                         position,
-                        (column.offsetY - columns[0].offsetY)
-                        * parameters.caps.size,
+                        (column.offsetY - columns[0].offsetY) * cap.size,
                         direction=1,
                     )
 
