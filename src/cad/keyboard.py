@@ -45,7 +45,27 @@ class KeyboardCAD:
         internal_radius = p.body.radius
         obj -= osc.sphere(internal_radius) + [0, 0, p.body.radius]
 
-        return self.colorize(obj.intersection(self.body_mask()))
+        result = obj.intersection(self.body_mask())
+
+        for f in result.faces():
+            if f.matrix[2][2] > -0.5:
+                continue
+
+            # TODO: it would be better to use skin instead of hull for better rendering result.
+
+            f = self.colorize(f)
+
+            e1 = self.colorize(f.linear_extrude(height=5))
+
+            f2 = self.colorize(osc.polygon(list(f.mesh()[0])))
+            f2 -= [0, 0, 10]
+            f2 *= [1.1, 1.1, 1]
+
+            e2 = self.colorize(f2.linear_extrude(height=5))
+
+            result |= osc.hull(e1, e2)
+
+        return self.colorize(result)
 
     def colorize(self, obj):
         return osc.color(obj, "#333333")
