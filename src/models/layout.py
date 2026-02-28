@@ -51,11 +51,6 @@ class LayoutPositioning:
     def depth(self) -> float:
         return self.bottom[1] - self.top[1]
 
-
-@dataclass
-class MainBody:
-    positioning: LayoutPositioning
-
     def dimensions(self, parameters: Parameters, height: float) -> List[float]:
         full_width: float = (
             self.positioning.width()
@@ -140,3 +135,60 @@ class Layout:
             )
 
         return cls(columns=columns, grid=grid, positioning=positioning)
+
+
+@dataclass
+class MainBody:
+    positioning: LayoutPositioning
+
+    def corners(
+        self, parameters: Parameters, layout: Layout
+    ) -> List[List[float]]:
+        top_left = [
+            self.positioning.left[0]
+            - parameters.caps.size
+            - parameters.caps.gap,
+            self.positioning.top[1]
+            - parameters.caps.size
+            - parameters.caps.gap,
+        ]
+        top_right = [
+            self.positioning.right[0]
+            + parameters.caps.size
+            + parameters.caps.gap,
+            self.positioning.top[1]
+            - parameters.caps.size
+            - parameters.caps.gap,
+        ]
+        bottom_left = [
+            self.positioning.left[0]
+            - parameters.caps.size
+            - parameters.caps.gap,
+            self.positioning.bottom[1]
+            + parameters.caps.size
+            + parameters.caps.gap,
+        ]
+        bottom_right = [
+            self.positioning.right[0]
+            + parameters.caps.size
+            + parameters.caps.gap,
+            self.positioning.bottom[1]
+            + parameters.caps.size
+            + parameters.caps.gap,
+        ]
+
+        top_first_key = list(layout.grid[0][0].position)
+        top_first_key[0] = top_left[0]
+        top_first_key[1] -= parameters.caps.size + parameters.caps.gap
+
+        top_third_key = list(layout.grid[3][0].position)
+        top_third_key[0] -= parameters.caps.size + parameters.caps.gap
+        top_third_key[1] = top_left[1]
+
+        return [
+            top_third_key,
+            top_first_key,
+            bottom_left,
+            bottom_right,
+            top_right,
+        ]

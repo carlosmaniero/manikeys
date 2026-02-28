@@ -21,6 +21,8 @@ class BodyParameters:
     thickness: float
     width: float
     depth: float
+    height: float
+    fillet: float
 
 
 @dataclass

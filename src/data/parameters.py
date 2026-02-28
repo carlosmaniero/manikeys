@@ -20,6 +20,13 @@ class ParametersModule(Module):
                 gap=2.5,
                 outer=CapsOuterParameters(thickness=1.5),
             ),
-            body=BodyParameters(radius=300, thickness=3, width=150, depth=130),
+            body=BodyParameters(
+                radius=300,
+                thickness=3,
+                width=150,
+                depth=130,
+                height=15,
+                fillet=15,
+            ),
             globals=GlobalParameters(diff_offset=0.5),
         )

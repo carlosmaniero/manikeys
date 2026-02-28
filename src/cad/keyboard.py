@@ -41,6 +41,15 @@ class KeyboardCAD:
 
         return osc.union(*masks)
 
+    def to_vec2(self, position):
+        return [position[0], position[1]]
+
+    def _assembly_block(self):
+        shape = osc.polygon(
+            self.main_body.corners(self.parameters, self.layout)
+        )
+        return shape.linear_extrude(self.parameters.body.height * 4)
+
     def body(self):
         p = self.parameters
         obj = osc.sphere(p.body.radius)
@@ -52,15 +61,11 @@ class KeyboardCAD:
 
         result = obj.intersection(self.body_mask())
 
-        block = osc.cube(
-            self.main_body.dimensions(self.parameters, 80), center=False
-        )
+        block = self._assembly_block()
 
-        block += self.main_body.position(self.parameters)
+        block -= [0, 0, self.parameters.body.height]
 
-        block += [0, 0, -15]
-
-        block = block.fillet(10, fn=100)
+        block = block.fillet(self.parameters.body.fillet, fn=100)
 
         block -= outer_sphere
 
