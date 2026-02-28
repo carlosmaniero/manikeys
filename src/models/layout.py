@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Protocol
 from .projection import SphereProjection
+from .parameters import Parameters
+from dataclasses import field
 
 
 @dataclass
@@ -24,9 +26,65 @@ class CapSize(Protocol):
 
 
 @dataclass
+class LayoutPositioning:
+    left: list[float] = field(default_factory=lambda: [float("inf"), 0, 0])
+    right: list[float] = field(default_factory=lambda: [float("-inf"), 0, 0])
+    top: list[float] = field(default_factory=lambda: [0, float("inf"), 0])
+    bottom: list[float] = field(default_factory=lambda: [0, float("-inf"), 0])
+
+    def update(self, position: List[float]):
+        if position[0] < self.left[0]:
+            self.left = position
+
+        if position[0] > self.right[0]:
+            self.right = position
+
+        if position[1] > self.bottom[1]:
+            self.bottom = position
+
+        if position[1] < self.top[1]:
+            self.top = position
+
+    def width(self) -> float:
+        return self.right[0] - self.left[0]
+
+    def depth(self) -> float:
+        return self.bottom[1] - self.top[1]
+
+
+@dataclass
+class MainBody:
+    positioning: LayoutPositioning
+
+    def dimensions(self, parameters: Parameters, height: float) -> List[float]:
+        full_width: float = (
+            self.positioning.width()
+            + (parameters.caps.size + parameters.caps.gap) * 2
+        )
+        full_depth: float = (
+            self.positioning.depth()
+            + (parameters.caps.size + parameters.caps.gap) * 2
+        )
+
+        return [full_width, full_depth, height]
+
+    def position(self, parameters: Parameters) -> List[float]:
+        return [
+            self.positioning.left[0]
+            - parameters.caps.size
+            - parameters.caps.gap,
+            self.positioning.top[1]
+            - parameters.caps.size
+            - parameters.caps.gap,
+            0,
+        ]
+
+
+@dataclass
 class Layout:
     columns: List[LayoutColumn]
     grid: List[List[Key]]
+    positioning: LayoutPositioning
 
     @classmethod
     def from_spherical_projection(
@@ -39,6 +97,7 @@ class Layout:
         initial_column_position = [0, 0, -projection.radius]
 
         grid = []
+        positioning = LayoutPositioning()
 
         for col_index, column in enumerate(columns):
             keys_in_col = []
@@ -66,6 +125,8 @@ class Layout:
                     offsetY=column.offsetY,
                 )
 
+                positioning.update(key.position)
+
                 keys_in_col.append(key)
 
                 position = projection.move_constant_x(
@@ -78,4 +139,4 @@ class Layout:
                 initial_column_position, length, direction=1
             )
 
-        return cls(columns=columns, grid=grid)
+        return cls(columns=columns, grid=grid, positioning=positioning)

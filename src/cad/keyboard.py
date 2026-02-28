@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import openscad as osc
 from injector import inject
 from models.projection import SphereProjection
 from models.parameters import Parameters
-from models.layout import Layout
+from models.layout import Layout, MainBody
 from .cap import CapCAD
 
 
@@ -14,6 +14,10 @@ class KeyboardCAD:
     parameters: Parameters
     cap_cad: CapCAD
     layout: Layout
+    main_body: MainBody = field(init=False)
+
+    def __post_init__(self):
+        self.main_body = MainBody(self.layout.positioning)
 
     def cap_body_mask(self):
         return osc.cube(
@@ -43,27 +47,24 @@ class KeyboardCAD:
         obj += [0, 0, p.body.radius - p.body.thickness]
 
         internal_radius = p.body.radius
-        obj -= osc.sphere(internal_radius) + [0, 0, p.body.radius]
+        outer_sphere = osc.sphere(internal_radius) + [0, 0, p.body.radius]
+        obj -= outer_sphere
 
         result = obj.intersection(self.body_mask())
 
-        for f in result.faces():
-            if f.matrix[2][2] > -0.5:
-                continue
+        block = osc.cube(
+            self.main_body.dimensions(self.parameters, 80), center=False
+        )
 
-            # TODO: it would be better to use skin instead of hull for better rendering result.
+        block += self.main_body.position(self.parameters)
 
-            f = self.colorize(f)
+        block += [0, 0, -15]
 
-            e1 = self.colorize(f.linear_extrude(height=5))
+        block = block.fillet(10, fn=100)
 
-            f2 = self.colorize(osc.polygon(list(f.mesh()[0])))
-            f2 -= [0, 0, 10]
-            f2 *= [1.1, 1.1, 1]
+        block -= outer_sphere
 
-            e2 = self.colorize(f2.linear_extrude(height=5))
-
-            result |= osc.hull(e1, e2)
+        result |= block
 
         return self.colorize(result)
 

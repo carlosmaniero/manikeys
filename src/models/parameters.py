@@ -1,15 +1,35 @@
-from collections import namedtuple
+from dataclasses import dataclass
 
-CapsOuterParameters = namedtuple("CapsOuterParameters", ["thickness"])
 
-CapsParameters = namedtuple(
-    "CapsParameters", ["size", "thickness", "border", "outer", "gap"]
-)
+@dataclass
+class CapsOuterParameters:
+    thickness: float
 
-BodyParameters = namedtuple(
-    "BodyParameters", ["radius", "thickness", "width", "depth"]
-)
 
-GlobalParameters = namedtuple("GlobalParameters", ["diff_offset"])
+@dataclass
+class CapsParameters:
+    size: float
+    thickness: float
+    border: float
+    outer: CapsOuterParameters
+    gap: float
 
-Parameters = namedtuple("PARAMETERS", ["caps", "body", "globals"])
+
+@dataclass
+class BodyParameters:
+    radius: float
+    thickness: float
+    width: float
+    depth: float
+
+
+@dataclass
+class GlobalParameters:
+    diff_offset: float
+
+
+@dataclass
+class Parameters:
+    caps: CapsParameters
+    body: BodyParameters
+    globals: GlobalParameters
