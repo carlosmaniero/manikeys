@@ -47,7 +47,7 @@ class CapCAD:
             [
                 self.parameters.caps.size,
                 self.parameters.caps.size,
-                self.parameters.caps.thickness * 2
+                self.parameters.caps.thickness * 4
                 + self.parameters.globals.diff_offset * 2,
             ],
             center=True,

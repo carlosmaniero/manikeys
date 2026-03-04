@@ -20,6 +20,7 @@ class BodyParameters:
     radius: float
     thickness: float
     width: float
+    extra_width: float
     depth: float
     height: float
     fillet: float

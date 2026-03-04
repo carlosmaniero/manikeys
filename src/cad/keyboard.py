@@ -48,7 +48,11 @@ class KeyboardCAD:
         shape = osc.polygon(
             self.main_body.corners(self.parameters, self.layout)
         )
-        return shape.linear_extrude(self.parameters.body.height * 4)
+        return shape.linear_extrude(
+            self.layout.positioning.highest[2]
+            + self.parameters.body.height
+            + self.parameters.caps.size
+        )
 
     def body(self):
         p = self.parameters
