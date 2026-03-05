@@ -3,6 +3,8 @@ from typing import Callable
 import openscad as osc
 import traceback
 
+SMALL_OFFSET = 1e-6
+
 
 @dataclass
 class Profile:
@@ -10,35 +12,51 @@ class Profile:
     lower: Callable[[float], float]
     span: tuple[float, float]
     segments: int | None = field(default=None)
+    breakpoints: list[float] | None = field(default=None)
 
 
-def profile_points(upper, lower, span: tuple[float, float], step: float = 1):
+def profile_points(
+    upper,
+    lower,
+    span: tuple[float, float],
+    step: float = 1,
+    breakpoints: list[float] | None = None,
+):
     start, end = span
-    v = start
+
+    pts = [p for p in (breakpoints or []) if start < p < end]
+    left_pts = [p - SMALL_OFFSET for p in pts]
+    right_pts = [p + SMALL_OFFSET for p in pts]
+    milestones = sorted([start] + left_pts + pts + right_pts + [end])
+
+    all_vs = []
+    for segment_start, segment_end in zip(milestones, milestones[1:]):
+        dist = segment_end - segment_start
+        num_steps = max(1, int(round(dist / step)))
+        actual_step = dist / num_steps
+
+        for i in range(num_steps):
+            all_vs.append(segment_start + i * actual_step)
+
+    all_vs.append(end)
+
     ups = []
     downs = []
-
-    while v <= end:
+    for v in all_vs:
         try:
             ups.append([v, upper(v)])
             downs.append([v, lower(v)])
         except Exception:
-            print("Error processing v =", v)
+            print(f"Error processing v = {v}")
             raise
-
-        if v == end:
-            break
-
-        v += step
-
-        if v > end:
-            v = end
 
     return ups, downs
 
 
-def to_polygon(span, width_step, upper, lower):
-    ups, downs = profile_points(upper, lower, span, width_step)
+def to_polygon(
+    span, width_step, upper, lower, breakpoints: list[float] | None = None
+):
+    ups, downs = profile_points(upper, lower, span, width_step, breakpoints)
     downs_rev = downs[::-1]
     return ups + downs_rev
 
@@ -48,18 +66,21 @@ def callback_to_polygon_fn(callback: Callable[[float], Profile]):
         profile = callback(t)
         start, end = profile.span
         width = end - start
-        step = (
+
+        resolution_count = (
             profile.segments
             if profile.segments is not None
             else max(1, int(width))
         )
+        step = width / resolution_count if resolution_count > 0 else 1
 
         try:
             points = to_polygon(
                 profile.span,
-                width / step if step > 0 else 1,
+                step,
                 profile.upper,
                 profile.lower,
+                breakpoints=profile.breakpoints,
             )
 
             return points
@@ -85,7 +106,7 @@ def loft(
     all_points = [start] + points + [end]
 
     results = []
-    overlap_offset = 0.0000001
+    overlap_offset = SMALL_OFFSET
 
     for segment_start, segment_end in zip(all_points, all_points[1:]):
         adjusted_end = segment_end
