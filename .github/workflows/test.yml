@@ -68,5 +68,6 @@ jobs:
         with:
           name: keyboard-assets
           path: |
-            build/keyboard.stl
-            build/keyboard*.png
+            build/main.stl
+            build/main.3mf
+            build/main*.png
