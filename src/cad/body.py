@@ -36,6 +36,7 @@ class Body:
                 segments=200,
             ),
             span=(self._get_start_x(), self._get_end_x()),
+            breakpoints=[self._thumb_section_start_x()],
             fn=200,
         ).rotate([90, 0, 90])
 
@@ -53,8 +54,11 @@ class Body:
     def _is_thumb_section(self, x: float, y: float) -> bool:
         return self._is_thumb_section_x(x) and self._is_thumb_section_y(y)
 
+    def _thumb_section_start_x(self) -> float:
+        return self._get_end_x() - self._thumb_section_width()
+
     def _is_thumb_section_x(self, x: float) -> bool:
-        return x >= self._get_end_x() - self._thumb_section_width()
+        return x >= self._thumb_section_start_x()
 
     def _is_thumb_section_y(self, y: float) -> bool:
         return y < self._caps_start_y()

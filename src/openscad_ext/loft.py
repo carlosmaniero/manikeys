@@ -76,19 +76,51 @@ def loft(
     span: tuple[float, float],
     slices: int | None = None,
     fn: int = 100,
+    breakpoints: list[float] | None = None,
 ):
     start, end = span
-    height = end - start
+    total_height = end - start
 
-    if slices is None:
-        slices = int(height)
+    points = sorted([p for p in (breakpoints or []) if start < p < end])
+    all_points = [start] + points + [end]
 
-    def internal_callback(t_relative):
-        return callback(t_relative + start)
+    results = []
+    overlap_offset = 0.0000001
 
-    return osc.linear_extrude(
-        callback_to_polygon_fn(internal_callback),
-        height=height,
-        fn=fn,
-        slices=slices,
-    ).translate([0, 0, start])
+    for segment_start, segment_end in zip(all_points, all_points[1:]):
+        adjusted_end = segment_end
+
+        if segment_end != end:
+            # TODO: Because of this offset the union of segments contains a
+            # very thin gap.
+            # This can be solved by extruding the last segment of each part and
+            # extrudind it until the overlap that way the union will be
+            # seamless, but for now this is good enough.
+            adjusted_end -= overlap_offset
+
+        height = adjusted_end - segment_start
+
+        if height <= 0:
+            continue
+
+        if slices is not None:
+            current_slices = max(1, int(slices * (height / total_height)))
+        else:
+            current_slices = max(1, int(height))
+
+        def internal_callback(t_relative, start_at=segment_start):
+            return callback(t_relative + start_at)
+
+        extrusion = osc.linear_extrude(
+            callback_to_polygon_fn(internal_callback),
+            height=height,
+            fn=fn,
+            slices=current_slices,
+        ).translate([0, 0, segment_start])
+
+        results.append(extrusion)
+
+    if not results:
+        return osc.union()
+
+    return osc.union(*results) if len(results) > 1 else results[0]
