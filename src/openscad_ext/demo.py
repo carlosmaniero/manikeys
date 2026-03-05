@@ -18,4 +18,4 @@ def sphere_slices(z: float) -> Slice:
 
 
 def show_sphere():
-    slicer(sphere_slices, height=50, fn=100).show()
+    slicer(sphere_slices, z_range=(0, 50), fn=100).show()

@@ -54,15 +54,15 @@ def all_slices(z):
     r = 20
     x_delta = 0
 
-    relative_z = z
-
-    if z >= height - r:
-        relative_z = height - z
+    z_start = -20
+    z_end = height + z_start
+    dist_from_start = z - z_start
+    dist_from_end = z_end - z
+    relative_z = min(dist_from_start, dist_from_end)
 
     if relative_z < r:
-        x_delta = r - math.sqrt(r**2 - (r - relative_z) ** 2)
-
-    z = z - 20
+        safe_rel_z = max(0.0, min(r, relative_z))
+        x_delta = r - math.sqrt(r**2 - (r - safe_rel_z) ** 2)
 
     return Slice(
         upper=lambda x: get_shape(x, z),
@@ -73,8 +73,8 @@ def all_slices(z):
 
 
 def main():
-    return (
-        slicer(all_slices, height=height, fn=400).rotate([90, 0, 90]).left(20)
+    return slicer(all_slices, z_range=(-20, height - 20), fn=400).rotate(
+        [90, 0, 90]
     )
 
 
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     body = main()
     body = osc.color(body, "#333333")
     body |= cap_cad.assembly_grid()
-    body -= cap_cad.cap_holes()
+    body = body.difference(cap_cad.cap_holes())
     body.show()

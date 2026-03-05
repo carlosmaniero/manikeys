@@ -69,16 +69,22 @@ def callback_to_extrude_z_fn(callback: Callable[[float], Slice]):
 
 def slicer(
     callback: Callable[[float], Slice],
-    height: float,
+    z_range: tuple[float, float],
     slices: int | None = None,
     fn: int = 100,
 ):
+    z_start, z_end = z_range
+    height = z_end - z_start
+
     if slices is None:
         slices = int(height)
 
+    def internal_callback(z_relative):
+        return callback(z_relative + z_start)
+
     return osc.linear_extrude(
-        callback_to_extrude_z_fn(callback),
+        callback_to_extrude_z_fn(internal_callback),
         height=height,
         fn=fn,
         slices=slices,
-    )
+    ).translate([0, 0, z_start])
