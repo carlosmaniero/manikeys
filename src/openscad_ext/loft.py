@@ -3,7 +3,7 @@ from typing import Callable
 import openscad as osc
 import traceback
 
-SMALL_OFFSET = 1e-6
+SMALL_OFFSET = 1e-5
 
 
 @dataclass
@@ -32,7 +32,9 @@ def profile_points(
     all_vs = []
     for segment_start, segment_end in zip(milestones, milestones[1:]):
         dist = segment_end - segment_start
-        num_steps = max(1, int(round(dist / step)))
+        num_steps = 1
+        if dist != SMALL_OFFSET and step > 0:
+            num_steps = max(1, int(round(dist / step)))
         actual_step = dist / num_steps
 
         for i in range(num_steps):

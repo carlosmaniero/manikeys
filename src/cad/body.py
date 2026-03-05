@@ -33,7 +33,7 @@ class Body:
                     self._get_start_y(x),
                     self._get_end_y(x),
                 ),
-                segments=200,
+                segments=400,
                 breakpoints=[self._caps_start_y()],
             ),
             span=(self._get_start_x(), self._get_end_x()),
