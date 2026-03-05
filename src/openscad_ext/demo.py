@@ -1,4 +1,4 @@
-from .slicer import slicer, Slice
+from slicer import slicer, Slice
 import math
 
 
@@ -19,3 +19,7 @@ def sphere_slices(z: float) -> Slice:
 
 def show_sphere():
     slicer(sphere_slices, z_range=(0, 50), fn=100).show()
+
+
+if __name__ == "__main__":
+    show_sphere()

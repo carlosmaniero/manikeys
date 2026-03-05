@@ -1,14 +1,28 @@
 .PHONY: build test lint render clean
 
-build:
-	mkdir -p build
-	uv run pythonscad src/main.py --trust-python -o build/keyboard.stl
+build: build/main.stl build/main.3mf
 
-render:
-	mkdir -p build
-	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall -o build/keyboard.png
-	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,0,0,0,0 -o build/keyboard_top.png
-	uv run xvfb-run --auto-servernum pythonscad src/main.py --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,90,0,90,0 -o build/keyboard_side.png
+render: build/main.png build/main_top.png build/main_side.png
+
+build/%.stl: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run pythonscad $< --trust-python -o $@
+
+build/%.3mf: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run pythonscad $< --trust-python -o $@
+
+build/%.png: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall -o $@
+
+build/%_top.png: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,0,0,0,0 -o $@
+
+build/%_side.png: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,90,0,90,0 -o $@
 
 test:
 	uv run pytest
