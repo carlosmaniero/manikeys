@@ -1,6 +1,6 @@
 from context import injector
 from cad.cap import CapCAD
-from openscad_ext.slicer import slicer, Slice
+from openscad_ext.loft import loft, Profile
 import openscad as osc
 import math
 
@@ -50,7 +50,7 @@ def get_shape(x: float, z: float):
     )(x)
 
 
-def all_slices(z):
+def all_sections(z: float) -> Profile:
     r = 20
     x_delta = 0
 
@@ -64,16 +64,16 @@ def all_slices(z):
         safe_rel_z = max(0.0, min(r, relative_z))
         x_delta = r - math.sqrt(r**2 - (r - safe_rel_z) ** 2)
 
-    return Slice(
+    return Profile(
         upper=lambda x: get_shape(x, z),
         lower=lambda x: -15,
-        x_range=(-40 + x_delta, depth - x_delta),
-        slices=400,
+        span=(-40 + x_delta, depth - x_delta),
+        segments=400,
     )
 
 
 def main():
-    return slicer(all_slices, z_range=(-20, height - 20), fn=400).rotate(
+    return loft(all_sections, span=(-20, height - 20), fn=400).rotate(
         [90, 0, 90]
     )
 
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     body = main()
     body = osc.color(body, "#333333")
     body |= cap_cad.assembly_grid()
-    body = body.difference(cap_cad.cap_holes())
+    # body -= cap_cad.cap_holes()
     body.show()
