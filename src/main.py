@@ -1,26 +1,13 @@
 from context import injector
 from cad.cap import CapCAD
 from openscad_ext.loft import loft, Profile
+from openscad_ext.interpolation import smooth_transition_from_to
 import openscad as osc
 import math
 
 height = 180
 depth = 100
 radius = 300
-
-
-def smooth_transition(f, h, t):
-    t = max(0, min(1, t))
-    v = t * t * (3 - 2 * t)
-
-    def combined_func(x):
-        return (1 - v) * f(x) + v * h(x)
-
-    return combined_func
-
-
-def smooth_transition_from_to(f, h, from_x, to_x):
-    return lambda x: smooth_transition(f, h, (x - from_x) / (to_x - from_x))(x)
 
 
 def get_sphere_lower_y(x, z):

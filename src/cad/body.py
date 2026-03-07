@@ -29,7 +29,7 @@ class BodyProfile:
                 self.model.start_y(x),
                 self.model.end_y(),
             ),
-            segments=400,
+            segments=800,
             breakpoints=[self.model.thumb_section.start_y()],
         )
 
@@ -47,7 +47,8 @@ class Body:
             self.profile,
             span=(self.model.start_x(), self.model.end_x()),
             breakpoints=[self.model.end_x() - self.model.thumb_section.width()],
-            fn=200,
+            slices=800,
+            fn=100,
         ).rotate([90, 0, 90])
 
 
