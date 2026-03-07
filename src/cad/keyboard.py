@@ -1,12 +1,13 @@
 from dataclasses import dataclass, field
 import openscad as osc
-from injector import inject
+from injector import inject, singleton
 from models.projection import SphereProjection
 from models.parameters import Parameters
 from models.layout import Layout, MainBody
 from .cap import CapCAD
 
 
+@singleton
 @inject
 @dataclass
 class KeyboardCAD:

@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
 import openscad as osc
-from injector import inject
+from injector import inject, singleton
 from models.layout import Layout
 from models.parameters import Parameters
 
 
+@singleton
 @inject
 @dataclass
 class CapCAD:
