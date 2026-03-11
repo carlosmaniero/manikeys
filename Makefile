@@ -6,23 +6,25 @@ render: build/main.png build/main_top.png build/main_side.png
 
 build/%.stl: src/%.py
 	mkdir -p $(dir $@)
-	PYTHONPATH=src uv run pythonscad $< --trust-python -o $@
+	PYTHONPATH=src uv run pythonscad --backend Manifold $< --trust-python -o $@
 
 build/%.3mf: src/%.py
+	mkdir -p /tmp/3mf/$(dir $@)
 	mkdir -p $(dir $@)
-	PYTHONPATH=src uv run pythonscad $< --trust-python -o $@
+	PYTHONPATH=src uv run pythonscad --backend Manifold $< --trust-python -o /tmp/3mf/$@
+	mv /tmp/3mf/$@ $@
 
 build/%.png: src/%.py
 	mkdir -p $(dir $@)
-	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall -o $@
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad --backend Manifold $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall -o $@
 
 build/%_top.png: src/%.py
 	mkdir -p $(dir $@)
-	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,0,0,0,0 -o $@
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad --backend Manifold $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,0,0,0,0 -o $@
 
 build/%_side.png: src/%.py
 	mkdir -p $(dir $@)
-	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,90,0,90,0 -o $@
+	PYTHONPATH=src uv run xvfb-run --auto-servernum pythonscad --backend Manifold $< --trust-python --colorscheme "Metallic" --imgsize 2048,2048 --render --viewall --camera 0,0,0,90,0,90,0 -o $@
 
 test:
 	uv run pytest

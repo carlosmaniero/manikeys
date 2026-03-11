@@ -1,74 +1,37 @@
 from context import injector
 from cad.cap import CapCAD
-from openscad_ext.loft import loft, Profile
-from openscad_ext.interpolation import smooth_transition_from_to
+from cad.body import BodyCAD
 import openscad as osc
-import math
-
-height = 180
-depth = 100
-radius = 300
+import os
+from pathlib import Path
 
 
-def get_sphere_lower_y(x, z):
-    distance = math.sqrt(x**2 + z**2)
-
-    if distance >= radius:
-        return radius
-    else:
-        result = radius - math.sqrt(radius**2 - distance**2)
-        if result > 33:
-            return 33
-        return result
+def to_absolute_path(filename: str) -> str:
+    relative_path = Path(filename)
+    absolute_path = relative_path.resolve()
+    return str(absolute_path)
 
 
-def get_shape(x: float, z: float):
-    transition_start = 65
-    transition_end = 75
-    start_fixed = get_sphere_lower_y(transition_start, -21)
-
-    if x <= transition_start:
-        return get_sphere_lower_y(x, z)
-    return smooth_transition_from_to(
-        lambda x: get_sphere_lower_y(x, z),
-        lambda x: start_fixed + (x - transition_start) / 2,
-        transition_start,
-        transition_end,
-    )(x)
+def _file_exists(filename: str) -> bool:
+    return os.path.isfile(to_absolute_path(filename))
 
 
-def all_sections(z: float) -> Profile:
-    r = 20
-    x_delta = 0
-
-    z_start = -20
-    z_end = height + z_start
-    dist_from_start = z - z_start
-    dist_from_end = z_end - z
-    relative_z = min(dist_from_start, dist_from_end)
-
-    if relative_z < r:
-        safe_rel_z = max(0.0, min(r, relative_z))
-        x_delta = r - math.sqrt(r**2 - (r - safe_rel_z) ** 2)
-
-    return Profile(
-        upper=lambda x: get_shape(x, z),
-        lower=lambda x: -15,
-        span=(-40 + x_delta, depth - x_delta),
-        segments=400,
-    )
+def load_or_build(obj):
+    if _file_exists(obj.filename):
+        print(f"Loading {to_absolute_path(obj.filename)}")
+        return osc.osimport(to_absolute_path(obj.filename))
+    print(f"Building {obj.filename} from scratch")
+    obj.export()
+    return osc.osimport(to_absolute_path(obj.filename))
 
 
 def main():
-    return loft(all_sections, span=(-20, height - 20), fn=400).rotate(
-        [90, 0, 90]
-    )
+    return load_or_build(injector.get(BodyCAD))
 
 
 if __name__ == "__main__":
     cap_cad = injector.get(CapCAD)
     body = main()
-    body = osc.color(body, "#333333")
     body |= cap_cad.assembly_grid()
-    # body -= cap_cad.cap_holes()
+    body -= cap_cad.cap_body_mask_hole()
     body.show()
