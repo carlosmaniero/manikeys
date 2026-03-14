@@ -15,14 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install PythonSCAD
+      - name: Install System Dependencies (PythonSCAD & F3D)
         run: |
+          # Install PythonSCAD
           wget -qO - https://repos.pythonscad.org/apt/pythonscad-archive-keyring.gpg | \
           sudo gpg --dearmor -o /usr/share/keyrings/pythonscad-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/pythonscad-archive-keyring.gpg] https://repos.pythonscad.org/apt $(lsb_release -sc) main" | \
           sudo tee /etc/apt/sources.list.d/pythonscad.list
+          
+          # Download F3D
+          curl -L https://github.com/f3d-app/f3d/releases/download/v3.4.1/F3D-3.4.1-Linux-x86_64-raytracing.deb -o f3d.deb
+          
           sudo apt-get update -qq
-          sudo apt-get install -y -qq pythonscad xvfb libgl1-mesa-dri
+          sudo apt-get install -y -qq ./f3d.deb pythonscad xvfb libgl1-mesa-dri
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5

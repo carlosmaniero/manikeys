@@ -56,6 +56,9 @@ class BodyModel:
     def top_z_with_thumb(self, x: float, y: float) -> float:
         sphere_z = self.sphere_lower_z(x, y)
 
+        if y == self.start_y():
+            return self.min_z
+
         if y >= self.last_cap_y():
             return smooth_interpolate_from_to(
                 sphere_z,

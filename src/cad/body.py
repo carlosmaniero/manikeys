@@ -56,7 +56,7 @@ class BodyCAD:
 
     @property
     def filename(self) -> str:
-        return "build/body.3mf"
+        return "build/body.stl"
 
     def export(self):
         body_cad = self.assembly()

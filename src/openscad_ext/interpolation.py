@@ -1,8 +1,9 @@
 import math
 
+
 def ease_sine(t: float, reversed=False) -> float:
     t = max(0.0, min(1.0, t))
-    if reversed: # Ease-in
+    if reversed:  # Ease-in
         return 1.0 - math.cos((t * math.pi) / 2.0)
     # Ease-out
     return math.sin((t * math.pi) / 2.0)
