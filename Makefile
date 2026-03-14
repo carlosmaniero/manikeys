@@ -14,6 +14,10 @@ build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@
 
+build_with_pythonscad:
+	mkdir -p $(dir $(FILE))
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE)
+
 F3D_FLAGS = --resolution 2048,2048 --anti-aliasing=ssaa --no-config --axis=0 --grid=0 --up +Z --no-background
 
 build/%.png: build/%.stl

@@ -1,70 +1,41 @@
-from dataclasses import dataclass
-from injector import inject, singleton
-from context import injector
-from models.body import BodyModel
-from openscad_ext.loft import loft, Profile
-from cad.cap import CapCAD
-import openscad as osc
+from __future__ import annotations
+import sys
 import os
-
-"""
-The body is created using a loft that is then rotated [90, 0, 90].
-To make the math intuitive, we use the final coordinate system:
-- x axis: left to right (width)  => Loft extrusion axis
-- y axis: front to back (depth)  => Profile horizontal axis
-- z axis: up to down (height)    => Profile vertical axis
-"""
+import numpy as np
+from injector import inject, singleton
+import pyvista as pv
+from models.body import BodyModel
+from numpy_ext import map_meshgrid
+from pyvista_ext import create_full_surface, VistaObject
+from context import injector
 
 SLICES = int(os.getenv("SLICES", 800))
 
 
 @singleton
 @inject
-@dataclass
-class BodyProfile:
-    model: BodyModel
+class BodyCAD(VistaObject):
+    def __init__(self, model: BodyModel):
+        self.model = model
 
-    def __call__(self, x: float) -> Profile:
-        return Profile(
-            upper=lambda y: self.model.top_z(x, y),
-            lower=lambda y: -self.model.parameters.body.height - 10,
-            span=(
-                self.model.start_y(),
-                self.model.end_y(),
-            ),
-            segments=SLICES,
-            breakpoints=[self.model.fillet_end_y],
+    def assemble(self) -> pv.PolyData:
+        xrange = np.linspace(
+            self.model.start_x(), self.model.end_x(), SLICES, endpoint=True
         )
 
+        x, y = map_meshgrid(
+            xrange,
+            lambda _: np.linspace(
+                self.model.start_y(), self.model.end_y(), SLICES, endpoint=True
+            ),
+        )
 
-@singleton
-@inject
-@dataclass
-class BodyCAD:
-    cap_cad: CapCAD
-    model: BodyModel
-    profile: BodyProfile
+        top_z = np.vectorize(self.model.top_z)(x, y)
+        bottom_z = np.full_like(x, self.model.min_z)
 
-    def assembly(self):
-        return loft(
-            self.profile,
-            span=(self.model.start_x(), self.model.end_x()),
-            breakpoints=[self.model.fillet_start_x],
-            slices=SLICES,
-            fn=SLICES,
-        ).rotate([90, 0, 90])
-
-    @property
-    def filename(self) -> str:
-        return "build/body.stl"
-
-    def export(self):
-        body_cad = self.assembly()
-        body_cad.export(self.filename)
+        return create_full_surface(x, y, top_z, bottom_z)
 
 
 if __name__ == "__main__":
     body = injector.get(BodyCAD)
-    body_cad = body.assembly()
-    body_cad = osc.color(body_cad, "#333333")
-    body_cad.show()
+    body.program(sys.argv)

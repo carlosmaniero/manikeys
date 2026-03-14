@@ -18,7 +18,10 @@ dev = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["cad", "data", "models"]
+packages = {find = {where = ["src"]}}
+
+[tool.uv]
+package = true
 
 [tool.ruff]
 line-length = 80
