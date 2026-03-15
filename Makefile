@@ -23,6 +23,10 @@ sphere: build/sphere.stl build/sphere.png
 
 render: build/main.png build/main_back.png build/main_top.png build/main_side.png build/main_side_inv.png
 
+build/main.stl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl
+build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
+build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
+
 build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@

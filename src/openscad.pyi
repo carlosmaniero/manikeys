@@ -1315,16 +1315,16 @@ def rendervars(
 
 def osimport(
     file: str,
-    layer: str,
-    convexity: int,
-    origin: List[float],
-    scale: float,
-    width: float,
-    height: float,
-    filename: str,
-    center: bool,
-    dpi: float,
-    id: int,
+    layer: Optional[str] = None,
+    convexity: Optional[int] = None,
+    origin: Optional[List[float]] = None,
+    scale: Optional[float] = None,
+    width: Optional[float] = None,
+    height: Optional[float] = None,
+    filename: Optional[str] = None,
+    center: Optional[bool] = None,
+    dpi: Optional[float] = None,
+    id: Optional[int] = None,
 ) -> PyOpenSCAD:
     """Imports Object from disc"""
     ...
