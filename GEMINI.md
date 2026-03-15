@@ -11,4 +11,3 @@ Before performing any change in the code:
 After completing any code modifications:
 1.  **Format**: Run `uv run ruff format .` to ensure consistent styling.
 2.  **Verify**: Run `uv run pytest` to ensure no regressions were introduced.
-3.  **Trigger Rebuild**: Run `touch src/main.py` to notify any watchers (like OpenSCAD) that the entry point has changed.

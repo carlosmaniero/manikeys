@@ -4,13 +4,13 @@
 
 ## Views
 
-| Perspective | Back View | Top View |
-| :---: | :---: | :---: |
-| ![Perspective](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main.png) | ![Back View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_back.png) | ![Top View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_top.png) |
-
-| Side View | Side View (Inverse) |
+| Perspective | Back View |
 | :---: | :---: |
-| ![Side View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_side.png) | ![Side View (Inverse)](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_side_inv.png) |
+| ![Perspective](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main.png) | ![Back View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_back.png) |
+
+| Top View | Side View | Side View (Inverse) |
+| :---: | :---: | :---: |
+| ![Top View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_top.png) | ![Side View](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_side.png) | ![Side View (Inverse)](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/main_side_inv.png) |
 
 This project uses [PythonSCAD](https://pythonscad.org) to design a custom 3D-printable keyboard based on spherical projections.
 
