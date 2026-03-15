@@ -3,7 +3,6 @@ import sys
 import openscad as osc
 from injector import inject, singleton
 from context import injector
-from cad.cap import CapCAD
 from loader import load_stl
 from openscad_ext.object import OSCObject
 
@@ -11,13 +10,13 @@ from openscad_ext.object import OSCObject
 @singleton
 @inject
 class Keyboard(OSCObject):
-    def __init__(self, cap_cad: CapCAD):
-        self.cap_cad = cap_cad
+    def __init__(self):
+        pass
 
     def assemble(self) -> osc.PyOpenSCAD:
         body = load_stl("build/cad/body.stl")
-        body |= self.cap_cad.assembly_grid()
-        body -= self.cap_cad.cap_holes()
+        body |= load_stl("build/cad/cap_grid.stl")
+        body -= load_stl("build/cad/cap_hole_grid.stl")
         return body
 
 

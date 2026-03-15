@@ -5,6 +5,7 @@ from models.projection import SphereProjection
 from models.parameters import Parameters
 from models.layout import Layout, MainBody
 from .cap import CapCAD
+from .cap_hole import CapHoleCAD
 
 
 @singleton
@@ -14,6 +15,7 @@ class KeyboardCAD:
     projection: SphereProjection
     parameters: Parameters
     cap_cad: CapCAD
+    cap_hole_cad: CapHoleCAD
     layout: Layout
     main_body: MainBody = field(init=False)
 
@@ -83,5 +85,5 @@ class KeyboardCAD:
 
     def assembly(self):
         return (
-            self.body() | self.cap_cad.assembly_grid()
-        ) - self.cap_cad.cap_holes()
+            self.body() | self.cap_cad.assemble()
+        ) - self.cap_hole_cad.assemble()

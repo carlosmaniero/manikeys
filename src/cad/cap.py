@@ -1,19 +1,20 @@
+import sys
 from dataclasses import dataclass, field
 import openscad as osc
 from injector import inject, singleton
-from models.layout import Layout
 from models.parameters import Parameters
+from openscad_ext.object import OSCObject
+from context import injector
 
 
 @singleton
 @inject
 @dataclass
-class CapCAD:
-    layout: Layout
+class CapCAD(OSCObject):
     parameters: Parameters
     fn: int = field(default=20, init=False)
 
-    def cap(self):
+    def assemble(self):
         p = self.parameters
 
         squared_bottom = osc.cube(
@@ -43,36 +44,10 @@ class CapCAD:
 
         return self.colorize(obj)
 
-    def cap_body_mask_hole(self):
-        return osc.cube(
-            [
-                self.parameters.caps.size,
-                self.parameters.caps.size,
-                self.parameters.caps.thickness * 20
-                + self.parameters.globals.diff_offset * 2,
-            ],
-            center=True,
-        )
-
-    def cap_holes(self):
-        holes = []
-
-        for column in self.layout.grid:
-            for key in column:
-                hole = self.cap_body_mask_hole()
-                hole = hole.rotate(key.rotation) + key.position
-                holes.append(hole)
-
-        return self.colorize(osc.union(*holes))
-
     def colorize(self, obj):
         return osc.color(obj, "orange")
 
-    def assembly_grid(self):
-        grid = []
 
-        for column in self.layout.grid:
-            for key in column:
-                grid.append(self.cap().rotate(key.rotation) + key.position)
-
-        return osc.union(*grid)
+if __name__ == "__main__":
+    cap = injector.get(CapCAD)
+    cap.program(sys.argv)
