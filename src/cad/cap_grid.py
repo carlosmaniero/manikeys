@@ -16,11 +16,12 @@ class CapGridCAD(OSCObject):
 
     def assemble(self):
         grid = []
+        cap = load_stl("build/cad/cap.stl")
 
         for column in self.layout.grid:
             for key in column:
                 grid.append(
-                    load_stl("build/cad/cap.stl").rotate(key.rotation)
+                    cap.rotate(key.rotation)
                     + key.position
                 )
 
