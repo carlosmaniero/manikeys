@@ -44,7 +44,7 @@ jobs:
         run: |
           uv venv --system-site-packages
           uv sync --all-groups --active
-          uv pip install -e .
+          uv pip install -e . meshlib
 
       - name: Run Linter
         run: make lint
@@ -56,7 +56,7 @@ jobs:
         run: make build
 
       - name: Generate PNG
-        run: make render
+        run: xvfb-run make render
 
       - name: Deploy Assets
         uses: peaceiris/actions-gh-pages@v4
