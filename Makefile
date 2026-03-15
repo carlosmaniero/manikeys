@@ -1,6 +1,23 @@
-.PHONY: build test lint render clean sphere
+.PHONY: build test lint render clean sphere build_watch
 
 build: build/main.stl build/main.3mf
+
+build_watch:
+	@target="$(filter-out $@,$(MAKECMDGOALS))"; \
+	if [ -z "$$target" ]; then \
+		echo "Error: Please specify a target, e.g., make build_watch build/main.stl"; \
+		exit 1; \
+	fi; \
+	echo "Watching src/ for changes to build $$target..."; \
+	uv run watchmedo shell-command \
+		--patterns="*.py" \
+		--ignore-patterns="*__pycache__*" \
+		--recursive \
+		--drop \
+		--ignore-directories \
+		--command="rm -f $$target && make $$target" \
+		src/
+
 
 sphere: build/sphere.stl build/sphere.png
 
@@ -65,3 +82,7 @@ lint:
 clean:
 	rm -rf build/
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+# Catch-all to allow positional arguments for build_watch
+%:
+	@:
