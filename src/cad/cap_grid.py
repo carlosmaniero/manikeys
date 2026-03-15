@@ -20,10 +20,7 @@ class CapGridCAD(OSCObject):
 
         for column in self.layout.grid:
             for key in column:
-                grid.append(
-                    cap.rotate(key.rotation)
-                    + key.position
-                )
+                grid.append(cap.rotate(key.rotation) + key.position)
 
         return osc.union(*grid)
 
