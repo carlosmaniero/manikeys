@@ -23,14 +23,15 @@ class BodyCAD(VistaObject):
             self.model.start_x(), self.model.end_x(), SLICES, endpoint=True
         )
 
-        x, y = map_meshgrid(
-            xrange,
-            lambda _: np.linspace(
-                self.model.start_y(), self.model.end_y(), SLICES, endpoint=True
-            ),
-        )
+        def yfn(x_arr):
+            start_y = np.full_like(x_arr, self.model.start_y())
+            end_y = np.full_like(x_arr, self.model.end_y())
+            return np.linspace(start_y, end_y, SLICES, axis=-1)
 
-        top_z = np.vectorize(self.model.top_z)(x, y)
+        x, y = map_meshgrid(xrange, yfn)
+
+        top_z_func = np.vectorize(self.model.top_z)
+        top_z = top_z_func(x, y)
         bottom_z = np.full_like(x, self.model.min_z)
 
         return create_full_surface(x, y, top_z, bottom_z)

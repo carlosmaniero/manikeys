@@ -4,12 +4,10 @@ import numpy.typing as npt
 
 
 def map_meshgrid(
-    xrange: npt.NDArray[np.float64],
-    yfn: Callable[[float], npt.NDArray[np.float64]],
+    xrng: npt.NDArray[np.float64],
+    yfn: Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    xrng = np.asanyarray(xrange)
-    yrange = np.array([yfn(x) for x in xrng])
-    x = np.broadcast_to(xrng[:, None], yrange.shape)
-    y = yrange
+    y = yfn(xrng)
+    x = np.broadcast_to(xrng[:, None], y.shape)
 
     return x, y
