@@ -18,6 +18,11 @@ class Keyboard(OSCObject):
         body -= load_stl("build/cad/body_inner.stl")
         body |= load_stl("build/cad/cap_grid.stl")
         body -= load_stl("build/cad/cap_hole_grid.stl")
+
+        body = osc.color(body, "#333333")
+
+        body |= load_stl("build/cad/cap_top_grid.stl")
+
         return body
 
 

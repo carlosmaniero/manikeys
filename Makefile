@@ -1,6 +1,6 @@
 .PHONY: build test lint render clean sphere build_watch
 
-build: build/main.stl build/main.3mf
+build: build/main.stl build/main.3mf build/main.wrl
 
 build_watch:
 	@target="$(filter-out $@,$(MAKECMDGOALS))"; \
@@ -19,13 +19,25 @@ build_watch:
 		src/
 
 
-sphere: build/sphere.stl build/sphere.png
+sphere: build/sphere.wrl build/sphere.png
 
 render: build/main.png build/main_back.png build/main_top.png build/main_side.png build/main_side_inv.png
 
-build/main.stl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner.stl
+build/sphere.3mf: src/openscad_ext/demo.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run python $< -o $@
+
+build/sphere.wrl: src/openscad_ext/demo.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run python $< -o $@
+
+build/main.stl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner.stl build/cad/cap.stl build/cad/cap_top_grid.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
 build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
+
+build/%.wrl: src/%.py
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run python $< -o $@
 
 build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
@@ -41,6 +53,8 @@ build_with_pythonscad:
 		$(MAKE) _pythonscad_stl FILE=$(FILE); \
 	elif [ "$(suffix $(FILE))" = ".3mf" ]; then \
 		$(MAKE) _pythonscad_3mf FILE=$(FILE); \
+	elif [ "$(suffix $(FILE))" = ".wrl" ]; then \
+		$(MAKE) _pythonscad_wrl FILE=$(FILE); \
 	else \
 		$(MAKE) _pythonscad_other FILE=$(FILE); \
 	fi
@@ -52,6 +66,10 @@ _pythonscad_stl:
 
 _pythonscad_3mf:
 	mkdir -p $(dir $(FILE))
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE) -O export-3mf/material-type=color
+
+_pythonscad_wrl:
+	mkdir -p $(dir $(FILE))
 	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE)
 
 _pythonscad_other:
@@ -61,19 +79,19 @@ _pythonscad_other:
 
 F3D_FLAGS = --resolution 2048,2048 --anti-aliasing=ssaa --no-config --axis=0 --grid=0 --up +Z --no-background
 
-build/%.png: build/%.stl
+build/%.png: build/%.wrl
 	f3d $< $(F3D_FLAGS) --output $@ --camera-azimuth-angle 45 --camera-elevation-angle 30
 
-build/%_back.png: build/%.stl
+build/%_back.png: build/%.wrl
 	f3d $< $(F3D_FLAGS) --output $@ --camera-azimuth-angle 225 --camera-elevation-angle 30
 
-build/%_top.png: build/%.stl
+build/%_top.png: build/%.wrl
 	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,0,-1 --camera-view-up 0,1,0
 
-build/%_side.png: build/%.stl
+build/%_side.png: build/%.wrl
 	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,-1,0 --camera-view-up 0,0,1
 
-build/%_side_inv.png: build/%.stl
+build/%_side_inv.png: build/%.wrl
 	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,1,0 --camera-view-up 0,0,1
 
 test:
