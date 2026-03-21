@@ -18,7 +18,7 @@ class CapHoleCAD(OSCObject):
             [
                 self.parameters.caps.size,
                 self.parameters.caps.size,
-                self.parameters.caps.thickness * 20
+                self.parameters.caps.thickness * 5
                 + self.parameters.globals.diff_offset * 2,
             ],
             center=True,

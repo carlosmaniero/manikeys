@@ -5,7 +5,7 @@ import numpy as np
 from injector import inject, singleton
 from dataclasses import dataclass
 import pyvista as pv
-from models.body import BodyModel
+from models.body import BodyModel, BodyInnerModel
 from numpy_ext import map_meshgrid
 from pyvista_ext import create_full_surface, VistaObject
 from context import injector
@@ -16,8 +16,8 @@ SLICES = int(os.getenv("SLICES", 800))
 @singleton
 @inject
 @dataclass
-class BodyCAD(VistaObject):
-    model: BodyModel
+class BodyInnerCAD(VistaObject):
+    model: BodyInnerModel
 
     def assemble(self) -> pv.PolyData:
         xrange = np.linspace(
@@ -35,12 +35,11 @@ class BodyCAD(VistaObject):
         x, y = map_meshgrid(xrange, yfn)
 
         top_z = self.model.z(x, y)
-
         bottom_z = np.full_like(x, -self.model.parameters.body.height)
 
         return create_full_surface(x, y, top_z, bottom_z)
 
 
 if __name__ == "__main__":
-    body = injector.get(BodyCAD)
-    body.program(sys.argv)
+    body_inner = injector.get(BodyInnerCAD)
+    body_inner.program(sys.argv)

@@ -1,5 +1,5 @@
 from injector import Module, provider, singleton
-from models.body import BodyModel, BodyThumbSection
+from models.body import LegacyBodyModel, BodyThumbSection
 from models.layout import Layout
 from models.parameters import Parameters
 
@@ -19,7 +19,7 @@ class BodyModule(Module):
         layout: Layout,
         parameters: Parameters,
         thumb_section: BodyThumbSection,
-    ) -> BodyModel:
-        return BodyModel(
+    ) -> LegacyBodyModel:
+        return LegacyBodyModel(
             layout=layout, parameters=parameters, thumb_section=thumb_section
         )

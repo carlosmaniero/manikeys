@@ -4,7 +4,7 @@ import os
 import numpy as np
 from injector import inject, singleton
 import pyvista as pv
-from models.body import BodyModel
+from models.body import LegacyBodyModel
 from numpy_ext import map_meshgrid
 from pyvista_ext import create_full_surface, VistaObject
 from context import injector
@@ -15,7 +15,7 @@ SLICES = int(os.getenv("SLICES", 800))
 @singleton
 @inject
 class BodyCAD(VistaObject):
-    def __init__(self, model: BodyModel):
+    def __init__(self, model: LegacyBodyModel):
         self.model = model
 
     def assemble(self) -> pv.PolyData:
