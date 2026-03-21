@@ -35,6 +35,8 @@ class NumPyCapsBottomSphere:
 
     @property
     def highest(self) -> float:
+        # TODO: calculate the actual highest point based the cap position and
+        # rotation.
         return (
             self.layout.positioning.highest[2] + self.parameters.caps.border * 5
         )
@@ -119,9 +121,10 @@ class BodyModel:
             lerp.reverse_cubic(
                 y_ratio,
                 [
-                    self.caps_bottom_sphere.lowest + 10,
+                    self.caps_bottom_sphere.lowest
+                    + self.parameters.hand_support.offset_z,
                     self.caps_bottom_sphere.highest
-                    + 10
+                    + self.parameters.hand_support.offset_z
                     + self.parameters.body.fillet,
                 ],
             ),
@@ -139,7 +142,7 @@ class BodyModel:
                 ),
                 Interpolator(
                     start=self.start_y(),
-                    end=self.start_y() + 50,
+                    end=self.start_y() + self.parameters.hand_support.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
@@ -173,10 +176,13 @@ class BodyModel:
         return self.caps_bottom_sphere.start_x()
 
     def end_x(self) -> float:
-        return self.start_x() + 180
+        return self.start_x() + self.parameters.body.width
 
     def start_y(self) -> float:
-        return self.caps_bottom_sphere.start_y() - 110
+        return (
+            self.caps_bottom_sphere.start_y()
+            - self.parameters.hand_support.depth
+        )
 
     def end_y(self) -> float:
         return self.caps_bottom_sphere.end_y()

@@ -20,7 +20,6 @@ class BodyParameters:
     radius: float
     thickness: float
     width: float
-    extra_width: float
     depth: float
     height: float
     fillet: float
@@ -32,7 +31,15 @@ class GlobalParameters:
 
 
 @dataclass
+class HandSupportParameters:
+    offset_z: float
+    fillet: float
+    depth: float
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
     globals: GlobalParameters
+    hand_support: HandSupportParameters

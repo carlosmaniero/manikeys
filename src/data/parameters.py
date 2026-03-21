@@ -5,6 +5,7 @@ from models.parameters import (
     BodyParameters,
     CapsOuterParameters,
     GlobalParameters,
+    HandSupportParameters,
 )
 
 
@@ -23,11 +24,15 @@ class ParametersModule(Module):
             body=BodyParameters(
                 radius=280,
                 thickness=3,
-                width=150,
-                extra_width=40,
+                width=180,
                 depth=130,
                 height=15,
                 fillet=10,
             ),
             globals=GlobalParameters(diff_offset=0.5),
+            hand_support=HandSupportParameters(
+                offset_z=10,
+                fillet=50,
+                depth=110,
+            ),
         )
