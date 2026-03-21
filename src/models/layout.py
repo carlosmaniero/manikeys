@@ -32,6 +32,7 @@ class LayoutPositioning:
     top: list[float] = field(default_factory=lambda: [0, float("inf"), 0])
     bottom: list[float] = field(default_factory=lambda: [0, float("-inf"), 0])
     highest: list[float] = field(default_factory=lambda: [0, 0, float("-inf")])
+    lowest: list[float] = field(default_factory=lambda: [0, 0, float("inf")])
 
     def update(self, position: List[float]):
         if position[0] < self.left[0]:
@@ -48,6 +49,9 @@ class LayoutPositioning:
 
         if position[2] > self.highest[2]:
             self.highest = position
+
+        if position[2] < self.lowest[2]:
+            self.lowest = position
 
     def width(self) -> float:
         return self.right[0] - self.left[0]

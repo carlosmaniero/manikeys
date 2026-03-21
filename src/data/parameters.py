@@ -21,7 +21,7 @@ class ParametersModule(Module):
                 outer=CapsOuterParameters(thickness=1.5),
             ),
             body=BodyParameters(
-                radius=300,
+                radius=280,
                 thickness=3,
                 width=150,
                 extra_width=40,
