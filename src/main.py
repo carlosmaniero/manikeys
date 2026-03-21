@@ -14,7 +14,7 @@ class Keyboard(OSCObject):
         pass
 
     def assemble(self) -> osc.PyOpenSCAD:
-        body = load_stl("build/cad/body_numpy.stl")
+        body = load_stl("build/cad/body.stl")
         body -= load_stl("build/cad/body_inner.stl")
         body |= load_stl("build/cad/cap_grid.stl")
         body -= load_stl("build/cad/cap_hole_grid.stl")

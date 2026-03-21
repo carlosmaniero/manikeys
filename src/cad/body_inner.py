@@ -5,7 +5,7 @@ import numpy as np
 from injector import inject, singleton
 from dataclasses import dataclass
 import pyvista as pv
-from models.body import BodyModel, BodyInnerModel
+from models.body import BodyInnerModel
 from numpy_ext import map_meshgrid
 from pyvista_ext import create_full_surface, VistaObject
 from context import injector

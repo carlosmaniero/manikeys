@@ -3,8 +3,9 @@ import sys
 import os
 import numpy as np
 from injector import inject, singleton
+from dataclasses import dataclass
 import pyvista as pv
-from models.body import LegacyBodyModel
+from models.body import BodyModel
 from numpy_ext import map_meshgrid
 from pyvista_ext import create_full_surface, VistaObject
 from context import injector
@@ -14,13 +15,16 @@ SLICES = int(os.getenv("SLICES", 800))
 
 @singleton
 @inject
+@dataclass
 class BodyCAD(VistaObject):
-    def __init__(self, model: LegacyBodyModel):
-        self.model = model
+    model: BodyModel
 
     def assemble(self) -> pv.PolyData:
         xrange = np.linspace(
-            self.model.start_x(), self.model.end_x(), SLICES, endpoint=True
+            self.model.start_x(),
+            self.model.end_x(),
+            SLICES,
+            endpoint=True,
         )
 
         def yfn(x_arr):
@@ -30,9 +34,9 @@ class BodyCAD(VistaObject):
 
         x, y = map_meshgrid(xrange, yfn)
 
-        top_z_func = np.vectorize(self.model.top_z)
-        top_z = top_z_func(x, y)
-        bottom_z = np.full_like(x, self.model.min_z)
+        top_z = self.model.z(x, y)
+
+        bottom_z = np.full_like(x, -self.model.parameters.body.height)
 
         return create_full_surface(x, y, top_z, bottom_z)
 
