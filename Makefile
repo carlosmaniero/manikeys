@@ -31,9 +31,11 @@ build/sphere.wrl: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner.stl build/cad/cap.stl build/cad/cap_top_grid.stl
+build/main.stl build/main.3mf build/main.wrl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner.stl build/cad/cap.stl build/cad/cap_top_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
 build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
+build/cad/cap_thumb.stl: src/cad/cap_thumb.py build/cad/cap.stl
+build/cad/cap_thumb_hole.stl: src/cad/cap_thumb_hole.py build/cad/cap_hole.stl
 
 build/%.wrl: src/%.py
 	mkdir -p $(dir $@)
@@ -61,20 +63,21 @@ build_with_pythonscad:
 
 _pythonscad_stl:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE) --export-format binstl
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) --export-format binstl
 	uv run python simplify.py -i $(FILE) -o $(FILE)
 
 _pythonscad_3mf:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE) -O export-3mf/material-type=color
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) -O export-3mf/material-type=color
 
 _pythonscad_wrl:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE)
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE)
 
 _pythonscad_other:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(shell find src -name "$(notdir $(basename $(FILE))).py") -o $(FILE)
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE)
+
 
 
 F3D_FLAGS = --resolution 2048,2048 --anti-aliasing=ssaa --no-config --axis=0 --grid=0 --up +Z --no-background

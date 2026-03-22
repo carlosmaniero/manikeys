@@ -12,7 +12,7 @@ Color = Union[str, list[float]]
 Vector2 = list[float]
 """2D vector represented as [x, y] list."""
 
-Vector3 = list[float]
+Vector3 = list[float] | list[int]
 """3D vector represented as [x, y, z] list."""
 
 Matrix4x4 = list[list[float]]

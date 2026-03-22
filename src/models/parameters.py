@@ -14,6 +14,14 @@ class CapsParameters:
     outer: CapsOuterParameters
     gap: float
 
+    @property
+    def full_offset(self) -> float:
+        return self.size / 2 + self.border + self.gap
+
+    @property
+    def next_offset(self) -> float:
+        return self.size + self.gap
+
 
 @dataclass
 class BodyParameters:
