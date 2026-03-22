@@ -46,6 +46,13 @@ class NumPyCapsBottomSphere:
         return self.layout.positioning.highest[0]
 
     @property
+    def outer_highest(self) -> float:
+        return self.highest
+
+    def outer_start_y(self) -> float:
+        return self.start_y()
+
+    @property
     def lowest(self) -> float:
         return self.layout.positioning.lowest[2]
 
@@ -86,6 +93,13 @@ class HoleNumPyCapsBottomSphere(NumPyCapsBottomSphere):
     def highest(self) -> float:
         return super().highest - self.parameters.body.thickness
 
+    @property
+    def outer_highest(self) -> float:
+        return self.highest + self.parameters.body.thickness
+
+    def outer_start_y(self) -> float:
+        return self.start_y() - self.parameters.body.thickness
+
     def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         super_z = super().z(x, y)
         return super_z - self.parameters.body.thickness
@@ -101,185 +115,138 @@ class BodyLowBottom:
         return np.full_like(x, -self.parameters.body.height)
 
 
+class BodyModelBase:
+    parameters: Parameters
+    low_bottom: BodyLowBottom
+
+    @property
+    def sphere(self) -> NumPyCapsBottomSphere:
+        raise NotImplementedError()
+
+    @property
+    def effective_width(self) -> float:
+        raise NotImplementedError()
+
+    @property
+    def effective_depth(self) -> float:
+        raise NotImplementedError()
+
+    def low_bottom_interpolations(
+        self, coords: list[np.ndarray]
+    ) -> InterpolationChain:
+        x, y = coords
+        base = self.low_bottom.z(x, y)
+
+        y_ratio = lerp.x_factor(
+            coords,
+            self.sphere.start_x(),
+            self.sphere.highest_x,
+        )
+
+        lowest_to_heighest = np.minimum(
+            lerp.reverse_cubic(
+                y_ratio,
+                [
+                    self.sphere.lowest + self.parameters.hand_support.offset_z,
+                    self.sphere.outer_highest
+                    + self.parameters.hand_support.offset_z
+                    + self.parameters.body.fillet,
+                ],
+            ),
+            self.sphere.highest,
+        )
+
+        return InterpolationChain(
+            [
+                Interpolator(
+                    start=self.sphere.outer_start_y(),
+                    end=self.sphere.start_y() + self.parameters.body.fillet,
+                    base=lowest_to_heighest,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.start_y(),
+                    end=self.start_y() + self.parameters.hand_support.fillet,
+                    base=base,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.sphere.end_y(),
+                    end=self.sphere.end_y() - self.parameters.body.fillet,
+                    base=base,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.sphere.start_x(),
+                    end=self.sphere.start_x() + self.parameters.body.fillet,
+                    base=base,
+                ),
+                Interpolator(
+                    start=self.end_x(),
+                    end=self.end_x() - self.parameters.body.fillet,
+                    base=base,
+                ),
+            ]
+        )
+
+    def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        z = self.sphere.z(x, y)
+
+        return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
+
+    def start_x(self) -> float:
+        return self.sphere.start_x()
+
+    def end_x(self) -> float:
+        return self.start_x() + self.effective_width
+
+    def start_y(self) -> float:
+        return self.sphere.start_y() - self.effective_depth
+
+    def end_y(self) -> float:
+        return self.sphere.end_y()
+
+
 @singleton
 @inject
 @dataclass
-class BodyModel:
+class BodyModel(BodyModelBase):
     caps_bottom_sphere: NumPyCapsBottomSphere
     low_bottom: BodyLowBottom
     parameters: Parameters
 
-    def low_bottom_interpolations(
-        self, coords: list[np.ndarray]
-    ) -> InterpolationChain:
-        x, y = coords
-        base = self.low_bottom.z(x, y)
+    @property
+    def sphere(self) -> NumPyCapsBottomSphere:
+        return self.caps_bottom_sphere
 
-        y_ratio = lerp.x_factor(
-            coords,
-            self.caps_bottom_sphere.start_x(),
-            self.caps_bottom_sphere.highest_x,
-        )
+    @property
+    def effective_width(self) -> float:
+        return self.parameters.body.width
 
-        lowest_to_heighest = np.minimum(
-            lerp.reverse_cubic(
-                y_ratio,
-                [
-                    self.caps_bottom_sphere.lowest
-                    + self.parameters.hand_support.offset_z,
-                    self.caps_bottom_sphere.highest
-                    + self.parameters.hand_support.offset_z
-                    + self.parameters.body.fillet,
-                ],
-            ),
-            self.caps_bottom_sphere.highest,
-        )
-
-        return InterpolationChain(
-            [
-                Interpolator(
-                    start=self.caps_bottom_sphere.start_y(),
-                    end=self.caps_bottom_sphere.start_y()
-                    + self.parameters.body.fillet,
-                    base=lowest_to_heighest,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.start_y(),
-                    end=self.start_y() + self.parameters.hand_support.fillet,
-                    base=base,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.caps_bottom_sphere.end_y(),
-                    end=self.caps_bottom_sphere.end_y()
-                    - self.parameters.body.fillet,
-                    base=base,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.caps_bottom_sphere.start_x(),
-                    end=self.caps_bottom_sphere.start_x()
-                    + self.parameters.body.fillet,
-                    base=base,
-                ),
-                Interpolator(
-                    start=self.end_x(),
-                    end=self.end_x() - self.parameters.body.fillet,
-                    base=base,
-                ),
-            ]
-        )
-
-    def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        z = self.caps_bottom_sphere.z(x, y)
-
-        return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
-
-    def start_x(self) -> float:
-        return self.caps_bottom_sphere.start_x()
-
-    def end_x(self) -> float:
-        return self.start_x() + self.parameters.body.width
-
-    def start_y(self) -> float:
-        return (
-            self.caps_bottom_sphere.start_y()
-            - self.parameters.hand_support.depth
-        )
-
-    def end_y(self) -> float:
-        return self.caps_bottom_sphere.end_y()
+    @property
+    def effective_depth(self) -> float:
+        return self.parameters.hand_support.depth
 
 
 @singleton
 @inject
 @dataclass
-class BodyInnerModel:
+class BodyInnerModel(BodyModelBase):
     parameters: Parameters
     hole: HoleNumPyCapsBottomSphere
     low_bottom: BodyLowBottom
 
-    def low_bottom_interpolations(
-        self, coords: list[np.ndarray]
-    ) -> InterpolationChain:
-        x, y = coords
-        base = self.low_bottom.z(x, y)
+    @property
+    def sphere(self) -> HoleNumPyCapsBottomSphere:
+        return self.hole
 
-        y_ratio = lerp.x_factor(
-            coords,
-            self.hole.start_x(),
-            self.hole.highest_x,
-        )
+    @property
+    def effective_width(self) -> float:
+        return self.parameters.body.width - self.parameters.body.thickness * 2
 
-        lowest_to_heighest = np.minimum(
-            lerp.reverse_cubic(
-                y_ratio,
-                [
-                    self.hole.lowest + self.parameters.hand_support.offset_z,
-                    self.hole.highest
-                    + self.parameters.body.thickness
-                    + self.parameters.hand_support.offset_z
-                    + self.parameters.body.fillet,
-                ],
-            ),
-            self.hole.highest,
-        )
-
-        return InterpolationChain(
-            [
-                Interpolator(
-                    start=self.hole.start_y() - self.parameters.body.thickness,
-                    end=self.hole.start_y() + self.parameters.body.fillet,
-                    base=lowest_to_heighest,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.start_y(),
-                    end=self.start_y() + self.parameters.hand_support.fillet,
-                    base=base,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.hole.end_y(),
-                    end=self.hole.end_y() - self.parameters.body.fillet,
-                    base=base,
-                    ratio=lerp.y_factor,
-                ),
-                Interpolator(
-                    start=self.hole.start_x(),
-                    end=self.hole.start_x() + self.parameters.body.fillet,
-                    base=base,
-                ),
-                Interpolator(
-                    start=self.end_x(),
-                    end=self.end_x() - self.parameters.body.fillet,
-                    base=base,
-                ),
-            ]
-        )
-
-    def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        z = self.hole.z(x, y)
-
-        return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
-
-    def start_x(self) -> float:
-        return self.hole.start_x()
-
-    def end_x(self) -> float:
+    @property
+    def effective_depth(self) -> float:
         return (
-            self.start_x()
-            + self.parameters.body.width
+            self.parameters.hand_support.depth
             - self.parameters.body.thickness * 2
         )
-
-    def start_y(self) -> float:
-        return (
-            self.hole.start_y()
-            - self.parameters.hand_support.depth
-            + self.parameters.body.thickness * 2
-        )
-
-    def end_y(self) -> float:
-        return self.hole.end_y()
