@@ -31,17 +31,15 @@ class BodyInnerSections(OSCObject):
             .back(self.model.hole.outer_start_y())
         )
 
-        cabe_hole_radius = 10
-
         cabe_hole = (
             osc.cylinder(
-                r=cabe_hole_radius,
+                r=self.parameters.body.cabe_hole_radius,
                 h=self.parameters.body.thickness * 2 + 1,
             )
             .rotx(90)
             .right(
                 self.model.end_x()
-                - cabe_hole_radius
+                - self.parameters.body.cabe_hole_radius
                 - self.parameters.body.thickness * 2
             )
             .back(
@@ -51,7 +49,7 @@ class BodyInnerSections(OSCObject):
             )
             .down(
                 self.parameters.body.height
-                - cabe_hole_radius
+                - self.parameters.body.cabe_hole_radius
                 - self.parameters.body.thickness * 2
             )
         )
