@@ -20,4 +20,12 @@ class OSCObject(Object["osc.PyOpenSCAD"]):
         # pythonscad
         if argv[0] == "":
             return self.show()
+
+        parser = self._get_program_parser()
+        args = parser.parse_args(argv[1:])
+
+        if args.show:
+            subprocess.run(["pythonscad", argv[0]], check=True)
+            return
+
         super().program(argv)

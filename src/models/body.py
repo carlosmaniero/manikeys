@@ -206,6 +206,14 @@ class BodyModelBase:
     def end_y(self) -> float:
         return self.sphere.end_y()
 
+    @property
+    def width(self) -> float:
+        return self.end_x() - self.start_x()
+
+    @property
+    def depth(self) -> float:
+        return self.end_y() - self.start_y()
+
 
 @singleton
 @inject

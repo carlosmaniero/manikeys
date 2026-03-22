@@ -122,39 +122,39 @@ class PyOpenSCAD:
         """
         ...
 
-    def right(self, v: List[float]) -> "PyOpenSCAD":
+    def right(self, v: List[float] | float) -> "PyOpenSCAD":
         """Moves an Object to the right"""
         ...
 
-    def left(self, v: List[float]) -> "PyOpenSCAD":
+    def left(self, v: List[float] | float) -> "PyOpenSCAD":
         """Moves an Object to the left"""
         ...
 
-    def back(self, v: List[float]) -> "PyOpenSCAD":
+    def back(self, v: List[float] | float) -> "PyOpenSCAD":
         """Moves Object backwards"""
         ...
 
-    def front(self, v: List[float]) -> "PyOpenSCAD":
+    def front(self, v: List[float] | float) -> "PyOpenSCAD":
         """Moves Object frontwards"""
         ...
 
-    def up(self, v: List[float]) -> "PyOpenSCAD":
+    def up(self, v: List[float] | float) -> "PyOpenSCAD":
         """Move Object upwards"""
         ...
 
-    def down(self, v: List[float]) -> "PyOpenSCAD":
+    def down(self, v: List[float] | float) -> "PyOpenSCAD":
         """Move Object downwards"""
         ...
 
-    def rotx(self, v: List[float]) -> "PyOpenSCAD":
+    def rotx(self, v: List[float] | float) -> "PyOpenSCAD":
         """Rotate Object around X Axis"""
         ...
 
-    def roty(self, v: List[float]) -> "PyOpenSCAD":
+    def roty(self, v: List[float] | float) -> "PyOpenSCAD":
         """Rotate Object around Y Axis"""
         ...
 
-    def rotz(self, v: List[float]) -> "PyOpenSCAD":
+    def rotz(self, v: List[float] | float) -> "PyOpenSCAD":
         """Rotate Object around Z Axis"""
         ...
 
