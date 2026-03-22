@@ -82,6 +82,10 @@ class HoleNumPyCapsBottomSphere(NumPyCapsBottomSphere):
     def cap_offset(self) -> float:
         return super().cap_offset - self.parameters.body.thickness
 
+    @property
+    def highest(self) -> float:
+        return super().highest - self.parameters.body.thickness
+
     def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         super_z = super().z(x, y)
         return super_z - self.parameters.body.thickness
@@ -194,24 +198,45 @@ class BodyModel:
 class BodyInnerModel:
     parameters: Parameters
     hole: HoleNumPyCapsBottomSphere
+    low_bottom: BodyLowBottom
 
-    def low_bottom_interpolations(self):
-        base = -self.parameters.body.height
+    def low_bottom_interpolations(
+        self, coords: list[np.ndarray]
+    ) -> InterpolationChain:
+        x, y = coords
+        base = self.low_bottom.z(x, y)
+
+        y_ratio = lerp.x_factor(
+            coords,
+            self.hole.start_x(),
+            self.hole.highest_x,
+        )
+
+        lowest_to_heighest = np.minimum(
+            lerp.reverse_cubic(
+                y_ratio,
+                [
+                    self.hole.lowest + self.parameters.hand_support.offset_z,
+                    self.hole.highest
+                    + self.parameters.body.thickness
+                    + self.parameters.hand_support.offset_z
+                    + self.parameters.body.fillet,
+                ],
+            ),
+            self.hole.highest,
+        )
+
         return InterpolationChain(
             [
                 Interpolator(
-                    start=self.hole.start_x(),
-                    end=self.hole.start_x() + self.parameters.body.fillet,
-                    base=base,
-                ),
-                Interpolator(
-                    start=self.hole.end_x(),
-                    end=self.hole.end_x() - self.parameters.body.fillet,
-                    base=base,
-                ),
-                Interpolator(
-                    start=self.hole.start_y(),
+                    start=self.hole.start_y() - self.parameters.body.thickness,
                     end=self.hole.start_y() + self.parameters.body.fillet,
+                    base=lowest_to_heighest,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.start_y(),
+                    end=self.start_y() + self.parameters.hand_support.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
@@ -221,29 +246,40 @@ class BodyInnerModel:
                     base=base,
                     ratio=lerp.y_factor,
                 ),
+                Interpolator(
+                    start=self.hole.start_x(),
+                    end=self.hole.start_x() + self.parameters.body.fillet,
+                    base=base,
+                ),
+                Interpolator(
+                    start=self.end_x(),
+                    end=self.end_x() - self.parameters.body.fillet,
+                    base=base,
+                ),
             ]
         )
 
     def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        z = np.where(
-            (x >= self.hole.start_x())
-            & (x <= self.hole.end_x())
-            & (y >= self.hole.start_y())
-            & (y <= self.hole.end_y()),
-            self.hole.z(x, y),
-            -self.parameters.body.height,
-        )
+        z = self.hole.z(x, y)
 
-        return self.low_bottom_interpolations().interpolate([x, y], z)
+        return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
 
     def start_x(self) -> float:
         return self.hole.start_x()
 
     def end_x(self) -> float:
-        return self.hole.end_x()
+        return (
+            self.start_x()
+            + self.parameters.body.width
+            - self.parameters.body.thickness * 2
+        )
 
     def start_y(self) -> float:
-        return self.hole.start_y()
+        return (
+            self.hole.start_y()
+            - self.parameters.hand_support.depth
+            + self.parameters.body.thickness * 2
+        )
 
     def end_y(self) -> float:
         return self.hole.end_y()

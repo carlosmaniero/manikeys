@@ -1,6 +1,7 @@
 import argparse
 import meshlib.mrmeshpy as mrmeshpy
 import os
+import multiprocessing
 import sys
 
 
@@ -25,9 +26,9 @@ def main():
 
     settings = mrmeshpy.DecimateSettings()
 
-    settings.maxError = 0.05  # Maximum error when decimation stops
+    settings.maxError = 0.05
 
-    settings.subdivideParts = 64
+    settings.subdivideParts = multiprocessing.cpu_count()
 
     mrmeshpy.decimateMesh(mesh, settings)
 
