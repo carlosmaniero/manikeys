@@ -31,12 +31,13 @@ build/sphere.wrl: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl build/main.3mf build/main.wrl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner_sections.stl build/cad/cap.stl build/cad/cap_top_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl
+build/main.stl build/main.3mf build/main.wrl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner_sections.stl build/cad/cap.stl build/cad/cap_top_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/socket_adapter_grid.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
 build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
 build/cad/cap_thumb.stl: src/cad/cap_thumb.py build/cad/cap.stl
 build/cad/cap_thumb_hole.stl: src/cad/cap_thumb_hole.py build/cad/cap_hole.stl
+build/cad/socket_adapter_grid.stl: src/cad/socket_adapter_grid.py build/cad/socket_adapter.stl
 
 build/%.wrl: src/%.py
 	mkdir -p $(dir $@)
@@ -49,6 +50,11 @@ build/%.3mf: src/%.py
 build/%.stl: src/%.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@
+	uv run python simplify.py -i $@ -o $@
+
+build/%.stl: src/%.scad
+	mkdir -p $(dir $@)
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $< -o $@ --export-format binstl
 	uv run python simplify.py -i $@ -o $@
 
 build_with_pythonscad:
