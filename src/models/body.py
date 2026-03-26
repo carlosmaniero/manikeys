@@ -121,7 +121,7 @@ class BodyModelBase:
 
     @property
     def effective_depth(self) -> float:
-        raise NotImplementedError()
+        return self.parameters.hand_support.depth
 
     @property
     def offset(self) -> float:
@@ -230,10 +230,6 @@ class BodyModel(BodyModelBase):
     def effective_width(self) -> float:
         return self.parameters.body.width
 
-    @property
-    def effective_depth(self) -> float:
-        return self.parameters.hand_support.depth
-
 
 @singleton
 @inject
@@ -250,13 +246,6 @@ class BodyInnerModel(BodyModelBase):
     @property
     def effective_width(self) -> float:
         return self.parameters.body.width - self.parameters.body.thickness * 2
-
-    @property
-    def effective_depth(self) -> float:
-        return (
-            self.parameters.hand_support.depth
-            - self.parameters.body.thickness * 2
-        )
 
     @property
     def offset(self) -> float:
