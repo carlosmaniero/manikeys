@@ -87,22 +87,22 @@ _pythonscad_other:
 
 
 
-F3D_FLAGS = --resolution 2048,2048 --anti-aliasing=ssaa --no-config --axis=0 --grid=0 --up +Z --no-background
+PYTHONSCAD_RENDER_FLAGS = --render --imgsize=2048,2048 --viewall --autocenter
 
-build/%.png: build/%.wrl
-	f3d $< $(F3D_FLAGS) --output $@ --camera-azimuth-angle 45 --camera-elevation-angle 30
+build/%.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,45,0 -D 'import("'$(abspath $<)'");' /dev/null
 
-build/%_back.png: build/%.wrl
-	f3d $< $(F3D_FLAGS) --output $@ --camera-azimuth-angle 225 --camera-elevation-angle 30
+build/%_back.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,225,0 -D 'import("'$(abspath $<)'");' /dev/null
 
-build/%_top.png: build/%.wrl
-	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,0,-1 --camera-view-up 0,1,0
+build/%_top.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --projection=o --camera=0,0,0,0,0,0,0 -D 'import("'$(abspath $<)'");' /dev/null
 
-build/%_side.png: build/%.wrl
-	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,-1,0 --camera-view-up 0,0,1
+build/%_side.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --projection=o --camera=0,0,0,90,0,0,0 -D 'import("'$(abspath $<)'");' /dev/null
 
-build/%_side_inv.png: build/%.wrl
-	f3d $< $(F3D_FLAGS) --output $@ --camera-orthographic --camera-direction 0,1,0 --camera-view-up 0,0,1
+build/%_side_inv.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --projection=o --camera=0,0,0,90,0,180,0 -D 'import("'$(abspath $<)'");' /dev/null
 
 test:
 	uv run pytest

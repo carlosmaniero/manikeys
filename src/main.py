@@ -21,9 +21,9 @@ class Keyboard(OSCObject):
         body -= load_stl("build/cad/cap_thumb_hole.stl")
         body |= load_stl("build/cad/socket_adapter_grid.stl")
 
-        body = osc.color(body, "#333333")
+        body = osc.color(body, "#c0b89b")
 
-        body |= load_stl("build/cad/cap_top_grid.stl")
+        body |= osc.color(load_stl("build/cad/cap_top_grid.stl"), "#bec0b1")
 
         return body
 
