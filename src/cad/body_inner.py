@@ -19,6 +19,24 @@ SLICES = int(os.getenv("SLICES", 800))
 class BodyInnerCAD(VistaObject):
     model: BodyInnerModel
 
+    def show(self):
+        inner = self.assemble()
+
+        from cad.body import BodyCAD
+
+        body_cad = injector.get(BodyCAD)
+        body = body_cad.assemble()
+
+        plotter = pv.Plotter()
+
+        plotter.add_mesh(body, color="tan", opacity=0.25)
+        plotter.add_mesh(inner, color="cyan")
+
+        plotter.show_grid()  # type: ignore
+        plotter.add_axes()  # type: ignore
+
+        plotter.show()
+
     def assemble(self) -> pv.PolyData:
         xrange = np.linspace(
             self.model.start_x(),

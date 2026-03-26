@@ -45,10 +45,6 @@ class NumPyCapsBottomSphere:
     def highest_x(self) -> float:
         return self.layout.positioning.highest[0]
 
-    @property
-    def outer_highest(self) -> float:
-        return self.highest
-
     def outer_start_y(self) -> float:
         return self.start_y()
 
@@ -93,10 +89,6 @@ class HoleNumPyCapsBottomSphere(NumPyCapsBottomSphere):
     def highest(self) -> float:
         return super().highest - self.parameters.body.thickness
 
-    @property
-    def outer_highest(self) -> float:
-        return self.highest + self.parameters.body.thickness
-
     def outer_start_y(self) -> float:
         return self.start_y() - self.parameters.body.thickness
 
@@ -131,6 +123,10 @@ class BodyModelBase:
     def effective_depth(self) -> float:
         raise NotImplementedError()
 
+    @property
+    def offset(self) -> float:
+        return 0
+
     def low_bottom_interpolations(
         self, coords: list[np.ndarray]
     ) -> InterpolationChain:
@@ -139,20 +135,23 @@ class BodyModelBase:
 
         y_ratio = lerp.x_factor(
             coords,
-            self.sphere.start_x(),
-            self.sphere.highest_x,
+            self.sphere.start_x() + self.offset,
+            self.sphere.highest_x - self.offset,
         )
 
         lowest_to_heighest = np.minimum(
             lerp.reverse_cubic(
                 y_ratio,
                 [
-                    self.sphere.lowest + self.parameters.hand_support.offset_z,
-                    self.sphere.outer_highest
+                    self.sphere.lowest
+                    + self.offset
+                    + self.parameters.hand_support.offset_z,
+                    self.sphere.highest
                     + self.parameters.hand_support.offset_z
                     + self.parameters.body.fillet,
                 ],
             ),
+            # TODO: need to be calculated based on the offset
             self.sphere.highest,
         )
 
@@ -258,3 +257,7 @@ class BodyInnerModel(BodyModelBase):
             self.parameters.hand_support.depth
             - self.parameters.body.thickness * 2
         )
+
+    @property
+    def offset(self) -> float:
+        return -self.parameters.body.thickness
