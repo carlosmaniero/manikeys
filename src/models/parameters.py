@@ -47,8 +47,23 @@ class HandSupportParameters:
 
 
 @dataclass
+class SocketAdapterParameters:
+    border: float
+    offset_fix: float
+    diode_r: float
+    diode_wire_r: float
+    diode_l: float
+    diode_x: float
+    cube_size: float
+    body_thickness: float
+    cap_socket_height: float
+    cap_socket_width: float
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
     globals: GlobalParameters
     hand_support: HandSupportParameters
+    socket_adapter: SocketAdapterParameters
