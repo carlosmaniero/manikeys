@@ -23,12 +23,12 @@ class BodyInnerSections(OSCObject):
                 [
                     self.model.width,
                     self.parameters.body.thickness * 2,
-                    self.model.hole.outer_highest + self.parameters.body.height,
+                    self.model.sphere.highest + self.parameters.body.height,
                 ],
             )
             .right(self.model.start_x())
             .down(self.parameters.body.height)
-            .back(self.model.hole.outer_start_y())
+            .back(self.model.sphere.start_y() - self.parameters.body.thickness)
         )
 
         cabe_hole = (
@@ -43,8 +43,8 @@ class BodyInnerSections(OSCObject):
                 - self.parameters.body.thickness * 2
             )
             .back(
-                self.model.hole.outer_start_y()
-                + self.parameters.body.thickness * 2
+                self.model.sphere.start_y()
+                + self.parameters.body.thickness
                 + 0.5
             )
             .down(
@@ -56,7 +56,7 @@ class BodyInnerSections(OSCObject):
 
         body = load_stl("build/cad/body_inner.stl")
 
-        return body - (divider - cabe_hole)
+        return body - osc.color(divider - cabe_hole, "#00ffffcc")
 
 
 if __name__ == "__main__":

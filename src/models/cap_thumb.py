@@ -15,10 +15,9 @@ class CapThumbModel:
 
     def get_positions(self) -> list[list[float]]:
         pos1 = [
-            self.body_model.caps_bottom_sphere.highest_x,
-            self.body_model.caps_bottom_sphere.start_y()
-            - self.parameters.caps.full_offset,
-            self.body_model.caps_bottom_sphere.highest,
+            self.body_model.sphere.highest_x,
+            self.body_model.sphere.start_y() - self.parameters.caps.full_offset,
+            self.body_model.sphere.highest,
         ]
 
         pos2 = [

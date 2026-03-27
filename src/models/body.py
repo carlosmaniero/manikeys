@@ -77,29 +77,6 @@ class NumPyCapsBottomSphere:
 @singleton
 @inject
 @dataclass
-class HoleNumPyCapsBottomSphere(NumPyCapsBottomSphere):
-    layout: Layout
-    parameters: Parameters
-
-    @property
-    def cap_offset(self) -> float:
-        return super().cap_offset - self.parameters.body.thickness
-
-    @property
-    def highest(self) -> float:
-        return super().highest - self.parameters.body.thickness
-
-    def outer_start_y(self) -> float:
-        return self.start_y() - self.parameters.body.thickness
-
-    def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        super_z = super().z(x, y)
-        return super_z - self.parameters.body.thickness
-
-
-@singleton
-@inject
-@dataclass
 class BodyLowBottom:
     parameters: Parameters
 
@@ -107,17 +84,13 @@ class BodyLowBottom:
         return np.full_like(x, -self.parameters.body.height)
 
 
-class BodyModelBase:
-    parameters: Parameters
+@singleton
+@inject
+@dataclass
+class BodyModel:
+    sphere: NumPyCapsBottomSphere
     low_bottom: BodyLowBottom
-
-    @property
-    def sphere(self) -> NumPyCapsBottomSphere:
-        raise NotImplementedError()
-
-    @property
-    def effective_width(self) -> float:
-        raise NotImplementedError()
+    parameters: Parameters
 
     @property
     def effective_depth(self) -> float:
@@ -147,12 +120,12 @@ class BodyModelBase:
                     + self.offset
                     + self.parameters.hand_support.offset_z,
                     self.sphere.highest
+                    + self.offset
                     + self.parameters.hand_support.offset_z
                     + self.parameters.body.fillet,
                 ],
             ),
-            # TODO: need to be calculated based on the offset
-            self.sphere.highest,
+            self.sphere.highest + self.offset,
         )
 
         return InterpolationChain(
@@ -170,14 +143,14 @@ class BodyModelBase:
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
-                    start=self.sphere.end_y(),
-                    end=self.sphere.end_y() - self.parameters.body.fillet,
+                    start=self.end_y(),
+                    end=self.end_y() - self.parameters.body.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
-                    start=self.sphere.start_x(),
-                    end=self.sphere.start_x() + self.parameters.body.fillet,
+                    start=self.start_x(),
+                    end=self.start_x() + self.parameters.body.fillet,
                     base=base,
                 ),
                 Interpolator(
@@ -189,21 +162,21 @@ class BodyModelBase:
         )
 
     def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        z = self.sphere.z(x, y)
+        z = self.sphere.z(x, y) + self.offset
 
         return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
 
     def start_x(self) -> float:
-        return self.sphere.start_x()
+        return self.sphere.start_x() - self.offset
 
     def end_x(self) -> float:
-        return self.start_x() + self.effective_width
+        return self.start_x() + self.effective_width + self.offset * 2
 
     def start_y(self) -> float:
-        return self.sphere.start_y() - self.effective_depth
+        return self.sphere.start_y() - self.effective_depth - self.offset
 
     def end_y(self) -> float:
-        return self.sphere.end_y()
+        return self.sphere.end_y() + self.offset
 
     @property
     def width(self) -> float:
@@ -213,19 +186,6 @@ class BodyModelBase:
     def depth(self) -> float:
         return self.end_y() - self.start_y()
 
-
-@singleton
-@inject
-@dataclass
-class BodyModel(BodyModelBase):
-    caps_bottom_sphere: NumPyCapsBottomSphere
-    low_bottom: BodyLowBottom
-    parameters: Parameters
-
-    @property
-    def sphere(self) -> NumPyCapsBottomSphere:
-        return self.caps_bottom_sphere
-
     @property
     def effective_width(self) -> float:
         return self.parameters.body.width
@@ -234,19 +194,7 @@ class BodyModel(BodyModelBase):
 @singleton
 @inject
 @dataclass
-class BodyInnerModel(BodyModelBase):
-    parameters: Parameters
-    hole: HoleNumPyCapsBottomSphere
-    low_bottom: BodyLowBottom
-
-    @property
-    def sphere(self) -> HoleNumPyCapsBottomSphere:
-        return self.hole
-
-    @property
-    def effective_width(self) -> float:
-        return self.parameters.body.width - self.parameters.body.thickness * 2
-
+class BodyInnerModel(BodyModel):
     @property
     def offset(self) -> float:
         return -self.parameters.body.thickness
