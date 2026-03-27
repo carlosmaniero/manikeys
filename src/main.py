@@ -13,14 +13,8 @@ from openscad_ext.object import OSCObject
 @dataclass
 class Keyboard(OSCObject):
     def assemble(self) -> osc.PyOpenSCAD:
-        body = load_stl("build/cad/body.stl")
-        body -= load_stl("build/cad/body_inner_sections.stl")
-        body |= load_stl("build/cad/cap_grid.stl")
-        body -= load_stl("build/cad/cap_hole_grid.stl")
-        body |= load_stl("build/cad/cap_thumb.stl")
-        body -= load_stl("build/cad/cap_thumb_hole.stl")
+        body = load_stl("build/full_keyboard.stl")
         body |= load_stl("build/cad/socket_adapter_grid.stl")
-
         body = osc.color(body, "#c0b89b")
 
         body |= osc.color(load_stl("build/cad/cap_top_grid.stl"), "#bec0b1")

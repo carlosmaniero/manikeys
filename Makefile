@@ -31,7 +31,8 @@ build/sphere.wrl: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl build/main.3mf build/main.wrl: src/main.py build/cad/body.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/body_inner_sections.stl build/cad/cap.stl build/cad/cap_top_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/socket_adapter_grid.stl
+build/main.stl build/main.3mf build/main.wrl: src/main.py build/full_keyboard.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
+build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
 build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
