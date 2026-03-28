@@ -17,16 +17,13 @@ class SocketPlacementShell(OSCObject):
     model: SocketPlacementInner
     parameters: Parameters
 
-    def show(self):
-        super().show()
-        load_stl("build/cad/body_inner.stl").color("red", 0.5).show()
-
     def assemble(self) -> osc.PyOpenSCAD:
         body_divider = (
             osc.cube(
                 [
                     self.model.width * 3,
-                    self.parameters.body.thickness * 2 + 0.4,
+                    self.parameters.body.thickness * 2
+                    + self.parameters.body.clearance * 2,
                     self.model.sphere.highest + self.parameters.body.height,
                 ],
             )
@@ -35,7 +32,7 @@ class SocketPlacementShell(OSCObject):
             .back(
                 self.model.sphere.start_y()
                 - self.parameters.body.thickness
-                - 0.2
+                - self.parameters.body.clearance
             )
         )
 

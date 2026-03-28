@@ -56,21 +56,21 @@ class NumPyCapsBottomSphere:
     def lowest_x(self) -> float:
         return self.layout.positioning.lowest[0]
 
-    def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        radius = self.parameters.body.radius
+    def z(self, x: np.ndarray, y: np.ndarray, offset) -> np.ndarray:
+        radius = self.parameters.body.radius - offset
         distance = np.sqrt(x**2 + y**2)
         start_fixed = self.highest_x + self.parameters.caps.size / 2
 
         interpolation = Interpolator(
             start=start_fixed,
             end=start_fixed + self.parameters.caps.gap,
-            base=radius - np.sqrt(radius**2 - distance**2),
+            base=radius - np.sqrt(radius**2 - distance**2) + offset,
             algorithm=lerp.reverse_cubic,
         )
 
         return interpolation.interpolate(
             [x, y],
-            self.highest,
+            self.highest + offset,
         )
 
 
@@ -162,7 +162,7 @@ class BodyModel:
         )
 
     def z(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-        z = self.sphere.z(x, y) + self.offset
+        z = self.sphere.z(x, y, self.offset)
 
         return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
 

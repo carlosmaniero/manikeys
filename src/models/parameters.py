@@ -32,6 +32,7 @@ class BodyParameters:
     height: float
     fillet: float
     cabe_hole_radius: float
+    clearance: float
 
 
 @dataclass

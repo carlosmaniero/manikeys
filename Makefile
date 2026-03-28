@@ -1,3 +1,5 @@
+SIMPLIFY ?= 1
+
 .PHONY: build test lint render clean sphere build_watch
 
 build: build/main.stl build/main.3mf build/main.wrl
@@ -53,12 +55,12 @@ build/%.3mf: src/%.py
 build/%.stl: src/%.py
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run python $< -o $@
-	+uv run python simplify.py -i $@ -o $@
+	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 build/%.stl: src/%.scad
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $< -o $@ --export-format binstl
-	+uv run python simplify.py -i $@ -o $@
+	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 build_with_pythonscad:
 	@if [ "$(suffix $(FILE))" = ".stl" ]; then \
@@ -74,7 +76,7 @@ build_with_pythonscad:
 _pythonscad_stl:
 	mkdir -p $(dir $(FILE))
 	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) --export-format binstl
-	uv run python simplify.py -i $(FILE) -o $(FILE)
+	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $(FILE) -o $(FILE); fi
 
 _pythonscad_3mf:
 	mkdir -p $(dir $(FILE))

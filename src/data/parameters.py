@@ -31,6 +31,7 @@ class ParametersModule(Module):
                 height=15,
                 fillet=10,
                 cabe_hole_radius=10,
+                clearance=2,
             ),
             globals=GlobalParameters(diff_offset=0.5),
             hand_support=HandSupportParameters(
