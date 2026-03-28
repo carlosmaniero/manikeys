@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from context import injector
 from loader import load_stl
+from models.parameters import Parameters
+from models.socket_placement import SocketPlacementInner
 from openscad_ext.object import OSCObject
 
 
@@ -12,9 +14,13 @@ from openscad_ext.object import OSCObject
 @inject
 @dataclass
 class FullKeyboard(OSCObject):
+    model: SocketPlacementInner
+    parameters: Parameters
+
     def assemble(self) -> osc.PyOpenSCAD:
         body = load_stl("build/cad/body.stl")
         body -= load_stl("build/cad/body_inner_sections.stl")
+        body |= load_stl("build/cad/socket_placement_shell.stl")
         body |= load_stl("build/cad/cap_grid.stl")
         body -= load_stl("build/cad/cap_hole_grid.stl")
         body |= load_stl("build/cad/cap_thumb.stl")

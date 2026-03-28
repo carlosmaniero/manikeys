@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import subprocess
 from typing import Sequence
 import openscad as osc  # noqa: F401
@@ -7,8 +8,9 @@ from cad.object import Object
 
 class OSCObject(Object["osc.PyOpenSCAD"]):
     def save(self, path: str):
+        make_cmd = os.getenv("MAKE", "make")
         subprocess.run(
-            ["make", "build_with_pythonscad", f"FILE={path}"], check=True
+            [make_cmd, "build_with_pythonscad", f"FILE={path}"], check=True
         )
 
     def show(self):

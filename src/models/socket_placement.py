@@ -10,7 +10,7 @@ class SocketPlacement(BodyInnerModel):
     @property
     def offset(self) -> float:
         # TODO: it also should have an error margin
-        return super().offset - self.parameters.socket_adapter.cap_socket_height
+        return super().offset - 0.2
 
 
 @singleton
