@@ -35,6 +35,7 @@ class ParametersModule(Module):
             ),
             globals=GlobalParameters(diff_offset=0.5),
             hand_support=HandSupportParameters(
+                offset_x=75,
                 offset_z=10,
                 fillet=50,
                 depth=110,

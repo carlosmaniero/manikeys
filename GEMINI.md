@@ -42,6 +42,8 @@ There are two primary methods for generating CAD models in this project:
 
 2.  **CSG with `openscad`**: Other models are built using Constructive Solid Geometry (CSG) principles via the `openscad` Python library. These scripts define shapes and combine them with boolean operations (union, difference, intersection). `src/full_keyboard.py` is a good example, as it assembles the final keyboard.
 
+    When using boolean operations, **prefer the `|` operator for union** instead of the `+` operator.
+
     A key feature of this approach is the ability to import existing models using `load_stl("path/to/model.stl")`. This returns an `openscad` object that can be manipulated, allowing for a hybrid workflow where generated and pre-existing parts can be combined.
 
 All generated STL files are post-processed with `simplify.py` to reduce complexity and file size.

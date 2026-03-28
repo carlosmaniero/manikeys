@@ -18,19 +18,36 @@ class SocketPlacementInnerSections(OSCObject):
     parameters: Parameters
 
     def assemble(self) -> osc.PyOpenSCAD:
+        divider_y = (
+            self.model.sphere.start_y() - self.parameters.body.thickness * 2
+        )
+        height = self.model.sphere.highest + self.parameters.body.height
+
         divider = (
             osc.cube(
                 [
                     self.model.width,
                     self.parameters.body.thickness * 4,
-                    self.model.sphere.highest + self.parameters.body.height,
+                    height,
                 ],
             )
             .right(self.model.start_x())
             .down(self.parameters.body.height)
-            .back(
-                self.model.sphere.start_y() - self.parameters.body.thickness * 2
+            .back(divider_y)
+        )
+
+        side_section = (
+            osc.cube(
+                [
+                    self.model.hand_support_end_x
+                    - self.model.hand_support_start_x,
+                    divider_y - self.model.start_y(),
+                    height,
+                ],
             )
+            .right(self.model.start_x())
+            .back(self.model.start_y())
+            .down(self.parameters.body.height)
         )
 
         cabe_hole = (
@@ -58,7 +75,9 @@ class SocketPlacementInnerSections(OSCObject):
 
         body = load_stl("build/cad/socket_placement_inner.stl")
 
-        return body - osc.color(divider - cabe_hole, "#00ffffcc")
+        return body - osc.color(
+            (divider | side_section) - cabe_hole, "#00ffffcc"
+        )
 
 
 if __name__ == "__main__":

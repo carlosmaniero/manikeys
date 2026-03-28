@@ -45,9 +45,6 @@ class NumPyCapsBottomSphere:
     def highest_x(self) -> float:
         return self.layout.positioning.highest[0]
 
-    def outer_start_y(self) -> float:
-        return self.start_y()
-
     @property
     def lowest(self) -> float:
         return self.layout.positioning.lowest[2]
@@ -59,7 +56,7 @@ class NumPyCapsBottomSphere:
     def z(self, x: np.ndarray, y: np.ndarray, offset) -> np.ndarray:
         radius = self.parameters.body.radius - offset
         distance = np.sqrt(x**2 + y**2)
-        start_fixed = self.highest_x + self.parameters.caps.size / 2
+        start_fixed = self.highest_x + self.parameters.caps.size / 2 - offset
 
         interpolation = Interpolator(
             start=start_fixed,
@@ -100,40 +97,71 @@ class BodyModel:
     def offset(self) -> float:
         return 0
 
+    @property
+    def hand_support_start_x(self) -> float:
+        return self.start_x()
+
+    @property
+    def hand_support_end_x(self) -> float:
+        return (
+            self.end_x()
+            - self.parameters.hand_support.offset_x
+            - self.offset * 2
+        )
+
+    def hand_support_z(self, coords: list[np.ndarray]) -> np.ndarray:
+        x_ratio = lerp.x_factor(
+            coords,
+            self.hand_support_start_x,
+            self.hand_support_end_x,
+        )
+
+        curve = lerp.cubic(
+            x_ratio,
+            [
+                self.sphere.lowest
+                + self.offset
+                + self.parameters.hand_support.offset_z,
+                self.sphere.highest + self.offset,
+            ],
+        )
+
+        reverse_curve = lerp.reverse_cubic(
+            x_ratio,
+            [
+                self.sphere.lowest
+                + self.offset
+                + self.parameters.hand_support.offset_z,
+                self.sphere.highest + self.offset,
+            ],
+        )
+
+        return Interpolator(
+            start=(self.hand_support_start_x + self.hand_support_end_x) / 2,
+            end=self.hand_support_end_x,
+            base=reverse_curve,
+            ratio=lerp.x_factor,
+            algorithm=lerp.reverse_cubic,
+        ).interpolate(
+            coords,
+            curve,
+        )
+
     def low_bottom_interpolations(
         self, coords: list[np.ndarray]
     ) -> InterpolationChain:
         x, y = coords
         base = self.low_bottom.z(x, y)
 
-        y_ratio = lerp.x_factor(
-            coords,
-            self.sphere.start_x() + self.offset,
-            self.sphere.highest_x - self.offset,
-        )
-
-        lowest_to_heighest = np.minimum(
-            lerp.reverse_cubic(
-                y_ratio,
-                [
-                    self.sphere.lowest
-                    + self.offset
-                    + self.parameters.hand_support.offset_z,
-                    self.sphere.highest
-                    + self.offset
-                    + self.parameters.hand_support.offset_z
-                    + self.parameters.body.fillet,
-                ],
-            ),
-            self.sphere.highest + self.offset,
-        )
-
         return InterpolationChain(
             [
+                # Y: from sphere to hand support
                 Interpolator(
-                    start=self.sphere.outer_start_y(),
-                    end=self.sphere.start_y() + self.parameters.body.fillet,
-                    base=lowest_to_heighest,
+                    start=self.sphere.start_y() + self.offset,
+                    end=self.sphere.start_y()
+                    + self.parameters.body.fillet
+                    + self.offset,
+                    base=self.hand_support_z(coords),
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
