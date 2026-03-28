@@ -23,7 +23,9 @@ build_watch:
 
 sphere: build/sphere.wrl build/sphere.png
 
-render: build/main.png build/main_back.png build/main_top.png build/main_side.png build/main_side_inv.png
+render: build/main.png build/main_back.png build/main_top.png build/main_side.png build/main_side_inv.png \
+	build/main_angle0.png build/main_angle45.png build/main_angle90.png build/main_angle135.png \
+	build/main_angle180.png build/main_angle225.png build/main_angle270.png build/main_angle315.png
 
 build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
@@ -108,6 +110,30 @@ build/%_side.png: build/%.3mf
 
 build/%_side_inv.png: build/%.3mf
 	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --projection=o --camera=0,0,0,90,0,180,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle0.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,0,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle45.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,45,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle90.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,90,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle135.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,135,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle180.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,180,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle225.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,225,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle270.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,270,0 -D 'import("'$(abspath $<)'");' /dev/null
+
+build/%_angle315.png: build/%.3mf
+	pythonscad -o $@ $(PYTHONSCAD_RENDER_FLAGS) --camera=0,0,0,60,0,315,0 -D 'import("'$(abspath $<)'");' /dev/null
 
 test:
 	uv run pytest
