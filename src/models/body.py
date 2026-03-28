@@ -109,6 +109,10 @@ class BodyModel:
             - self.offset * 2
         )
 
+    @property
+    def divider_y(self) -> float:
+        return self.sphere.start_y()
+
     def hand_support_z(self, coords: list[np.ndarray]) -> np.ndarray:
         x_ratio = lerp.x_factor(
             coords,

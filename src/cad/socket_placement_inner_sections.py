@@ -18,16 +18,19 @@ class SocketPlacementInnerSections(OSCObject):
     parameters: Parameters
 
     def assemble(self) -> osc.PyOpenSCAD:
-        divider_y = (
-            self.model.sphere.start_y() - self.parameters.body.thickness * 2
+        divider_size = (
+            self.parameters.body.thickness * 4
+            + self.parameters.body.clearance * 2
         )
+        divider_y = self.model.divider_y - divider_size / 2
+
         height = self.model.sphere.highest + self.parameters.body.height
 
         divider = (
             osc.cube(
                 [
                     self.model.width,
-                    self.parameters.body.thickness * 4,
+                    divider_size,
                     height,
                 ],
             )
@@ -53,7 +56,7 @@ class SocketPlacementInnerSections(OSCObject):
         cabe_hole = (
             osc.cylinder(
                 r=self.parameters.body.cabe_hole_radius,
-                h=self.parameters.body.thickness * 4 + 1,
+                h=divider_size + 1,
             )
             .rotx(90)
             .right(
@@ -61,11 +64,7 @@ class SocketPlacementInnerSections(OSCObject):
                 - self.parameters.body.cabe_hole_radius
                 - self.parameters.body.thickness * 4
             )
-            .back(
-                self.model.sphere.start_y()
-                + self.parameters.body.thickness * 2
-                + 0.5
-            )
+            .back(divider_y + divider_size + 0.5)
             .down(
                 self.parameters.body.height
                 - self.parameters.body.cabe_hole_radius

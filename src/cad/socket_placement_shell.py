@@ -18,22 +18,23 @@ class SocketPlacementShell(OSCObject):
     parameters: Parameters
 
     def assemble(self) -> osc.PyOpenSCAD:
+        divider_size = (
+            self.parameters.body.thickness * 2
+            + self.parameters.body.clearance * 2
+        )
+        divider_y = self.model.divider_y - divider_size / 2
+
         body_divider = (
             osc.cube(
                 [
                     self.model.width * 3,
-                    self.parameters.body.thickness * 2
-                    + self.parameters.body.clearance * 2,
+                    divider_size,
                     self.model.sphere.highest + self.parameters.body.height,
                 ],
             )
             .right(self.model.start_x() - self.model.width)
             .down(self.parameters.body.height)
-            .back(
-                self.model.sphere.start_y()
-                - self.parameters.body.thickness
-                - self.parameters.body.clearance
-            )
+            .back(divider_y)
         )
 
         return (

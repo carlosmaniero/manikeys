@@ -7,6 +7,9 @@ from models.cap_thumb import CapThumbModel
 from openscad_ext.object import OSCObject
 from context import injector
 from loader import load_stl
+import os
+
+DEBUG = os.getenv("DEBUG", "false") == "true"
 
 
 @singleton
@@ -15,6 +18,15 @@ from loader import load_stl
 class CapTopGridCAD(OSCObject):
     layout: Layout
     cad_thump: CapThumbModel
+
+    def show(self):
+        if DEBUG:
+            try:
+                load_stl("build/cad/body.stl").show()
+            except Exception as e:
+                print("build the body to use debugging", e)
+
+        return super().show()
 
     def assemble(self):
         grid = []
