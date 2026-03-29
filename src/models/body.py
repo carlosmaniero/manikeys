@@ -22,16 +22,28 @@ class NumPyCapsBottomSphere:
         )
 
     def start_x(self) -> float:
-        return self.layout.positioning.left[0] - self.cap_offset
-
-    def start_y(self) -> float:
-        return self.layout.positioning.top[1] - self.cap_offset
+        return (
+            self.layout.positioning.left[0]
+            - self.cap_offset
+            - self.parameters.body.thickness
+        )
 
     def end_x(self) -> float:
         return self.layout.positioning.right[0] + self.cap_offset
 
+    def start_y(self) -> float:
+        return (
+            self.layout.positioning.top[1]
+            - self.cap_offset
+            - self.parameters.body.thickness
+        )
+
     def end_y(self) -> float:
-        return self.layout.positioning.bottom[1] + self.cap_offset
+        return (
+            self.layout.positioning.bottom[1]
+            + self.cap_offset
+            + self.parameters.body.thickness * 2
+        )
 
     @property
     def highest(self) -> float:
