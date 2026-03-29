@@ -2,7 +2,10 @@ SIMPLIFY ?= 1
 
 .PHONY: build test lint render clean sphere build_watch
 
-build: build/main.stl build/main.3mf build/main.wrl
+build: build/main.stl build/main.3mf build/main.wrl \
+	build/cad/full_keyboard_main.stl \
+	build/cad/full_keyboard_hand.stl \
+	build/cad/full_keyboard_side.stl
 
 build_watch:
 	@target="$(filter-out $@,$(MAKECMDGOALS))"; \
@@ -45,6 +48,10 @@ build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
 build/cad/cap_thumb.stl: src/cad/cap_thumb.py build/cad/cap.stl
 build/cad/cap_thumb_hole.stl: src/cad/cap_thumb_hole.py build/cad/cap_hole.stl
 build/cad/socket_adapter_grid.stl: src/cad/socket_adapter_grid.py build/cad/socket_adapter.stl
+
+build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
+build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
+build/cad/full_keyboard_side.stl: src/cad/full_keyboard_side.py build/full_keyboard.stl
 
 build/%.wrl: src/%.py
 	mkdir -p $(dir $@)

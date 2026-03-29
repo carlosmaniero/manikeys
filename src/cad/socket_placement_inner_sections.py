@@ -74,9 +74,7 @@ class SocketPlacementInnerSections(OSCObject):
 
         body = load_stl("build/cad/socket_placement_inner.stl")
 
-        return body - osc.color(
-            (divider | side_section) - cabe_hole, "#00ffffcc"
-        )
+        return body - ((divider | side_section) - cabe_hole)
 
 
 if __name__ == "__main__":
