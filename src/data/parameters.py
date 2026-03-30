@@ -37,7 +37,7 @@ class ParametersModule(Module):
             hand_support=HandSupportParameters(
                 offset_x=75,
                 offset_z=10,
-                fillet=50,
+                fillet=40,
                 depth=110,
             ),
             socket_adapter=SocketAdapterParameters(

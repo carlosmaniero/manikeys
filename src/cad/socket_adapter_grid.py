@@ -18,7 +18,7 @@ class SocketGrid(OSCObject):
 
     def assemble(self):
         grid = []
-        cap = load_stl("build/cad/socket_adapter.stl").rotx(180)
+        cap = load_stl("build/cad/socket_adapter.stl").rotx(180).rotz(180)
 
         offset = [0, 0, -2]
 

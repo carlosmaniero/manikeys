@@ -16,8 +16,11 @@ class CapThumbModel:
     def get_positions(self) -> list[list[float]]:
         pos1 = [
             self.body_model.hand_support_end_x
-            + self.parameters.caps.full_offset,
-            self.body_model.divider_y - self.parameters.caps.full_offset,
+            + self.parameters.caps.full_offset
+            + self.parameters.body.thickness,
+            self.body_model.divider_y
+            - self.parameters.caps.full_offset
+            - self.parameters.body.thickness,
             self.body_model.sphere.highest,
         ]
 
