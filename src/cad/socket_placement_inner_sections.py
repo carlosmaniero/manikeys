@@ -53,28 +53,9 @@ class SocketPlacementInnerSections(OSCObject):
             .down(self.parameters.body.height)
         )
 
-        cabe_hole = (
-            osc.cylinder(
-                r=self.parameters.body.cabe_hole_radius,
-                h=divider_size + 1,
-            )
-            .rotx(90)
-            .right(
-                self.model.end_x()
-                - self.parameters.body.cabe_hole_radius
-                - self.parameters.body.thickness * 4
-            )
-            .back(divider_y + divider_size + 0.5)
-            .down(
-                self.parameters.body.height
-                - self.parameters.body.cabe_hole_radius
-                - self.parameters.body.thickness * 4
-            )
-        )
-
         body = load_stl("build/cad/socket_placement_inner.stl")
 
-        return body - ((divider | side_section) - cabe_hole)
+        return body - (divider | side_section)
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ class FullKeyboard(OSCObject):
         body -= load_stl("build/cad/cap_hole_grid.stl")
         body |= load_stl("build/cad/cap_thumb.stl")
         body -= load_stl("build/cad/cap_thumb_hole.stl")
+        body -= load_stl("build/cad/cable_path.stl")
 
         return body
 

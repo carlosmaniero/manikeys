@@ -52,32 +52,9 @@ class BodyInnerSections(OSCObject):
             .down(self.parameters.body.height)
         )
 
-        cabe_hole = (
-            osc.cylinder(
-                r=self.parameters.body.cabe_hole_radius,
-                h=self.parameters.body.thickness * 2 + 1,
-            )
-            .rotx(90)
-            .right(
-                self.model.end_x()
-                - self.parameters.body.cabe_hole_radius
-                - self.parameters.body.thickness * 2
-            )
-            .back(
-                self.model.sphere.start_y()
-                + self.parameters.body.thickness
-                + 0.5
-            )
-            .down(
-                self.parameters.body.height
-                - self.parameters.body.cabe_hole_radius
-                - self.parameters.body.thickness * 2
-            )
-        )
-
         body = load_stl("build/cad/body_inner.stl") - side_mask
 
-        return body - (divider - cabe_hole)
+        return body - divider
 
 
 if __name__ == "__main__":
