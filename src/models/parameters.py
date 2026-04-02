@@ -35,6 +35,9 @@ class BodyParameters:
     clearance: float
     m2_screw_diameter: float
     m2_screw_length: float
+    m2_screw_head_diameter: float
+    m2_screw_head_height: float
+    bottom_thickness: float
 
 
 @dataclass

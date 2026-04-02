@@ -14,6 +14,7 @@ from openscad_ext.object import OSCObject
 class Keyboard(OSCObject):
     def assemble(self) -> osc.PyOpenSCAD:
         body = load_stl("build/full_keyboard.stl")
+        body |= load_stl("build/cad/body_bottom.stl")
         body |= load_stl("build/cad/socket_adapter_grid.stl")
         body = osc.color(body, "#c0b89b")
 

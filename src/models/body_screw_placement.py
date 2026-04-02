@@ -69,6 +69,26 @@ class BodyScrewPlacementModel:
         return self.main_points + self.hand_points
 
     @property
+    def screw_head_diameter(self) -> float:
+        return self.parameters.body.m2_screw_head_diameter
+
+    @property
+    def screw_head_height(self) -> float:
+        return self.parameters.body.m2_screw_head_height
+
+    @property
+    def bottom_thickness(self) -> float:
+        return self.parameters.body.bottom_thickness
+
+    @property
+    def bottom_z(self) -> float:
+        return self.z - self.bottom_thickness
+
+    @property
+    def screw_head_z(self) -> float:
+        return self.bottom_z
+
+    @property
     def screw_diameter(self) -> float:
         return self.parameters.body.m2_screw_diameter
 
