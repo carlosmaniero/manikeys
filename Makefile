@@ -3,6 +3,7 @@ SIMPLIFY ?= 1
 .PHONY: build test lint render clean sphere build_watch
 
 build: build/main.stl build/main.3mf build/main.wrl \
+	build/render.3mf \
 	build/cad/full_keyboard_main.stl \
 	build/cad/full_keyboard_hand.stl \
 	build/cad/full_keyboard_side.stl
@@ -26,9 +27,9 @@ build_watch:
 
 sphere: build/sphere.wrl build/sphere.png
 
-render: build/main.png build/main_back.png build/main_top.png build/main_side.png build/main_side_inv.png \
-	build/main_angle0.png build/main_angle45.png build/main_angle90.png build/main_angle135.png \
-	build/main_angle180.png build/main_angle225.png build/main_angle270.png build/main_angle315.png
+render: build/render.png build/render_back.png build/render_top.png build/render_side.png build/render_side_inv.png \
+	build/render_angle0.png build/render_angle45.png build/render_angle90.png build/render_angle135.png \
+	build/render_angle180.png build/render_angle225.png build/render_angle270.png build/render_angle315.png
 
 build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
@@ -39,6 +40,7 @@ build/sphere.wrl: src/openscad_ext/demo.py
 	+PYTHONPATH=src uv run python $< -o $@
 
 build/main.stl build/main.3mf build/main.wrl: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
+build/render.3mf: src/render.py build/main.3mf
 build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl
 build/cad/cable_path.stl: src/cad/cable_path.py
 build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/body.stl
