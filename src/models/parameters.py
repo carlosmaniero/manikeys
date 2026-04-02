@@ -33,6 +33,8 @@ class BodyParameters:
     fillet: float
     cabe_hole_radius: float
     clearance: float
+    m2_screw_diameter: float
+    m2_screw_length: float
 
 
 @dataclass

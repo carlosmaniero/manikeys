@@ -32,6 +32,8 @@ class ParametersModule(Module):
                 fillet=10,
                 cabe_hole_radius=10,
                 clearance=2,
+                m2_screw_diameter=2.0,
+                m2_screw_length=8.0,
             ),
             globals=GlobalParameters(diff_offset=0.5),
             hand_support=HandSupportParameters(
