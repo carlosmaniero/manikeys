@@ -33,16 +33,8 @@ class BodyScrewPlacementCAD(OSCObject):
             cubes.append(cube)
 
         body = load_stl("build/cad/body.stl")
-        return osc.union(*cubes) & body
 
-    def show(self):
-        screw_placement = self.assemble()
-
-        if DEBUG:
-            body = load_stl("build/cad/body.stl")
-            body.color("red", 0.5).show()
-
-        screw_placement.color("blue", 0.5).show()
+        return osc.intersection(osc.union(*cubes), body)
 
 
 if __name__ == "__main__":

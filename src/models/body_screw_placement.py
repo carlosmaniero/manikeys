@@ -18,12 +18,23 @@ class BodyScrewPlacementModel:
 
     @property
     def cube_height(self) -> float:
-        p = self.parameters.body
-        return p.m2_screw_length + p.thickness
+        return self.mask_height
+
+    @property
+    def mask_size(self) -> float:
+        return self.cube_size + self.parameters.body.thickness
+
+    @property
+    def mask_height(self) -> float:
+        return 1000
 
     @property
     def z(self) -> float:
         return -self.parameters.body.height
+
+    @property
+    def mask_z(self) -> float:
+        return -500
 
     @property
     def main_points(self) -> list[tuple[float, float]]:
@@ -56,3 +67,7 @@ class BodyScrewPlacementModel:
     @property
     def points(self) -> list[tuple[float, float]]:
         return self.main_points + self.hand_points
+
+    def get_mask_points(self) -> list[tuple[float, float]]:
+        offset = (self.mask_size - self.cube_size) / 2
+        return [(x - offset, y - offset) for x, y in self.points]
