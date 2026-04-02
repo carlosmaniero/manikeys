@@ -68,6 +68,22 @@ class BodyScrewPlacementModel:
     def points(self) -> list[tuple[float, float]]:
         return self.main_points + self.hand_points
 
+    @property
+    def screw_diameter(self) -> float:
+        return self.parameters.body.m2_screw_diameter
+
+    @property
+    def screw_height(self) -> float:
+        return self.parameters.body.m2_screw_length
+
+    @property
+    def screw_z(self) -> float:
+        return self.z
+
+    def get_centered_points(self) -> list[tuple[float, float]]:
+        offset = self.cube_size / 2
+        return [(x + offset, y + offset) for x, y in self.points]
+
     def get_mask_points(self) -> list[tuple[float, float]]:
         offset = (self.mask_size - self.cube_size) / 2
         return [(x - offset, y - offset) for x, y in self.points]
