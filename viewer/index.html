@@ -50,9 +50,14 @@
         <section>
             <h2>Build Control</h2>
             <button type="button" id="buildBtn">Build STL</button>
-            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 0.5rem;">
-                <input type="checkbox" id="forceBuild" style="width: auto; margin: 0;"> Force Rebuild
-            </label>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                    <input type="checkbox" id="forceBuild" style="width: auto; margin: 0;"> Force Rebuild
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                    <input type="checkbox" id="watchBuild" style="width: auto; margin: 0;"> Watch for Changes
+                </label>
+            </div>
             <label style="margin-top: 1rem;">Build Log</label>
             <pre id="buildOutput"></pre>
         </section>
@@ -117,6 +122,7 @@
         const distValDisplay = document.getElementById('distVal');
         const buildBtn = document.getElementById('buildBtn');
         const forceBuild = document.getElementById('forceBuild');
+        const watchBuild = document.getElementById('watchBuild');
         const buildOutput = document.getElementById('buildOutput');
 
         let scene, camera, renderer, controls, mesh;
@@ -127,6 +133,7 @@
         let measurePoints = [];
         let measureMarkers = [];
         let isMeasuring = false;
+        let isWatching = false;
 
         function init() {
             scene = new THREE.Scene();
@@ -151,6 +158,7 @@
             container.addEventListener('mousemove', onMouseMove);
             measureBtn.addEventListener('click', toggleMeasure);
             buildBtn.addEventListener('click', onBuild);
+            watchBuild.addEventListener('change', toggleWatch);
 
             scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
 
@@ -392,6 +400,32 @@
                 buildOutput.style.color = '#f55';
             } finally {
                 buildBtn.disabled = false;
+            }
+        }
+
+        async function toggleWatch() {
+            if (watchBuild.checked) {
+                isWatching = true;
+                startWatcher();
+            } else {
+                isWatching = false;
+            }
+        }
+
+        async function startWatcher() {
+            while (isWatching) {
+                try {
+                    const response = await fetch('/watch');
+                    if (!response.ok) throw new Error('Watch failed');
+                    const result = await response.json();
+                    
+                    if (isWatching && result.file) {
+                        onBuild();
+                    }
+                } catch (error) {
+                    console.error('Watcher error:', error);
+                    if (isWatching) await new Promise(r => setTimeout(r, 2000));
+                }
             }
         }
 
