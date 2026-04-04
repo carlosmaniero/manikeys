@@ -248,6 +248,19 @@
                 </div>
             </details>
         </section>
+
+        <section>
+            <details id="details-shortcuts">
+                <summary><h2>Shortcuts</h2></summary>
+                <div style="font-size: 0.9rem; line-height: 1.4; color: #0f0; opacity: 0.8;">
+                    <div class="info-row"><span class="info-label">Measure</span><span class="info-value">M</span></div>
+                    <div class="info-row"><span class="info-label">Fit View</span><span class="info-value">F</span></div>
+                    <div class="info-row"><span class="info-label">Build</span><span class="info-value">B</span></div>
+                    <div class="info-row"><span class="info-label">Persp/Ortho</span><span class="info-value">P/O</span></div>
+                    <div class="info-row"><span class="info-label">Views</span><span class="info-value">1-6</span></div>
+                </div>
+            </details>
+        </section>
     </aside>
 
     <div id="viewer">
@@ -404,6 +417,23 @@
             scene.add(previewLine);
 
             window.addEventListener('resize', onWindowResize);
+            window.addEventListener('keydown', (event) => {
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
+
+                switch(event.key.toLowerCase()) {
+                    case 'm': toggleMeasure(); break;
+                    case 'f': fitCamera(); break;
+                    case 'p': setCameraType('persp'); break;
+                    case 'o': setCameraType('ortho'); break;
+                    case 'b': onBuild(); break;
+                    case '1': window.setView('top'); break;
+                    case '2': window.setView('bottom'); break;
+                    case '3': window.setView('front'); break;
+                    case '4': window.setView('back'); break;
+                    case '5': window.setView('left'); break;
+                    case '6': window.setView('right'); break;
+                }
+            });
             animate();
         }
 
@@ -482,6 +512,7 @@
             if (verticesMesh) verticesMesh.visible = isMeasuring;
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
+            container.style.cursor = isMeasuring ? 'crosshair' : 'default';
             if (!isMeasuring) clearMeasure();
         }
 
