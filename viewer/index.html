@@ -64,6 +64,37 @@
             background: #0f0;
             text-transform: uppercase;
             letter-spacing: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        summary {
+            cursor: pointer;
+            list-style: none;
+            outline: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary h2::after {
+            content: '[+]';
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        details[open] summary h2::after {
+            content: '[-]';
+        }
+
+        details:not([open]) summary h2 {
+            margin-bottom: 0;
+        }
+
+        section:has(details:not([open])) {
+            padding-bottom: 0;
         }
 
         select, input, button {
@@ -126,54 +157,77 @@
         <h1>Manikeys</h1>
 
         <section>
-            <h2>Model Selection</h2>
-            <form id="fileForm">
-                <label for="fileSelect">Source File</label>
-                <select id="fileSelect">
-                    <option value="">Loading files...</option>
-                </select>
-            </form>
+            <details id="details-model-selection" open>
+                <summary><h2>Model Selection</h2></summary>
+                <form id="fileForm">
+                    <label for="fileSelect">Source File</label>
+                    <select id="fileSelect">
+                        <option value="">Loading files...</option>
+                    </select>
+                </form>
+            </details>
         </section>
 
         <section>
-            <h2>Build Control</h2>
-            <button type="button" id="buildBtn">Build STL</button>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                    <input type="checkbox" id="forceBuild" style="width: auto; margin: 0;"> Force Rebuild
-                </label>
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                    <input type="checkbox" id="watchBuild" style="width: auto; margin: 0;"> Watch for Changes
-                </label>
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                    <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
-                </label>
-            </div>
-            <label style="margin-top: 1rem;">Build Log</label>
-            <pre id="buildOutput"></pre>
+            <details id="details-build-control" open>
+                <summary><h2>Build Control</h2></summary>
+                <button type="button" id="buildBtn">Build STL</button>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <input type="checkbox" id="forceBuild" style="width: auto; margin: 0;"> Force Rebuild
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <input type="checkbox" id="watchBuild" style="width: auto; margin: 0;"> Watch for Changes
+                    </label>
+                </div>
+                <label style="margin-top: 1rem;">Build Log</label>
+                <pre id="buildOutput"></pre>
+            </details>
         </section>
 
         <section>
-            <h2>Measurement Tool</h2>
-            <div id="modelInfo" style="display: none; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #333;">
-                <div class="info-row">
-                    <span class="info-label">Dimensions</span>
-                    <span id="dims" class="info-value">0 x 0 x 0 mm</span>
+            <details id="details-view" open>
+                <summary><h2>View</h2></summary>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
+                    </label>
+                    <button type="button" id="fitCameraBtn">Fit Camera</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button type="button" onclick="window.setView('top')">Top</button>
+                        <button type="button" onclick="window.setView('bottom')">Bottom</button>
+                        <button type="button" onclick="window.setView('front')">Front</button>
+                        <button type="button" onclick="window.setView('back')">Back</button>
+                        <button type="button" onclick="window.setView('left')">Left</button>
+                        <button type="button" onclick="window.setView('right')">Right</button>
+                    </div>
                 </div>
-            </div>
-            <button id="measureBtn">Activate Measure</button>
-            <div id="measureInfo" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #333;">
-                <div style="color: #64b5f6; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: bold;">MODE: SNAPPING ACTIVE</div>
-                <div class="info-row">
-                    <span class="info-label">Current Distance</span>
-                    <span id="distVal" class="info-value" style="font-size: 1.2rem; color: #64b5f6;">- mm</span>
+            </details>
+        </section>
+
+        <section>
+            <details id="details-measurement-tool" open>
+                <summary><h2>Measurement Tool</h2></summary>
+                <div id="modelInfo" style="display: none; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #333;">
+                    <div class="info-row">
+                        <span class="info-label">Dimensions</span>
+                        <span id="dims" class="info-value">0 x 0 x 0 mm</span>
+                    </div>
                 </div>
-                <div style="font-size: 0.75rem; color: #777; line-height: 1.4;">
-                    • Green dots: Vertices<br>
-                    • Blue lines: Edges<br>
-                    • Click 2 points to measure
+                <button id="measureBtn">Activate Measure</button>
+                <div id="measureInfo" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #333;">
+                    <div style="color: #64b5f6; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: bold;">MODE: SNAPPING ACTIVE</div>
+                    <div class="info-row">
+                        <span class="info-label">Current Distance</span>
+                        <span id="distVal" class="info-value" style="font-size: 1.2rem; color: #64b5f6;">- mm</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #777; line-height: 1.4;">
+                        • Green dots: Vertices<br>
+                        • Blue lines: Edges<br>
+                        • Click 2 points to measure
+                    </div>
                 </div>
-            </div>
+            </details>
         </section>
     </aside>
 
@@ -215,6 +269,7 @@
         const forceBuild = document.getElementById('forceBuild');
         const watchBuild = document.getElementById('watchBuild');
         const gridAtBottom = document.getElementById('gridAtBottom');
+        const fitCameraBtn = document.getElementById('fitCameraBtn');
         const buildOutput = document.getElementById('buildOutput');
 
         let scene, camera, renderer, controls, mesh;
@@ -234,6 +289,7 @@
             scene.background = new THREE.Color(0x000000);
 
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.up.set(0, 0, 1);
             camera.position.set(200, 200, 200);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -267,12 +323,25 @@
                 localStorage.setItem('gridAtBottom', gridAtBottom.checked);
                 updateMeshPosition();
             });
+            fitCameraBtn.addEventListener('click', () => {
+                fitCamera();
+            });
 
             // Restore state
             forceBuild.checked = localStorage.getItem('forceBuild') === 'true';
             watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
             gridAtBottom.checked = localStorage.getItem('gridAtBottom') !== 'false'; // Default to true
             if (watchBuild.checked) toggleWatch();
+
+            document.querySelectorAll('details[id]').forEach(details => {
+                const saved = localStorage.getItem(details.id);
+                if (saved !== null) {
+                    details.open = saved === 'true';
+                }
+                details.addEventListener('toggle', () => {
+                    localStorage.setItem(details.id, details.open);
+                });
+            });
 
             scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
 
@@ -556,6 +625,75 @@
             if (verticesMesh) verticesMesh.position.copy(mesh.position);
         }
 
+        function fitCamera() {
+            if (!mesh) return;
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+
+            const fov = camera.fov * (Math.PI / 180);
+            const aspect = camera.aspect;
+
+            // Calculate distance to fit the bounding sphere
+            const sphere = new THREE.Sphere();
+            box.getBoundingSphere(sphere);
+            const dist = (sphere.radius / Math.sin(fov / 2)) * 1.1;
+
+            camera.position.set(center.x + dist, center.y + dist, center.z + dist);
+            camera.up.set(0, 0, 1);
+            controls.target.copy(center);
+            controls.update();
+        }
+
+        window.setView = function(view) {
+            if (!mesh) return;
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+
+            const fov = camera.fov * (Math.PI / 180);
+            const aspect = camera.aspect;
+
+            // Formula to fit a plane of (w, h) at distance 'dist'
+            // Added depth/2 to ensure the front of the object is also contained
+            const getDist = (w, h, d) => (Math.max(h / (2 * Math.tan(fov / 2)), w / (2 * Math.tan(fov / 2) * aspect)) * 1.1) + (d / 2);
+
+            let dist;
+            camera.up.set(0, 0, 1);
+            switch(view) {
+                case 'top':
+                    dist = getDist(size.x, size.y, size.z);
+                    camera.position.set(center.x, center.y - 0.0001, center.z + dist);
+                    break;
+                case 'bottom':
+                    dist = getDist(size.x, size.y, size.z);
+                    camera.position.set(center.x, center.y - 0.0001, center.z - dist);
+                    break;
+                case 'front':
+                    dist = getDist(size.x, size.z, size.y);
+                    camera.position.set(center.x, center.y - dist, center.z);
+                    break;
+                case 'back':
+                    dist = getDist(size.x, size.z, size.y);
+                    camera.position.set(center.x, center.y + dist, center.z);
+                    break;
+                case 'left':
+                    dist = getDist(size.y, size.z, size.x);
+                    camera.position.set(center.x - dist, center.y, center.z);
+                    break;
+                case 'right':
+                    dist = getDist(size.y, size.z, size.x);
+                    camera.position.set(center.x + dist, center.y, center.z);
+                    break;
+            }
+            controls.target.copy(center);
+            controls.update();
+        };
+
         function loadSTL(path) {
             if (mesh) scene.remove(mesh);
             if (edgesMesh) scene.remove(edgesMesh);
@@ -611,9 +749,7 @@
                     camera.position.copy(savedCameraPosition);
                     controls.target.copy(savedCameraTarget);
                 } else {
-                    const distance = Math.max(size.x, size.y, size.z) * 2;
-                    camera.position.set(distance, distance, distance);
-                    controls.target.set(0, 0, 0);
+                    fitCamera();
                 }
             }, undefined, (error) => {
                 console.error(error);
