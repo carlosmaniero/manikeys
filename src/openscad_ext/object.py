@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 import subprocess
-from typing import Sequence
+from typing import Sequence, Iterator
 import openscad as osc  # noqa: F401
 from cad.object import Object
 
@@ -15,7 +15,11 @@ class OSCObject(Object["osc.PyOpenSCAD"]):
 
     def show(self):
         obj = self.assemble()
-        obj.show()
+        if isinstance(obj, Iterator):
+            for item in obj:
+                item.show()
+        else:
+            obj.show()
 
     def program(self, argv: Sequence[str]):
         # UGLY HACK: if the first argument is empty, it means that it is inside

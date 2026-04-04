@@ -36,3 +36,8 @@ def load_stl_to_manifold(path: str) -> manifold3d.Manifold:
 def load_many_stl_to_manifold(paths: list[str]) -> list[manifold3d.Manifold]:
     with ThreadPoolExecutor() as executor:
         return list(executor.map(load_stl_to_manifold, paths))
+
+
+def load_many_stl(paths: list[str]) -> list[osc.PyOpenSCAD]:
+    with ThreadPoolExecutor() as executor:
+        return list(executor.map(load_stl, paths))

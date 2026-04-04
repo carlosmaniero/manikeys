@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, TypeVar, Sequence, Iterator
 import argparse
 
 T = TypeVar("T")
@@ -7,7 +7,7 @@ T = TypeVar("T")
 
 class Object(ABC, Generic[T]):
     @abstractmethod
-    def assemble(self) -> T:
+    def assemble(self) -> T | Iterator[T]:
         pass
 
     @abstractmethod
