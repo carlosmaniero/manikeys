@@ -22,18 +22,20 @@ class LogoCAD(ManifoldObject):
         logo = load_stl_to_manifold("dist/mani-logo.stl")
 
         logo_w = 15.00
-        logo_d = 63.12
+        logo_d = 44.431
 
         x_start = self.body.divider_x_main
         x_end = self.body.end_x() - self.parameters.body.fillet / 2
         center_x = (x_start + x_end) / 2
 
-        y_start = self.body.divider_y
-        y_end = self.body.end_y()
-        center_y = (y_start + y_end) / 2
-
         target_x = center_x - logo_w / 2
-        target_y = center_y - logo_d / 2
+        target_y = (
+            self.body.end_y()
+            - self.parameters.body.fillet
+            - self.parameters.body.thickness
+            - logo_d
+        )
+        center_y = target_y + logo_d / 2
 
         target_z = (
             float(self.body.z(np.array([center_x]), np.array([center_y]))[0])
