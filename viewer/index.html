@@ -150,6 +150,21 @@
         .info-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 1.2rem; }
         .info-label { color: #0f0; }
         .info-value { color: #0ff; font-weight: bold; }
+
+        #floatingLabel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0ff;
+            padding: 2px 6px;
+            border: 1px solid #0ff;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0 0 5px #0ff;
+        }
     </style>
 </head>
 <body>
@@ -237,6 +252,7 @@
 
     <div id="viewer">
         <div id="loading">Loading STL...</div>
+        <div id="floatingLabel">0.00 mm</div>
         <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none;">
             <div style="margin-bottom: 2px;">Grid: 10mm / unit</div>
             <div style="display: flex; gap: 10px;">
@@ -276,11 +292,12 @@
         const fitCameraBtn = document.getElementById('fitCameraBtn');
         const perspBtn = document.getElementById('perspBtn');
         const orthoBtn = document.getElementById('orthoBtn');
+        const floatingLabel = document.getElementById('floatingLabel');
         const buildOutput = document.getElementById('buildOutput');
 
         let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh;
         let raycaster, mouse;
-        let edgesMesh, hoverLine, verticesMesh, hoverPoint;
+        let edgesMesh, hoverLine, verticesMesh, hoverPoint, previewLine;
         let highlightedEdge = null;
         let highlightedVertex = null;
         let measurePoints = [];
@@ -382,6 +399,10 @@
             const axesHelper = new THREE.AxesHelper(100);
             scene.add(axesHelper);
 
+            previewLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 }));
+            previewLine.visible = false;
+            scene.add(previewLine);
+
             window.addEventListener('resize', onWindowResize);
             animate();
         }
@@ -458,7 +479,6 @@
             isMeasuring = !isMeasuring;
             measureBtn.classList.toggle('active', isMeasuring);
             measureInfo.style.display = isMeasuring ? 'inline' : 'none';
-            if (edgesMesh) edgesMesh.visible = isMeasuring;
             if (verticesMesh) verticesMesh.visible = isMeasuring;
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
@@ -472,8 +492,15 @@
             distValDisplay.textContent = '-';
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
+            if (previewLine) previewLine.visible = false;
+            if (floatingLabel) floatingLabel.style.display = 'none';
             highlightedEdge = null;
             highlightedVertex = null;
+        }
+
+        function getPointUnderMouse() {
+            if (highlightedVertex) return highlightedVertex.clone();
+            return null;
         }
 
         function onMouseMove(event) {
@@ -496,35 +523,37 @@
                 hoverPoint.visible = true;
                 highlightedVertex = p;
 
-                hoverLine.visible = false;
-                highlightedEdge = null;
-                container.style.cursor = 'crosshair';
-                return;
-            }
-
-            // Then check edges
-            const eIntersects = raycaster.intersectObject(edgesMesh);
-            if (eIntersects.length > 0) {
-                const index = eIntersects[0].index;
-                const pos = edgesMesh.geometry.attributes.position;
-                const vIndex = Math.floor(index / 2) * 2;
-
-                const v1 = new THREE.Vector3().fromBufferAttribute(pos, vIndex).applyMatrix4(edgesMesh.matrixWorld);
-                const v2 = new THREE.Vector3().fromBufferAttribute(pos, vIndex + 1).applyMatrix4(edgesMesh.matrixWorld);
-
-                hoverLine.geometry.setFromPoints([v1, v2]);
-                hoverLine.visible = true;
-                highlightedEdge = { v1, v2 };
-
-                hoverPoint.visible = false;
-                highlightedVertex = null;
                 container.style.cursor = 'crosshair';
             } else {
-                hoverLine.visible = false;
                 hoverPoint.visible = false;
-                highlightedEdge = null;
                 highlightedVertex = null;
                 container.style.cursor = isMeasuring ? 'crosshair' : 'default';
+            }
+
+            if (hoverLine) hoverLine.visible = false;
+            highlightedEdge = null;
+
+            if (isMeasuring && measurePoints.length === 1) {
+                const currentPoint = getPointUnderMouse();
+                if (currentPoint) {
+                    const dist = measurePoints[0].distanceTo(currentPoint);
+                    const distStr = dist.toFixed(2) + ' mm';
+                    distValDisplay.textContent = dist.toFixed(2);
+                    previewLine.geometry.setFromPoints([measurePoints[0], currentPoint]);
+                    previewLine.visible = true;
+
+                    // Update floating label
+                    floatingLabel.textContent = distStr;
+                    floatingLabel.style.display = 'block';
+                    floatingLabel.style.left = (event.clientX - rect.left + 20) + 'px';
+                    floatingLabel.style.top = (event.clientY - rect.top + 20) + 'px';
+                } else {
+                    previewLine.visible = false;
+                    distValDisplay.textContent = '-';
+                    floatingLabel.style.display = 'none';
+                }
+            } else if (floatingLabel) {
+                floatingLabel.style.display = 'none';
             }
         }
 
@@ -536,25 +565,7 @@
             mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
 
-            let point;
-            if (highlightedVertex) {
-                point = highlightedVertex.clone();
-            } else if (highlightedEdge) {
-                const edgeIntersects = raycaster.intersectObject(edgesMesh);
-                if (edgeIntersects.length > 0) {
-                    const p = edgeIntersects[0].point;
-                    const d1 = p.distanceTo(highlightedEdge.v1);
-                    const d2 = p.distanceTo(highlightedEdge.v2);
-                    point = d1 < d2 ? highlightedEdge.v1.clone() : highlightedEdge.v2.clone();
-                }
-            }
-
-            if (!point) {
-                const intersects = raycaster.intersectObject(mesh);
-                if (intersects.length > 0) {
-                    point = intersects[0].point;
-                }
-            }
+            const point = getPointUnderMouse();
 
             if (point) {
                 if (measurePoints.length >= 2) clearMeasure();
@@ -570,6 +581,8 @@
                 if (measurePoints.length === 2) {
                     const dist = measurePoints[0].distanceTo(measurePoints[1]);
                     distValDisplay.textContent = dist.toFixed(2);
+                    previewLine.visible = false;
+                    if (floatingLabel) floatingLabel.style.display = 'none';
 
                     const lineGeom = new THREE.BufferGeometry().setFromPoints(measurePoints);
                     const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
