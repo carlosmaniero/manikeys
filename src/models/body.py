@@ -65,10 +65,13 @@ class NumPyCapsBottomSphere:
     def lowest_x(self) -> float:
         return self.layout.positioning.lowest[0]
 
-    def z(self, x: np.ndarray, y: np.ndarray, offset) -> np.ndarray:
+    def divider_x_main(self, offset: float) -> float:
+        return self.highest_x + self.parameters.caps.size / 2 - offset
+
+    def z(self, x: np.ndarray, y: np.ndarray, offset: float) -> np.ndarray:
         radius = self.parameters.body.radius - offset
         distance = np.sqrt(x**2 + y**2)
-        start_fixed = self.highest_x + self.parameters.caps.size / 2 - offset
+        start_fixed = self.divider_x_main(offset)
 
         interpolation = Interpolator(
             start=start_fixed,
@@ -108,6 +111,10 @@ class BodyModel:
     @property
     def offset(self) -> float:
         return 0
+
+    @property
+    def divider_x_main(self) -> float:
+        return self.sphere.divider_x_main(self.offset)
 
     @property
     def hand_support_start_x(self) -> float:

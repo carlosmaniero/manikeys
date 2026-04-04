@@ -3,7 +3,6 @@ SIMPLIFY ?= 1
 .PHONY: build test lint render clean sphere build_watch
 
 build: build/main.stl build/main.3mf build/main.wrl \
-	build/render.3mf \
 	build/cad/full_keyboard_main.stl \
 	build/cad/full_keyboard_hand.stl \
 	build/cad/full_keyboard_side.stl
@@ -41,8 +40,9 @@ build/sphere.wrl: src/openscad_ext/demo.py
 
 build/main.stl build/main.3mf build/main.wrl: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl
+build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl
 build/cad/cable_path.stl: src/cad/cable_path.py
+build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
 build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/body.stl
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
