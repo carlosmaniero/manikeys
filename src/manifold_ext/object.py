@@ -5,6 +5,7 @@ import manifold3d
 import pyvista as pv
 import numpy as np
 from cad.object import Object
+import sys
 
 
 class ManifoldObject(Object[manifold3d.Manifold]):
@@ -41,4 +42,5 @@ class ManifoldObject(Object[manifold3d.Manifold]):
         try:
             super().program(argv)
         finally:
+            sys.stdout.flush()
             os._exit(0)
