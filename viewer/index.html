@@ -5,38 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manikeys Viewer</title>
     <style>
-        body { margin: 0; font-family: sans-serif; display: flex; flex-direction: row; height: 100vh; background: #111; color: #eee; overflow: hidden; }
-        aside { width: 350px; min-width: 350px; background: #1a1a1a; border-right: 1px solid #333; padding: 1rem; display: flex; flex-direction: column; overflow-y: auto; gap: 1.5rem; }
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'VT323', monospace;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 100;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        aside {
+            width: 350px;
+            min-width: 350px;
+            background: #050505;
+            border-right: 2px solid #0f0;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            gap: 1.5rem;
+        }
+
         #viewer { flex-grow: 1; background: #000; position: relative; }
-        
-        section { background: #222; border-radius: 8px; padding: 1rem; border: 1px solid #333; }
-        section h2 { margin: 0 0 1rem 0; font-size: 1rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 1px; }
-        
-        select, input, button { background: #333; color: #eee; border: 1px solid #444; padding: 0.6rem; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #aaa; }
-        
-        button { border: 1px solid #555; transition: all 0.2s; }
-        button:hover { background: #444; border-color: #777; }
-        button.active { background: #64b5f6; color: #000; font-weight: bold; border-color: #90caf9; }
-        
+
+        section {
+            background: #000;
+            border-radius: 0;
+            padding: 1rem;
+            border: 2px solid #0f0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        section h2 {
+            margin: -1rem -1rem 1rem -1rem;
+            padding: 0.3rem 0.5rem;
+            font-size: 1.4rem;
+            color: #000;
+            background: #0f0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        select, input, button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 0.4rem;
+            border-radius: 0;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            text-shadow: 0 0 2px #0f0;
+        }
+
+        label { display: block; margin-bottom: 0.5rem; font-size: 1.1rem; color: #0f0; }
+
+        button:hover { background: #0f0; color: #000; }
+        button.active { background: #0ff; color: #000; font-weight: bold; border-color: #0ff; box-shadow: 0 0 10px #0ff; text-shadow: none; }
+
         #loading {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: white; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 4px;
-            border: 1px solid #444; display: none; z-index: 10;
+            color: #0f0; background: #000; padding: 1.5rem; border: 2px solid #0f0;
+            display: none; z-index: 10; font-size: 2rem;
+            box-shadow: 0 0 20px #0f0;
         }
-        h1 { margin: 0; font-size: 1.5rem; color: #fff; border-bottom: 2px solid #64b5f6; padding-bottom: 0.5rem; }
-        
-        #buildOutput { background: #000; color: #0f0; padding: 10px; border-radius: 4px; font-size: 0.75rem; height: 150px; min-height: 150px; overflow-y: auto; white-space: pre-wrap; border: 1px solid #333; }
-        
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .info-label { color: #aaa; }
-        .info-value { color: #fff; font-weight: 500; }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #0f0;
+            text-align: center;
+            border: 4px double #0f0;
+            padding: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        #buildOutput {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            font-size: 1rem;
+            height: 150px;
+            min-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid #0f0;
+            font-family: 'VT323', monospace;
+            text-shadow: none;
+        }
+
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .info-label { color: #0f0; }
+        .info-value { color: #0ff; font-weight: bold; }
     </style>
 </head>
 <body>
     <aside>
         <h1>Manikeys</h1>
-        
+
         <section>
             <h2>Model Selection</h2>
             <form id="fileForm">
@@ -61,7 +149,7 @@
             <label style="margin-top: 1rem;">Build Log</label>
             <pre id="buildOutput"></pre>
         </section>
-        
+
         <section>
             <h2>Measurement Tool</h2>
             <div id="modelInfo" style="display: none; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #333;">
@@ -370,7 +458,7 @@
             try {
                 const force = forceBuild.checked;
                 const response = await fetch(`/build-stl?file_path=${encodeURIComponent(selectedFile)}&force=${force}`);
-                
+
                 if (!response.ok) {
                     const result = await response.json();
                     buildOutput.textContent = `Error: ${result.detail}`;
@@ -429,7 +517,7 @@
                     const response = await fetch('/watch');
                     if (!response.ok) throw new Error('Watch failed');
                     const result = await response.json();
-                    
+
                     if (isWatching && result.file) {
                         onBuild();
                     }
@@ -452,7 +540,12 @@
 
             const loader = new STLLoader();
             loader.load(`/get-stl?file_path=${encodeURIComponent(path)}`, (geometry) => {
-                const material = new THREE.MeshPhongMaterial({ color: 0xc0b89b, specular: 0x111111, shininess: 200 });
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0xff00ff,
+                    specular: 0x440044,
+                    shininess: 10,
+                    emissive: 0x220022
+                });
                 mesh = new THREE.Mesh(geometry, material);
 
                 geometry.computeBoundingBox();
