@@ -226,6 +226,8 @@
         let measureMarkers = [];
         let isMeasuring = false;
         let isWatching = false;
+        let savedCameraPosition = null;
+        let savedCameraTarget = null;
 
         function init() {
             scene = new THREE.Scene();
@@ -240,6 +242,10 @@
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+            controls.addEventListener('change', () => {
+                savedCameraPosition = camera.position.clone();
+                savedCameraTarget = controls.target.clone();
+            });
 
             raycaster = new THREE.Raycaster();
             raycaster.params.Line.threshold = 3;
@@ -601,9 +607,14 @@
 
                 loading.style.display = 'none';
 
-                const distance = Math.max(size.x, size.y, size.z) * 2;
-                camera.position.set(distance, distance, distance);
-                controls.target.set(0, 0, 0);
+                if (savedCameraPosition && savedCameraTarget) {
+                    camera.position.copy(savedCameraPosition);
+                    controls.target.copy(savedCameraTarget);
+                } else {
+                    const distance = Math.max(size.x, size.y, size.z) * 2;
+                    camera.position.set(distance, distance, distance);
+                    controls.target.set(0, 0, 0);
+                }
             }, undefined, (error) => {
                 console.error(error);
                 loading.textContent = 'Error loading STL';
