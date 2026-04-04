@@ -179,6 +179,10 @@
                     <select id="fileSelect">
                         <option value="">Loading files...</option>
                     </select>
+                    <label for="refSelect" style="margin-top: 0.5rem;">Reference File (Transparent)</label>
+                    <select id="refSelect">
+                        <option value="">None</option>
+                    </select>
                 </form>
             </details>
         </section>
@@ -291,6 +295,7 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         const fileSelect = document.getElementById('fileSelect');
+        const refSelect = document.getElementById('refSelect');
         const loading = document.getElementById('loading');
         const container = document.getElementById('viewer');
         const modelInfo = document.getElementById('modelInfo');
@@ -308,7 +313,7 @@
         const floatingLabel = document.getElementById('floatingLabel');
         const buildOutput = document.getElementById('buildOutput');
 
-        let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh;
+        let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh, refMesh, refEdgesMesh;
         let raycaster, mouse;
         let edgesMesh, hoverLine, verticesMesh, hoverPoint, previewLine;
         let highlightedEdge = null;
@@ -714,9 +719,40 @@
             box.getCenter(center);
 
             const zOffset = gridAtBottom.checked ? -box.min.z : -center.z;
-            mesh.position.set(-center.x, -center.y, zOffset);
-            if (edgesMesh) edgesMesh.position.copy(mesh.position);
-            if (verticesMesh) verticesMesh.position.copy(mesh.position);
+            const newPos = new THREE.Vector3(-center.x, -center.y, zOffset);
+
+            mesh.position.copy(newPos);
+            if (edgesMesh) edgesMesh.position.copy(newPos);
+            if (verticesMesh) verticesMesh.position.copy(newPos);
+            if (refMesh) refMesh.position.copy(newPos);
+            if (refEdgesMesh) refEdgesMesh.position.copy(newPos);
+        }
+
+        function loadRefSTL(path) {
+            if (refMesh) scene.remove(refMesh);
+            if (refEdgesMesh) scene.remove(refEdgesMesh);
+            if (!path) return;
+
+            const loader = new STLLoader();
+            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}`, (geometry) => {
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0x00ffff,
+                    transparent: true,
+                    opacity: 0.3,
+                    specular: 0x004444,
+                    shininess: 5
+                });
+                refMesh = new THREE.Mesh(geometry, material);
+                scene.add(refMesh);
+
+                const edgesGeom = new THREE.EdgesGeometry(geometry);
+                refEdgesMesh = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 }));
+                scene.add(refEdgesMesh);
+
+                updateMeshPosition();
+            }, undefined, (error) => {
+                console.error('Error loading reference STL:', error);
+            });
         }
 
         function fitCamera() {
@@ -750,6 +786,7 @@
             controls.target.copy(center);
             controls.update();
         }
+
         window.setView = function(view) {
             if (!mesh) return;
             const box = new THREE.Box3().setFromObject(mesh);
@@ -826,6 +863,7 @@
             controls.target.copy(center);
             controls.update();
         };
+
         function loadSTL(path) {
             if (mesh) scene.remove(mesh);
             if (edgesMesh) scene.remove(edgesMesh);
@@ -895,6 +933,7 @@
             .then(response => response.json())
             .then(files => {
                 fileSelect.innerHTML = '<option value="">-- Select a file --</option>';
+                refSelect.innerHTML = '<option value="">None</option>';
                 const groups = {};
                 files.forEach(file => {
                     const parts = file.split('/');
@@ -907,13 +946,17 @@
                 Object.keys(groups).sort().forEach(dir => {
                     const optgroup = document.createElement('optgroup');
                     optgroup.label = dir;
+                    const refOptgroup = optgroup.cloneNode();
+
                     groups[dir].sort((a, b) => a.name.localeCompare(b.name)).forEach(fileInfo => {
                         const option = document.createElement('option');
                         option.value = fileInfo.path;
                         option.textContent = fileInfo.name;
                         optgroup.appendChild(option);
+                        refOptgroup.appendChild(option.cloneNode(true));
                     });
                     fileSelect.appendChild(optgroup);
+                    refSelect.appendChild(refOptgroup);
                 });
 
                 // Restore selected file
@@ -921,6 +964,12 @@
                 if (lastFile && files.includes(lastFile)) {
                     fileSelect.value = lastFile;
                     loadSTL(lastFile);
+                }
+
+                const lastRefFile = localStorage.getItem('selectedRefFile');
+                if (lastRefFile && files.includes(lastRefFile)) {
+                    refSelect.value = lastRefFile;
+                    loadRefSTL(lastRefFile);
                 }
             });
 
@@ -930,6 +979,12 @@
                 localStorage.setItem('selectedFile', selectedFile);
                 loadSTL(selectedFile);
             }
+        });
+
+        refSelect.addEventListener('change', (event) => {
+            const selectedRefFile = event.target.value;
+            localStorage.setItem('selectedRefFile', selectedRefFile);
+            loadRefSTL(selectedRefFile);
         });
     </script>
 </body>
