@@ -8,7 +8,9 @@
         body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; background: #111; color: #eee; }
         header { padding: 1rem; background: #1a1a1a; border-bottom: 1px solid #333; }
         #viewer { flex-grow: 1; width: 100%; background: #000; position: relative; }
-        select, input { background: #333; color: #eee; border: 1px solid #444; padding: 0.4rem; border-radius: 4px; }
+        select, input, button { background: #333; color: #eee; border: 1px solid #444; padding: 0.4rem; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #444; }
+        button.active { background: #64b5f6; color: #000; font-weight: bold; }
         #loading {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             color: white; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 4px;
@@ -29,10 +31,14 @@
         </form>
         <p>Selected File: <span id="filePath" style="color: #64b5f6;">None</span></p>
         <div id="modelInfo" style="margin-top: 10px; font-size: 0.9rem; color: #ccc; display: none;">
-            Dimensions: <span id="dims" style="color: #fff;">0 x 0 x 0</span> mm
+            Dimensions: <span id="dims" style="color: #fff;">0 x 0 x 0</span> mm |
+            <button id="measureBtn">Measure Distance</button>
+            <span id="measureInfo" style="margin-left: 10px; display: none;">
+                Click 2 points | Dist: <span id="distVal" style="color: #fff;">-</span> mm
+            </span>
         </div>
     </header>
-    
+
     <div id="viewer">
         <div id="loading">Loading STL...</div>
         <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none;">
@@ -65,8 +71,18 @@
         const container = document.getElementById('viewer');
         const modelInfo = document.getElementById('modelInfo');
         const dimsDisplay = document.getElementById('dims');
+        const measureBtn = document.getElementById('measureBtn');
+        const measureInfo = document.getElementById('measureInfo');
+        const distValDisplay = document.getElementById('distVal');
 
         let scene, camera, renderer, controls, mesh;
+        let raycaster, mouse;
+        let edgesMesh, hoverLine, verticesMesh, hoverPoint;
+        let highlightedEdge = null;
+        let highlightedVertex = null;
+        let measurePoints = [];
+        let measureMarkers = [];
+        let isMeasuring = false;
 
         function init() {
             scene = new THREE.Scene();
@@ -81,6 +97,15 @@
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+
+            raycaster = new THREE.Raycaster();
+            raycaster.params.Line.threshold = 3;
+            raycaster.params.Points.threshold = 3;
+            mouse = new THREE.Vector2();
+
+            container.addEventListener('mousedown', onMouseDown);
+            container.addEventListener('mousemove', onMouseMove);
+            measureBtn.addEventListener('click', toggleMeasure);
 
             scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
 
@@ -118,11 +143,164 @@
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
+
+            if (isMeasuring && camera) {
+                const dist = camera.position.distanceTo(controls.target);
+                const pixelToWorld = (2 * Math.tan(camera.fov * Math.PI / 360) * dist) / container.clientHeight;
+
+                // Set threshold to approx 10 pixels
+                const threshold = 10 * pixelToWorld;
+                raycaster.params.Line.threshold = threshold;
+                raycaster.params.Points.threshold = threshold;
+
+                // Scale hover point and markers to approx 4 pixels diameter
+                const sphereScale = 4 * pixelToWorld;
+                if (hoverPoint && hoverPoint.visible) {
+                    hoverPoint.scale.setScalar(sphereScale);
+                }
+                measureMarkers.forEach(m => {
+                    if (m.isMesh && m.geometry.type === 'SphereGeometry') {
+                        m.scale.setScalar(sphereScale);
+                    }
+                });
+            }
+
             renderer.render(scene, camera);
+        }
+
+        function toggleMeasure() {
+            isMeasuring = !isMeasuring;
+            measureBtn.classList.toggle('active', isMeasuring);
+            measureInfo.style.display = isMeasuring ? 'inline' : 'none';
+            if (edgesMesh) edgesMesh.visible = isMeasuring;
+            if (verticesMesh) verticesMesh.visible = isMeasuring;
+            if (hoverLine) hoverLine.visible = false;
+            if (hoverPoint) hoverPoint.visible = false;
+            if (!isMeasuring) clearMeasure();
+        }
+
+        function clearMeasure() {
+            measurePoints = [];
+            measureMarkers.forEach(m => scene.remove(m));
+            measureMarkers = [];
+            distValDisplay.textContent = '-';
+            if (hoverLine) hoverLine.visible = false;
+            if (hoverPoint) hoverPoint.visible = false;
+            highlightedEdge = null;
+            highlightedVertex = null;
+        }
+
+        function onMouseMove(event) {
+            if (!isMeasuring || !edgesMesh || !verticesMesh) return;
+
+            const rect = container.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // Check vertices first
+            const vIntersects = raycaster.intersectObject(verticesMesh);
+            if (vIntersects.length > 0) {
+                const index = vIntersects[0].index;
+                const pos = verticesMesh.geometry.attributes.position;
+                const p = new THREE.Vector3().fromBufferAttribute(pos, index).applyMatrix4(verticesMesh.matrixWorld);
+
+                hoverPoint.position.copy(p);
+                hoverPoint.visible = true;
+                highlightedVertex = p;
+
+                hoverLine.visible = false;
+                highlightedEdge = null;
+                container.style.cursor = 'crosshair';
+                return;
+            }
+
+            // Then check edges
+            const eIntersects = raycaster.intersectObject(edgesMesh);
+            if (eIntersects.length > 0) {
+                const index = eIntersects[0].index;
+                const pos = edgesMesh.geometry.attributes.position;
+                const vIndex = Math.floor(index / 2) * 2;
+
+                const v1 = new THREE.Vector3().fromBufferAttribute(pos, vIndex).applyMatrix4(edgesMesh.matrixWorld);
+                const v2 = new THREE.Vector3().fromBufferAttribute(pos, vIndex + 1).applyMatrix4(edgesMesh.matrixWorld);
+
+                hoverLine.geometry.setFromPoints([v1, v2]);
+                hoverLine.visible = true;
+                highlightedEdge = { v1, v2 };
+
+                hoverPoint.visible = false;
+                highlightedVertex = null;
+                container.style.cursor = 'crosshair';
+            } else {
+                hoverLine.visible = false;
+                hoverPoint.visible = false;
+                highlightedEdge = null;
+                highlightedVertex = null;
+                container.style.cursor = isMeasuring ? 'crosshair' : 'default';
+            }
+        }
+
+        function onMouseDown(event) {
+            if (!isMeasuring || !mesh) return;
+
+            const rect = container.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            let point;
+            if (highlightedVertex) {
+                point = highlightedVertex.clone();
+            } else if (highlightedEdge) {
+                const edgeIntersects = raycaster.intersectObject(edgesMesh);
+                if (edgeIntersects.length > 0) {
+                    const p = edgeIntersects[0].point;
+                    const d1 = p.distanceTo(highlightedEdge.v1);
+                    const d2 = p.distanceTo(highlightedEdge.v2);
+                    point = d1 < d2 ? highlightedEdge.v1.clone() : highlightedEdge.v2.clone();
+                }
+            }
+
+            if (!point) {
+                const intersects = raycaster.intersectObject(mesh);
+                if (intersects.length > 0) {
+                    point = intersects[0].point;
+                }
+            }
+
+            if (point) {
+                if (measurePoints.length >= 2) clearMeasure();
+                measurePoints.push(point);
+
+                const markerGeom = new THREE.SphereGeometry(1);
+                const markerMat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.6 });
+                const marker = new THREE.Mesh(markerGeom, markerMat);
+                marker.position.copy(point);
+                scene.add(marker);
+                measureMarkers.push(marker);
+
+                if (measurePoints.length === 2) {
+                    const dist = measurePoints[0].distanceTo(measurePoints[1]);
+                    distValDisplay.textContent = dist.toFixed(2);
+
+                    const lineGeom = new THREE.BufferGeometry().setFromPoints(measurePoints);
+                    const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
+                    const line = new THREE.Line(lineGeom, lineMat);
+                    scene.add(line);
+                    measureMarkers.push(line);
+                }
+            }
         }
 
         function loadSTL(path) {
             if (mesh) scene.remove(mesh);
+            if (edgesMesh) scene.remove(edgesMesh);
+            if (hoverLine) scene.remove(hoverLine);
+            if (verticesMesh) scene.remove(verticesMesh);
+            if (hoverPoint) scene.remove(hoverPoint);
+            clearMeasure();
             loading.style.display = 'block';
             modelInfo.style.display = 'none';
 
@@ -135,18 +313,39 @@
                 const box = geometry.boundingBox;
                 const center = new THREE.Vector3();
                 box.getCenter(center);
-                
-                mesh.position.set(-center.x, -center.y, -box.min.z);
 
+                mesh.position.set(-center.x, -center.y, -box.min.z);
                 scene.add(mesh);
-                
+
+                const edgesGeom = new THREE.EdgesGeometry(geometry);
+                edgesMesh = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.3 }));
+                edgesMesh.position.copy(mesh.position);
+                edgesMesh.visible = false;
+                scene.add(edgesMesh);
+
+                const pointsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 4, sizeAttenuation: false, transparent: true, opacity: 0.5 });
+                verticesMesh = new THREE.Points(geometry, pointsMat);
+                verticesMesh.position.copy(mesh.position);
+                verticesMesh.visible = false;
+                scene.add(verticesMesh);
+
+                hoverLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x00aaff, linewidth: 2 }));
+                hoverLine.visible = false;
+                scene.add(hoverLine);
+
+                hoverPoint = new THREE.Mesh(new THREE.SphereGeometry(1.5), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 }));
+
+                hoverPoint.visible = false;
+                scene.add(hoverPoint);
+
                 const size = new THREE.Vector3();
                 box.getSize(size);
+
                 dimsDisplay.textContent = `${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)}`;
                 modelInfo.style.display = 'block';
 
                 loading.style.display = 'none';
-                
+
                 const distance = Math.max(size.x, size.y, size.z) * 2;
                 camera.position.set(distance, distance, distance);
                 controls.target.set(0, 0, 0);
