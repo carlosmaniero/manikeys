@@ -4,7 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from context import injector
-from loader import load_stl_to_manifold
+from loader import load_many_stl_to_manifold
 from models.parameters import Parameters
 from models.socket_placement import SocketPlacementInner
 from manifold_ext.object import ManifoldObject
@@ -18,24 +18,48 @@ class FullKeyboard(ManifoldObject):
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
-        body = load_stl_to_manifold("build/cad/body.stl")
-        body = body - load_stl_to_manifold("build/cad/body_inner_sections.stl")
-        body = body + load_stl_to_manifold("build/cad/body_screw_placement.stl")
+        paths = [
+            "build/cad/body.stl",
+            "build/cad/body_inner_sections.stl",
+            "build/cad/body_screw_placement.stl",
+            "build/cad/socket_placement_shell.stl",
+            "build/cad/body_screw_mask.stl",
+            "build/cad/cap_grid.stl",
+            "build/cad/cap_hole_grid.stl",
+            "build/cad/cap_thumb.stl",
+            "build/cad/cap_thumb_hole.stl",
+            "build/cad/cable_path.stl",
+            "build/cad/body_screw_hole.stl",
+            "build/cad/logo.stl",
+        ]
 
-        socket_shell = load_stl_to_manifold(
-            "build/cad/socket_placement_shell.stl"
-        )
-        screw_mask = load_stl_to_manifold("build/cad/body_screw_mask.stl")
+        manifolds = load_many_stl_to_manifold(paths)
 
+        (
+            body,
+            body_inner_sections,
+            body_screw_placement,
+            socket_shell,
+            screw_mask,
+            cap_grid,
+            cap_hole_grid,
+            cap_thumb,
+            cap_thumb_hole,
+            cable_path,
+            body_screw_hole,
+            logo,
+        ) = manifolds
+
+        body = body - body_inner_sections
+        body = body + body_screw_placement
         body = body + (socket_shell - screw_mask)
-
-        body = body + load_stl_to_manifold("build/cad/cap_grid.stl")
-        body = body - load_stl_to_manifold("build/cad/cap_hole_grid.stl")
-        body = body + load_stl_to_manifold("build/cad/cap_thumb.stl")
-        body = body - load_stl_to_manifold("build/cad/cap_thumb_hole.stl")
-        body = body - load_stl_to_manifold("build/cad/cable_path.stl")
-        body = body - load_stl_to_manifold("build/cad/body_screw_hole.stl")
-        body = body - load_stl_to_manifold("build/cad/logo.stl")
+        body = body + cap_grid
+        body = body - cap_hole_grid
+        body = body + cap_thumb
+        body = body - cap_thumb_hole
+        body = body - cable_path
+        body = body - body_screw_hole
+        body = body - logo
 
         return body
 
