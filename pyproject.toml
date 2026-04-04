@@ -17,9 +17,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "fastapi>=0.135.3",
     "ipdb>=0.13.13",
     "pytest>=9.0.2",
     "ruff>=0.15.2",
+    "uvicorn>=0.43.0",
     "watchdog>=6.0.0",
 ]
 

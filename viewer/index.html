@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manikeys Viewer</title>
+    <style>
+        body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; background: #111; color: #eee; }
+        header { padding: 1rem; background: #1a1a1a; border-bottom: 1px solid #333; }
+        #viewer { flex-grow: 1; width: 100%; background: #000; position: relative; }
+        select, input { background: #333; color: #eee; border: 1px solid #444; padding: 0.4rem; border-radius: 4px; }
+        #loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 4px;
+            border: 1px solid #444; display: none;
+        }
+        h1 { margin: 0 0 1rem 0; font-size: 1.5rem; color: #fff; }
+        p { margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #aaa; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manikeys Viewer</h1>
+        <form id="fileForm">
+            <label for="fileSelect">Choose a file:</label>
+            <select id="fileSelect">
+                <option value="">Loading files...</option>
+            </select>
+        </form>
+        <p>Selected File: <span id="filePath" style="color: #64b5f6;">None</span></p>
+        <div id="modelInfo" style="margin-top: 10px; font-size: 0.9rem; color: #ccc; display: none;">
+            Dimensions: <span id="dims" style="color: #fff;">0 x 0 x 0</span> mm
+        </div>
+    </header>
+    
+    <div id="viewer">
+        <div id="loading">Loading STL...</div>
+        <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none;">
+            <div style="margin-bottom: 2px;">Grid: 10mm / unit</div>
+            <div style="display: flex; gap: 10px;">
+                <span><span style="color: #ff3333;">■</span> X (Red)</span>
+                <span><span style="color: #33ff33;">■</span> Y (Green)</span>
+                <span><span style="color: #3333ff;">■</span> Z (Blue)</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const fileSelect = document.getElementById('fileSelect');
+        const filePathDisplay = document.getElementById('filePath');
+        const loading = document.getElementById('loading');
+        const container = document.getElementById('viewer');
+        const modelInfo = document.getElementById('modelInfo');
+        const dimsDisplay = document.getElementById('dims');
+
+        let scene, camera, renderer, controls, mesh;
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(200, 200, 200);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
+
+            const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight1.position.set(1, 1, 1);
+            scene.add(dirLight1);
+
+            const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight2.position.set(-1, -1, 1);
+            scene.add(dirLight2);
+
+            const dirLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLight3.position.set(0, 1, -1);
+            scene.add(dirLight3);
+
+            const grid = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
+            grid.rotation.x = Math.PI / 2;
+            grid.material.transparent = true;
+            grid.material.opacity = 0.5;
+            scene.add(grid);
+
+            const axesHelper = new THREE.AxesHelper(100);
+            scene.add(axesHelper);
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function loadSTL(path) {
+            if (mesh) scene.remove(mesh);
+            loading.style.display = 'block';
+            modelInfo.style.display = 'none';
+
+            const loader = new STLLoader();
+            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}`, (geometry) => {
+                const material = new THREE.MeshPhongMaterial({ color: 0xc0b89b, specular: 0x111111, shininess: 200 });
+                mesh = new THREE.Mesh(geometry, material);
+
+                geometry.computeBoundingBox();
+                const box = geometry.boundingBox;
+                const center = new THREE.Vector3();
+                box.getCenter(center);
+                
+                mesh.position.set(-center.x, -center.y, -box.min.z);
+
+                scene.add(mesh);
+                
+                const size = new THREE.Vector3();
+                box.getSize(size);
+                dimsDisplay.textContent = `${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)}`;
+                modelInfo.style.display = 'block';
+
+                loading.style.display = 'none';
+                
+                const distance = Math.max(size.x, size.y, size.z) * 2;
+                camera.position.set(distance, distance, distance);
+                controls.target.set(0, 0, 0);
+            }, undefined, (error) => {
+                console.error(error);
+                loading.textContent = 'Error loading STL';
+            });
+        }
+
+        init();
+
+        fetch('/list-files')
+            .then(response => response.json())
+            .then(files => {
+                fileSelect.innerHTML = '<option value="">-- Select a file --</option>';
+                const groups = {};
+                files.forEach(file => {
+                    const parts = file.split('/');
+                    const filename = parts.pop();
+                    const directory = parts.join('/');
+                    if (!groups[directory]) groups[directory] = [];
+                    groups[directory].push({ name: filename, path: file });
+                });
+
+                Object.keys(groups).sort().forEach(dir => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = dir;
+                    groups[dir].sort((a, b) => a.name.localeCompare(b.name)).forEach(fileInfo => {
+                        const option = document.createElement('option');
+                        option.value = fileInfo.path;
+                        option.textContent = fileInfo.name;
+                        optgroup.appendChild(option);
+                    });
+                    fileSelect.appendChild(optgroup);
+                });
+            });
+
+        fileSelect.addEventListener('change', (event) => {
+            const selectedFile = event.target.value;
+            filePathDisplay.textContent = selectedFile || 'None';
+            if (selectedFile) loadSTL(selectedFile);
+        });
+    </script>
+</body>
+</html>
