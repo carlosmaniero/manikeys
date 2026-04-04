@@ -1,23 +1,23 @@
 from __future__ import annotations
 from context import injector
 import sys
-import openscad as osc
+import manifold3d
 from dataclasses import dataclass
 from models.socket_placement import SocketPlacementInner
 from models.parameters import Parameters
 from injector import inject, singleton
-from loader import load_stl
-from openscad_ext.object import OSCObject
+from loader import load_stl_to_manifold
+from manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class SocketPlacementInnerSections(OSCObject):
+class SocketPlacementInnerSections(ManifoldObject):
     model: SocketPlacementInner
     parameters: Parameters
 
-    def assemble(self) -> osc.PyOpenSCAD:
+    def assemble(self) -> manifold3d.Manifold:
         divider_size = (
             self.parameters.body.thickness * 4
             + self.parameters.body.clearance * 2
@@ -26,36 +26,39 @@ class SocketPlacementInnerSections(OSCObject):
 
         height = self.model.sphere.highest + self.parameters.body.height
 
-        divider = (
-            osc.cube(
-                [
-                    self.model.width,
-                    divider_size,
-                    height,
-                ],
-            )
-            .right(self.model.start_x())
-            .down(self.parameters.body.height)
-            .back(divider_y)
+        divider = manifold3d.Manifold.cube(
+            [
+                self.model.width,
+                divider_size,
+                height,
+            ],
+            center=False,
+        ).translate(
+            [
+                self.model.start_x(),
+                divider_y,
+                -self.parameters.body.height,
+            ]
         )
 
-        side_section = (
-            osc.cube(
-                [
-                    self.model.hand_support_end_x
-                    - self.model.hand_support_start_x,
-                    divider_y - self.model.start_y(),
-                    height,
-                ],
-            )
-            .right(self.model.start_x())
-            .back(self.model.start_y())
-            .down(self.parameters.body.height)
+        side_section = manifold3d.Manifold.cube(
+            [
+                self.model.hand_support_end_x - self.model.hand_support_start_x,
+                divider_y - self.model.start_y(),
+                height,
+            ],
+            center=False,
+        ).translate(
+            [
+                self.model.start_x(),
+                self.model.start_y(),
+                -self.parameters.body.height,
+            ]
         )
 
-        body = load_stl("build/cad/socket_placement_inner.stl")
+        body = load_stl_to_manifold("build/cad/socket_placement_inner.stl")
 
-        return body - (divider | side_section)
+        return body - (divider + side_section)
 
 
 if __name__ == "__main__":

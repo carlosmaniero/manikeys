@@ -1,29 +1,29 @@
 import sys
 from dataclasses import dataclass
-import openscad as osc
+import manifold3d
 from injector import inject, singleton
 from models.layout import Layout
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 from context import injector
-from loader import load_stl
+from loader import load_stl_to_manifold
 
 
 @singleton
 @inject
 @dataclass
-class CapHoleGridCAD(OSCObject):
+class CapHoleGridCAD(ManifoldObject):
     layout: Layout
 
-    def assemble(self):
+    def assemble(self) -> manifold3d.Manifold:
         holes = []
+        cap_hole = load_stl_to_manifold("build/cad/cap_hole.stl")
 
         for column in self.layout.grid:
             for key in column:
-                hole = load_stl("build/cad/cap_hole.stl")
-                hole = hole.rotate(key.rotation) + key.position
+                hole = cap_hole.rotate(key.rotation).translate(key.position)
                 holes.append(hole)
 
-        return osc.color(osc.union(*holes), "orange")
+        return manifold3d.Manifold.batch_boolean(holes, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":

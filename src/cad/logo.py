@@ -1,25 +1,25 @@
 from __future__ import annotations
 import sys
 import numpy as np
-import openscad as osc
+import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from context import injector
-from openscad_ext.object import OSCObject
-from loader import load_stl
+from loader import load_stl_to_manifold
 from models.body import BodyModel
 from models.parameters import Parameters
+from manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class LogoCAD(OSCObject):
+class LogoCAD(ManifoldObject):
     body: BodyModel
     parameters: Parameters
 
-    def assemble(self) -> osc.PyOpenSCAD:
-        logo = load_stl("dist/mani-logo.stl")
+    def assemble(self) -> manifold3d.Manifold:
+        logo = load_stl_to_manifold("dist/mani-logo.stl")
 
         logo_w = 15.00
         logo_d = 63.12
@@ -40,7 +40,7 @@ class LogoCAD(OSCObject):
             - 2
         )
 
-        return osc.translate(logo, [target_x, target_y, target_z])
+        return logo.translate([target_x, target_y, target_z])
 
 
 if __name__ == "__main__":

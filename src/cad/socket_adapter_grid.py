@@ -1,37 +1,38 @@
 import sys
 from dataclasses import dataclass
-import openscad as osc
+import manifold3d
 from injector import inject, singleton
 from models.layout import Layout
 from models.cap_thumb import CapThumbModel
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 from context import injector
-from loader import load_stl
+from loader import load_stl_to_manifold
 
 
 @singleton
 @inject
 @dataclass
-class SocketGrid(OSCObject):
+class SocketGrid(ManifoldObject):
     layout: Layout
     cad_thump: CapThumbModel
 
-    def assemble(self):
+    def assemble(self) -> manifold3d.Manifold:
         grid = []
-        cap = load_stl("build/cad/socket_adapter.stl").rotx(180).rotz(180)
+        cap = load_stl_to_manifold("build/cad/socket_adapter.stl").rotate(
+            [180, 0, 180]
+        )
 
         offset = [0, 0, -2]
-
-        cap += offset
+        cap = cap.translate(offset)
 
         for column in self.layout.grid:
             for key in column:
-                grid.append(cap.rotate(key.rotation) + key.position)
+                grid.append(cap.rotate(key.rotation).translate(key.position))
 
         for position in self.cad_thump.get_positions():
-            grid.append(cap + position)
+            grid.append(cap.translate(position))
 
-        return osc.union(*grid)
+        return manifold3d.Manifold.batch_boolean(grid, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":

@@ -1,20 +1,20 @@
 import sys
+import manifold3d
 from dataclasses import dataclass
-import openscad as osc
 from injector import inject, singleton
 from models.parameters import Parameters
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 from context import injector
 
 
 @singleton
 @inject
 @dataclass
-class CapHoleCAD(OSCObject):
+class CapHoleCAD(ManifoldObject):
     parameters: Parameters
 
-    def assemble(self):
-        return osc.cube(
+    def assemble(self) -> manifold3d.Manifold:
+        return manifold3d.Manifold.cube(
             [
                 self.parameters.caps.size,
                 self.parameters.caps.size,

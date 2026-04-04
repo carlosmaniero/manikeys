@@ -1,34 +1,33 @@
 from __future__ import annotations
 import sys
-import openscad as osc
+import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from context import injector
 from models.body_screw_placement import BodyScrewPlacementModel
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class BodyScrewMaskCAD(OSCObject):
+class BodyScrewMaskCAD(ManifoldObject):
     model: BodyScrewPlacementModel
 
-    def assemble(self) -> osc.PyOpenSCAD:
+    def assemble(self) -> manifold3d.Manifold:
         cubes = []
         for x, y in self.model.get_mask_points():
-            cube = osc.cube(
+            cube = manifold3d.Manifold.cube(
                 [
                     self.model.mask_size,
                     self.model.mask_size,
                     self.model.mask_height,
                 ],
                 center=False,
-            )
-            cube = osc.translate(cube, [x, y, self.model.mask_z])
+            ).translate([x, y, self.model.mask_z])
             cubes.append(cube)
 
-        return osc.union(*cubes)
+        return manifold3d.Manifold.batch_boolean(cubes, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":

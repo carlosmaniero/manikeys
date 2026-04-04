@@ -1,33 +1,33 @@
 from __future__ import annotations
 import sys
-import openscad as osc
+import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from context import injector
 from models.body_screw_placement import BodyScrewPlacementModel
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class BodyScrewHoleCAD(OSCObject):
+class BodyScrewHoleCAD(ManifoldObject):
     model: BodyScrewPlacementModel
 
-    def assemble(self) -> osc.PyOpenSCAD:
+    def assemble(self) -> manifold3d.Manifold:
         holes = []
         offset = 0.1
         for x, y in self.model.get_centered_points():
-            hole = osc.cylinder(
-                r=self.model.screw_diameter / 2,
-                h=self.model.screw_height + offset,
+            hole = manifold3d.Manifold.cylinder(
+                radius_low=self.model.screw_diameter / 2,
+                height=self.model.screw_height + offset,
+                circular_segments=100,
                 center=False,
-                fn=100,
             )
-            hole = osc.translate(hole, [x, y, self.model.screw_z - offset / 2])
+            hole = hole.translate([x, y, self.model.screw_z - offset / 2])
             holes.append(hole)
 
-        return osc.union(*holes)
+        return manifold3d.Manifold.batch_boolean(holes, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":

@@ -1,28 +1,26 @@
 import sys
 from dataclasses import dataclass
-
-import openscad as osc
+import manifold3d
 from injector import inject, singleton
-
 from context import injector
-from loader import load_stl
+from loader import load_stl_to_manifold
 from models.cap_thumb import CapThumbModel
-from openscad_ext.object import OSCObject
+from manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class CapThumbCAD(OSCObject):
+class CapThumbCAD(ManifoldObject):
     model: CapThumbModel
 
-    def assemble(self):
-        cap = load_stl("build/cad/cap.stl")
+    def assemble(self) -> manifold3d.Manifold:
+        cap = load_stl_to_manifold("build/cad/cap.stl")
         positions = self.model.get_positions()
 
-        caps = [cap + pos for pos in positions]
+        caps = [cap.translate(pos) for pos in positions]
 
-        return osc.union(*caps)
+        return manifold3d.Manifold.batch_boolean(caps, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":
