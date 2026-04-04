@@ -192,6 +192,10 @@
                     <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
                         <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
                     </label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" id="perspBtn">Persp</button>
+                        <button type="button" id="orthoBtn">Ortho</button>
+                    </div>
                     <button type="button" id="fitCameraBtn">Fit Camera</button>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
                         <button type="button" onclick="window.setView('top')">Top</button>
@@ -270,9 +274,11 @@
         const watchBuild = document.getElementById('watchBuild');
         const gridAtBottom = document.getElementById('gridAtBottom');
         const fitCameraBtn = document.getElementById('fitCameraBtn');
+        const perspBtn = document.getElementById('perspBtn');
+        const orthoBtn = document.getElementById('orthoBtn');
         const buildOutput = document.getElementById('buildOutput');
 
-        let scene, camera, renderer, controls, mesh;
+        let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh;
         let raycaster, mouse;
         let edgesMesh, hoverLine, verticesMesh, hoverPoint;
         let highlightedEdge = null;
@@ -288,9 +294,16 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);
 
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.up.set(0, 0, 1);
-            camera.position.set(200, 200, 200);
+            const aspect = container.clientWidth / container.clientHeight;
+            cameraPersp = new THREE.PerspectiveCamera(45, aspect, 0.1, 2000);
+            cameraPersp.up.set(0, 0, 1);
+            cameraPersp.position.set(200, 200, 200);
+
+            cameraOrtho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 2000);
+            cameraOrtho.up.set(0, 0, 1);
+            cameraOrtho.position.set(200, 200, 200);
+
+            camera = cameraPersp;
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -326,12 +339,15 @@
             fitCameraBtn.addEventListener('click', () => {
                 fitCamera();
             });
+            perspBtn.addEventListener('click', () => setCameraType('persp'));
+            orthoBtn.addEventListener('click', () => setCameraType('ortho'));
 
             // Restore state
             forceBuild.checked = localStorage.getItem('forceBuild') === 'true';
             watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
             gridAtBottom.checked = localStorage.getItem('gridAtBottom') !== 'false'; // Default to true
             if (watchBuild.checked) toggleWatch();
+            setCameraType(localStorage.getItem('cameraType') || 'persp');
 
             document.querySelectorAll('details[id]').forEach(details => {
                 const saved = localStorage.getItem(details.id);
@@ -371,9 +387,38 @@
         }
 
         function onWindowResize() {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
+            const aspect = container.clientWidth / container.clientHeight;
+            cameraPersp.aspect = aspect;
+            cameraPersp.updateProjectionMatrix();
+
+            const height = (cameraOrtho.top - cameraOrtho.bottom) / cameraOrtho.zoom;
+            const width = height * aspect;
+            cameraOrtho.left = -width / 2;
+            cameraOrtho.right = width / 2;
+            cameraOrtho.top = height / 2;
+            cameraOrtho.bottom = -height / 2;
+            cameraOrtho.updateProjectionMatrix();
+
             renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function setCameraType(type) {
+            localStorage.setItem('cameraType', type);
+            perspBtn.classList.toggle('active', type === 'persp');
+            orthoBtn.classList.toggle('active', type === 'ortho');
+
+            const oldCamera = camera;
+            camera = type === 'persp' ? cameraPersp : cameraOrtho;
+
+            if (oldCamera) {
+                camera.position.copy(oldCamera.position);
+                camera.up.copy(oldCamera.up);
+            }
+
+            if (controls) {
+                controls.object = camera;
+                controls.update();
+            }
         }
 
         function animate() {
@@ -381,8 +426,13 @@
             controls.update();
 
             if (isMeasuring && camera) {
-                const dist = camera.position.distanceTo(controls.target);
-                const pixelToWorld = (2 * Math.tan(camera.fov * Math.PI / 360) * dist) / container.clientHeight;
+                let pixelToWorld;
+                if (camera instanceof THREE.PerspectiveCamera) {
+                    const dist = camera.position.distanceTo(controls.target);
+                    pixelToWorld = (2 * Math.tan(camera.fov * Math.PI / 360) * dist) / container.clientHeight;
+                } else {
+                    pixelToWorld = (camera.top - camera.bottom) / (container.clientHeight * camera.zoom);
+                }
 
                 // Set threshold to approx 10 pixels
                 const threshold = 10 * pixelToWorld;
@@ -633,20 +683,29 @@
             const size = new THREE.Vector3();
             box.getSize(size);
 
-            const fov = camera.fov * (Math.PI / 180);
-            const aspect = camera.aspect;
+            const aspect = container.clientWidth / container.clientHeight;
 
-            // Calculate distance to fit the bounding sphere
-            const sphere = new THREE.Sphere();
-            box.getBoundingSphere(sphere);
-            const dist = (sphere.radius / Math.sin(fov / 2)) * 1.1;
+            if (camera instanceof THREE.PerspectiveCamera) {
+                const fov = camera.fov * (Math.PI / 180);
+                const sphere = new THREE.Sphere();
+                box.getBoundingSphere(sphere);
+                const dist = (sphere.radius / Math.sin(fov / 2)) * 1.1;
+                camera.position.set(center.x + dist, center.y + dist, center.z + dist);
+            } else {
+                const boxSize = size.length();
+                camera.left = -boxSize * aspect / 2;
+                camera.right = boxSize * aspect / 2;
+                camera.top = boxSize / 2;
+                camera.bottom = -boxSize / 2;
+                camera.position.set(center.x + 100, center.y + 100, center.z + 100);
+                camera.zoom = 1;
+                camera.updateProjectionMatrix();
+            }
 
-            camera.position.set(center.x + dist, center.y + dist, center.z + dist);
             camera.up.set(0, 0, 1);
             controls.target.copy(center);
             controls.update();
         }
-
         window.setView = function(view) {
             if (!mesh) return;
             const box = new THREE.Box3().setFromObject(mesh);
@@ -655,45 +714,74 @@
             const size = new THREE.Vector3();
             box.getSize(size);
 
-            const fov = camera.fov * (Math.PI / 180);
-            const aspect = camera.aspect;
-
-            // Formula to fit a plane of (w, h) at distance 'dist'
-            // Added depth/2 to ensure the front of the object is also contained
-            const getDist = (w, h, d) => (Math.max(h / (2 * Math.tan(fov / 2)), w / (2 * Math.tan(fov / 2) * aspect)) * 1.1) + (d / 2);
+            const aspect = container.clientWidth / container.clientHeight;
 
             let dist;
             camera.up.set(0, 0, 1);
-            switch(view) {
-                case 'top':
-                    dist = getDist(size.x, size.y, size.z);
-                    camera.position.set(center.x, center.y - 0.0001, center.z + dist);
-                    break;
-                case 'bottom':
-                    dist = getDist(size.x, size.y, size.z);
-                    camera.position.set(center.x, center.y - 0.0001, center.z - dist);
-                    break;
-                case 'front':
-                    dist = getDist(size.x, size.z, size.y);
-                    camera.position.set(center.x, center.y - dist, center.z);
-                    break;
-                case 'back':
-                    dist = getDist(size.x, size.z, size.y);
-                    camera.position.set(center.x, center.y + dist, center.z);
-                    break;
-                case 'left':
-                    dist = getDist(size.y, size.z, size.x);
-                    camera.position.set(center.x - dist, center.y, center.z);
-                    break;
-                case 'right':
-                    dist = getDist(size.y, size.z, size.x);
-                    camera.position.set(center.x + dist, center.y, center.z);
-                    break;
+
+            if (camera instanceof THREE.PerspectiveCamera) {
+                const fov = camera.fov * (Math.PI / 180);
+                const getDist = (w, h, d) => (Math.max(h / (2 * Math.tan(fov / 2)), w / (2 * Math.tan(fov / 2) * aspect)) * 1.1) + (d / 2);
+
+                switch(view) {
+                    case 'top':
+                        dist = getDist(size.x, size.y, size.z);
+                        camera.position.set(center.x, center.y - 0.0001, center.z + dist);
+                        break;
+                    case 'bottom':
+                        dist = getDist(size.x, size.y, size.z);
+                        camera.position.set(center.x, center.y - 0.0001, center.z - dist);
+                        break;
+                    case 'front':
+                        dist = getDist(size.x, size.z, size.y);
+                        camera.position.set(center.x, center.y - dist, center.z);
+                        break;
+                    case 'back':
+                        dist = getDist(size.x, size.z, size.y);
+                        camera.position.set(center.x, center.y + dist, center.z);
+                        break;
+                    case 'left':
+                        dist = getDist(size.y, size.z, size.x);
+                        camera.position.set(center.x - dist, center.y, center.z);
+                        break;
+                    case 'right':
+                        dist = getDist(size.y, size.z, size.x);
+                        camera.position.set(center.x + dist, center.y, center.z);
+                        break;
+                }
+            } else {
+                const getFit = (w, h) => Math.max(w / aspect, h) * 1.1;
+                let fitSize;
+
+                switch(view) {
+                    case 'top':
+                    case 'bottom':
+                        fitSize = getFit(size.x, size.y);
+                        camera.position.set(center.x, center.y - 0.0001, center.z + (view === 'top' ? 100 : -100));
+                        break;
+                    case 'front':
+                    case 'back':
+                        fitSize = getFit(size.x, size.z);
+                        camera.position.set(center.x, center.y + (view === 'front' ? -100 : 100), center.z);
+                        break;
+                    case 'left':
+                    case 'right':
+                        fitSize = getFit(size.y, size.z);
+                        camera.position.set(center.x + (view === 'left' ? -100 : 100), center.y, center.z);
+                        break;
+                }
+
+                camera.left = -fitSize * aspect / 2;
+                camera.right = fitSize * aspect / 2;
+                camera.top = fitSize / 2;
+                camera.bottom = -fitSize / 2;
+                camera.zoom = 1;
+                camera.updateProjectionMatrix();
             }
+
             controls.target.copy(center);
             controls.update();
         };
-
         function loadSTL(path) {
             if (mesh) scene.remove(mesh);
             if (edgesMesh) scene.remove(edgesMesh);
