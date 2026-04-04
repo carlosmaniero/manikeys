@@ -28,16 +28,18 @@ async def list_files():
 
     files = []
 
+    # Files directly in src/
     for p in src_path.glob("*.py"):
         if p.is_file():
             files.append(str(p.absolute()))
 
+    # Files in src/cad/ recursively
     if cad_path.exists():
-        for p in cad_path.glob("*.py"):
-            if p.is_file():
+        for p in cad_path.rglob("*.py"):
+            if p.is_file() and "__pycache__" not in str(p):
                 files.append(str(p.absolute()))
 
-    return sorted(files)
+    return sorted(list(set(files)))
 
 
 @app.get("/build-stl")
@@ -62,7 +64,7 @@ async def build_stl(file_path: str, force: bool = False):
             *cmd,
             cwd=PROJECT_ROOT,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT
+            stderr=asyncio.subprocess.STDOUT,
         )
 
         while True:
@@ -117,12 +119,15 @@ async def get_stl(file_path: str):
     build_abs_path = os.path.join(PROJECT_ROOT, build_rel_path)
 
     if not os.path.exists(build_abs_path):
-        raise HTTPException(status_code=404, detail=f"STL file not found at {build_rel_path}. Please build it first.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"STL file not found at {build_rel_path}. Please build it first.",
+        )
 
     return FileResponse(
         path=build_abs_path,
         media_type="application/sla",
-        filename=os.path.basename(build_abs_path)
+        filename=os.path.basename(build_abs_path),
     )
 
 

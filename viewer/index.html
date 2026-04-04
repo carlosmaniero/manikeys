@@ -145,6 +145,9 @@
                 <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
                     <input type="checkbox" id="watchBuild" style="width: auto; margin: 0;"> Watch for Changes
                 </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                    <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
+                </label>
             </div>
             <label style="margin-top: 1rem;">Build Log</label>
             <pre id="buildOutput"></pre>
@@ -211,6 +214,7 @@
         const buildBtn = document.getElementById('buildBtn');
         const forceBuild = document.getElementById('forceBuild');
         const watchBuild = document.getElementById('watchBuild');
+        const gridAtBottom = document.getElementById('gridAtBottom');
         const buildOutput = document.getElementById('buildOutput');
 
         let scene, camera, renderer, controls, mesh;
@@ -253,10 +257,15 @@
             forceBuild.addEventListener('change', () => {
                 localStorage.setItem('forceBuild', forceBuild.checked);
             });
+            gridAtBottom.addEventListener('change', () => {
+                localStorage.setItem('gridAtBottom', gridAtBottom.checked);
+                updateMeshPosition();
+            });
 
             // Restore state
             forceBuild.checked = localStorage.getItem('forceBuild') === 'true';
             watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
+            gridAtBottom.checked = localStorage.getItem('gridAtBottom') !== 'false'; // Default to true
             if (watchBuild.checked) toggleWatch();
 
             scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
@@ -528,6 +537,19 @@
             }
         }
 
+        function updateMeshPosition() {
+            if (!mesh || !mesh.geometry) return;
+            mesh.geometry.computeBoundingBox();
+            const box = mesh.geometry.boundingBox;
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+
+            const zOffset = gridAtBottom.checked ? -box.min.z : -center.z;
+            mesh.position.set(-center.x, -center.y, zOffset);
+            if (edgesMesh) edgesMesh.position.copy(mesh.position);
+            if (verticesMesh) verticesMesh.position.copy(mesh.position);
+        }
+
         function loadSTL(path) {
             if (mesh) scene.remove(mesh);
             if (edgesMesh) scene.remove(edgesMesh);
@@ -547,26 +569,19 @@
                     emissive: 0x220022
                 });
                 mesh = new THREE.Mesh(geometry, material);
-
-                geometry.computeBoundingBox();
-                const box = geometry.boundingBox;
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-
-                mesh.position.set(-center.x, -center.y, -box.min.z);
                 scene.add(mesh);
 
                 const edgesGeom = new THREE.EdgesGeometry(geometry);
                 edgesMesh = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.3 }));
-                edgesMesh.position.copy(mesh.position);
                 edgesMesh.visible = false;
                 scene.add(edgesMesh);
 
                 const pointsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 4, sizeAttenuation: false, transparent: true, opacity: 0.5 });
                 verticesMesh = new THREE.Points(geometry, pointsMat);
-                verticesMesh.position.copy(mesh.position);
                 verticesMesh.visible = false;
                 scene.add(verticesMesh);
+
+                updateMeshPosition();
 
                 hoverLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x00aaff, linewidth: 2 }));
                 hoverLine.visible = false;
@@ -577,6 +592,7 @@
                 hoverPoint.visible = false;
                 scene.add(hoverPoint);
 
+                const box = geometry.boundingBox;
                 const size = new THREE.Vector3();
                 box.getSize(size);
 
