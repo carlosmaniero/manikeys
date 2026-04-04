@@ -158,7 +158,18 @@
             container.addEventListener('mousemove', onMouseMove);
             measureBtn.addEventListener('click', toggleMeasure);
             buildBtn.addEventListener('click', onBuild);
-            watchBuild.addEventListener('change', toggleWatch);
+            watchBuild.addEventListener('change', () => {
+                localStorage.setItem('watchBuild', watchBuild.checked);
+                toggleWatch();
+            });
+            forceBuild.addEventListener('change', () => {
+                localStorage.setItem('forceBuild', forceBuild.checked);
+            });
+
+            // Restore state
+            forceBuild.checked = localStorage.getItem('forceBuild') === 'true';
+            watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
+            if (watchBuild.checked) toggleWatch();
 
             scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.5));
 
@@ -516,11 +527,21 @@
                     });
                     fileSelect.appendChild(optgroup);
                 });
+
+                // Restore selected file
+                const lastFile = localStorage.getItem('selectedFile');
+                if (lastFile && files.includes(lastFile)) {
+                    fileSelect.value = lastFile;
+                    loadSTL(lastFile);
+                }
             });
 
         fileSelect.addEventListener('change', (event) => {
             const selectedFile = event.target.value;
-            if (selectedFile) loadSTL(selectedFile);
+            if (selectedFile) {
+                localStorage.setItem('selectedFile', selectedFile);
+                loadSTL(selectedFile);
+            }
         });
     </script>
 </body>
