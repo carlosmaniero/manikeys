@@ -211,6 +211,9 @@
                     <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
                         <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
                     </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <input type="checkbox" id="invertTransparency" style="width: auto; margin: 0;"> Invert Transparency
+                    </label>
                     <div style="display: flex; gap: 0.5rem;">
                         <button type="button" id="perspBtn">Persp</button>
                         <button type="button" id="orthoBtn">Ortho</button>
@@ -259,6 +262,7 @@
                 <div style="font-size: 0.9rem; line-height: 1.4; color: #0f0; opacity: 0.8;">
                     <div class="info-row"><span class="info-label">Measure</span><span class="info-value">M</span></div>
                     <div class="info-row"><span class="info-label">Fit View</span><span class="info-value">F</span></div>
+                    <div class="info-row"><span class="info-label">Invert Transp</span><span class="info-value">I</span></div>
                     <div class="info-row"><span class="info-label">Build</span><span class="info-value">B</span></div>
                     <div class="info-row"><span class="info-label">Persp/Ortho</span><span class="info-value">P/O</span></div>
                     <div class="info-row"><span class="info-label">Views</span><span class="info-value">1-6</span></div>
@@ -307,6 +311,7 @@
         const forceBuild = document.getElementById('forceBuild');
         const watchBuild = document.getElementById('watchBuild');
         const gridAtBottom = document.getElementById('gridAtBottom');
+        const invertTransparency = document.getElementById('invertTransparency');
         const fitCameraBtn = document.getElementById('fitCameraBtn');
         const perspBtn = document.getElementById('perspBtn');
         const orthoBtn = document.getElementById('orthoBtn');
@@ -371,6 +376,10 @@
                 localStorage.setItem('gridAtBottom', gridAtBottom.checked);
                 updateMeshPosition();
             });
+            invertTransparency.addEventListener('change', () => {
+                localStorage.setItem('invertTransparency', invertTransparency.checked);
+                updateMaterials();
+            });
             fitCameraBtn.addEventListener('click', () => {
                 fitCamera();
             });
@@ -381,6 +390,7 @@
             forceBuild.checked = localStorage.getItem('forceBuild') === 'true';
             watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
             gridAtBottom.checked = localStorage.getItem('gridAtBottom') !== 'false'; // Default to true
+            invertTransparency.checked = localStorage.getItem('invertTransparency') === 'true';
             if (watchBuild.checked) toggleWatch();
             setCameraType(localStorage.getItem('cameraType') || 'persp');
 
@@ -428,6 +438,11 @@
                 switch(event.key.toLowerCase()) {
                     case 'm': toggleMeasure(); break;
                     case 'f': fitCamera(); break;
+                    case 'i': 
+                        invertTransparency.checked = !invertTransparency.checked;
+                        localStorage.setItem('invertTransparency', invertTransparency.checked);
+                        updateMaterials();
+                        break;
                     case 'p': setCameraType('persp'); break;
                     case 'o': setCameraType('ortho'); break;
                     case 'b': onBuild(); break;
@@ -474,6 +489,20 @@
             if (controls) {
                 controls.object = camera;
                 controls.update();
+            }
+        }
+
+        function updateMaterials() {
+            const inverted = invertTransparency.checked;
+            if (mesh && mesh.material) {
+                mesh.material.transparent = inverted;
+                mesh.material.opacity = inverted ? 0.3 : 1.0;
+                mesh.material.needsUpdate = true;
+            }
+            if (refMesh && refMesh.material) {
+                refMesh.material.transparent = !inverted;
+                refMesh.material.opacity = !inverted ? 0.3 : 1.0;
+                refMesh.material.needsUpdate = true;
             }
         }
 
@@ -749,6 +778,7 @@
                 refEdgesMesh = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 }));
                 scene.add(refEdgesMesh);
 
+                updateMaterials();
                 updateMeshPosition();
             }, undefined, (error) => {
                 console.error('Error loading reference STL:', error);
@@ -895,6 +925,7 @@
                 verticesMesh.visible = false;
                 scene.add(verticesMesh);
 
+                updateMaterials();
                 updateMeshPosition();
 
                 hoverLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x00aaff, linewidth: 2 }));
