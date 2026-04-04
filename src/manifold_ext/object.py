@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 from typing import Sequence
 import manifold3d
 import pyvista as pv
@@ -11,8 +12,6 @@ class ManifoldObject(Object[manifold3d.Manifold]):
         manifold = self.assemble()
         mesh = manifold.to_mesh()
 
-        # manifold3d doesn't have a direct STL export in all versions,
-        # but we can use PyVista to save the mesh
         pd = pv.PolyData(
             mesh.vert_properties,
             np.hstack(
@@ -39,4 +38,7 @@ class ManifoldObject(Object[manifold3d.Manifold]):
         plotter.show()
 
     def program(self, argv: Sequence[str]):
-        super().program(argv)
+        try:
+            super().program(argv)
+        finally:
+            os._exit(0)
