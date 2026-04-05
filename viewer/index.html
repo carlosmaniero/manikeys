@@ -763,7 +763,8 @@
             if (!path) return;
 
             const loader = new STLLoader();
-            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}`, (geometry) => {
+            const timestamp = new Date().getTime();
+            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}&t=${timestamp}`, (geometry) => {
                 const material = new THREE.MeshPhongMaterial({
                     color: 0x00ffff,
                     transparent: true,
@@ -905,7 +906,8 @@
             modelInfo.style.display = 'none';
 
             const loader = new STLLoader();
-            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}`, (geometry) => {
+            const timestamp = new Date().getTime();
+            loader.load(`/get-stl?file_path=${encodeURIComponent(path)}&t=${timestamp}`, (geometry) => {
                 const material = new THREE.MeshPhongMaterial({
                     color: 0xff00ff,
                     specular: 0x440044,

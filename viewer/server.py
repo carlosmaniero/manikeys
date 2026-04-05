@@ -128,6 +128,11 @@ async def get_stl(file_path: str):
         path=build_abs_path,
         media_type="application/sla",
         filename=os.path.basename(build_abs_path),
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
     )
 
 
