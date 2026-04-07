@@ -31,6 +31,8 @@ class FullKeyboard(ManifoldObject):
             "build/cad/cable_path.stl",
             "build/cad/body_screw_hole.stl",
             "build/cad/logo.stl",
+            "build/cad/connectors/rj11_mask.stl",
+            "build/cad/connectors/rj11_adapter_trimmed.stl",
         ]
 
         manifolds = load_many_stl_to_manifold(paths)
@@ -48,6 +50,8 @@ class FullKeyboard(ManifoldObject):
             cable_path,
             body_screw_hole,
             logo,
+            rj11_mask,
+            rj11_adapter,
         ) = manifolds
 
         body = body - body_inner_sections
@@ -60,6 +64,9 @@ class FullKeyboard(ManifoldObject):
         body = body - cable_path
         body = body - body_screw_hole
         body = body - logo
+
+        body = body - rj11_mask
+        body = body + rj11_adapter
 
         return body
 

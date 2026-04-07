@@ -6,6 +6,7 @@ from injector import inject, singleton
 from context import injector
 from models.parameters import Parameters
 from models.rj11 import RJ11Model
+from models.body import BodyModel
 from manifold_ext.object import ManifoldObject
 
 
@@ -15,6 +16,7 @@ from manifold_ext.object import ManifoldObject
 class RJ11AdapterCAD(ManifoldObject):
     parameters: Parameters
     model: RJ11Model
+    body_model: BodyModel
 
     @property
     def height(self) -> float:
@@ -68,16 +70,20 @@ class RJ11AdapterCAD(ManifoldObject):
         )
 
     @property
+    def main_block(self) -> manifold3d.Manifold:
+        return manifold3d.Manifold.cube(
+            [
+                self.width,
+                self.model.rj11.length + self.parameters.body.thickness * 2,
+                self.model.rj11.height,
+            ],
+            center=True,
+        )
+
+    @property
     def body(self) -> manifold3d.Manifold:
         return (
-            manifold3d.Manifold.cube(
-                [
-                    self.width,
-                    self.model.rj11.length + self.parameters.body.thickness * 2,
-                    self.model.rj11.height,
-                ],
-                center=True,
-            )
+            self.main_block
             - self.bottom_notch_mask
             - self.body_mask
             - self.inner_mask
@@ -191,12 +197,23 @@ class RJ11AdapterCAD(ManifoldObject):
         return self.socket + self.socket.mirror([1, 0, 0])
 
     def assemble(self) -> manifold3d.Manifold:
+        max_x = self.width / 2
+        max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
         return (
             self.bottom_base
             + self.body
             + self.bottom_notch
             - self.sockets
             - self.bottom_pocket
+        ).translate(
+            [
+                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_y() - max_y,
+                self.body_model.bottom_z
+                + self.parameters.body.thickness
+                + self.model.rj11.height / 2
+                + self.height,
+            ]
         )
 
 

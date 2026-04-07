@@ -241,6 +241,10 @@ class BodyModel:
     def effective_width(self) -> float:
         return self.parameters.body.width
 
+    @property
+    def bottom_z(self) -> float:
+        return -self.parameters.body.height
+
 
 @singleton
 @inject
