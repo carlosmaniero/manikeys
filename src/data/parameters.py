@@ -7,6 +7,7 @@ from models.parameters import (
     GlobalParameters,
     HandSupportParameters,
     SocketAdapterParameters,
+    RJ11Parameters,
 )
 
 
@@ -56,5 +57,20 @@ class ParametersModule(Module):
                 body_thickness=6,
                 cap_socket_height=2,
                 cap_socket_width=cube_size + 4,
+            ),
+            rj11=RJ11Parameters(
+                width=11.0,
+                height=11.5,
+                length=18.2,
+                bottom_notch_length=6.0,
+                bottom_notch_height=0.5,
+                bottom_notch_start_y=5.0,
+                inner_paddings=[2.0, 1.5, 3.0, 1.5],
+                inner_length=12.0,
+                socket_height=4.4,
+                socket_diameter=2.0,
+                error_margin=0.25,
+                adapter_head_height=2.5,
+                adapter_socket_diameter=3.0,
             ),
         )
