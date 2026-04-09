@@ -67,6 +67,7 @@ class SocketPlacementShell(ManifoldObject):
             )
             - side_divider
             - body_divider
+            - load_stl_to_manifold("build/cad/connectors/placement_mask.stl")
         )
 
 

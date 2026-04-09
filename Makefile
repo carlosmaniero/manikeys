@@ -47,7 +47,7 @@ build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/bo
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
 build/cad/body_bottom.stl: src/cad/body_bottom.py build/cad/body.stl
-build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl
+build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/socket_placement_inner_sections.stl: src/cad/socket_placement_inner_sections.py build/cad/socket_placement_inner.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
