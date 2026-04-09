@@ -8,6 +8,7 @@ from models.parameters import (
     HandSupportParameters,
     SocketAdapterParameters,
     RJ11Parameters,
+    USBCParameters,
 )
 
 
@@ -72,5 +73,14 @@ class ParametersModule(Module):
                 error_margin=0.25,
                 adapter_head_height=2.5,
                 adapter_socket_diameter=3.0,
+            ),
+            usbc=USBCParameters(
+                width=13.0,
+                height=4.8,
+                length=22.0,
+                pcb_thickness=1.6,
+                hole_spacing=2.54,
+                aperture=1.0,
+                num_holes=6,
             ),
         )

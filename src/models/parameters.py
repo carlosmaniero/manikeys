@@ -85,6 +85,17 @@ class RJ11Parameters:
 
 
 @dataclass
+class USBCParameters:
+    width: float
+    height: float
+    length: float
+    pcb_thickness: float
+    hole_spacing: float
+    aperture: float
+    num_holes: int
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
@@ -92,3 +103,4 @@ class Parameters:
     hand_support: HandSupportParameters
     socket_adapter: SocketAdapterParameters
     rj11: RJ11Parameters
+    usbc: USBCParameters
