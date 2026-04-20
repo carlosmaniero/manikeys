@@ -29,3 +29,30 @@ This project uses [PythonSCAD](https://pythonscad.org) to design a custom 3D-pri
 - `make build/ANY_FILE.png`: Generate PNG rendering for `src/ANY_FILE.py`.
 - `make test`: Run tests.
 - `make lint`: Check code quality.
+- `make viewer`: Start the web-based 3D viewer.
+
+## 3D Viewer
+
+The project includes a web-based 3D viewer to visualize, build, and measure your keyboard models.
+
+### Features
+- **Live Preview**: See your models as you develop.
+- **Auto-Rebuild**: Enable "Watch for Changes" to automatically rebuild the STL and reload the viewer when you save a Python file.
+- **Measurement Tool**: Measure distances between vertices with snapping (shortcut: `M`).
+- **Reference Model**: Load a second model as a transparent reference to compare changes.
+- **Build Control**: Trigger builds directly from the browser.
+
+### Running the Viewer
+
+1.  **Install dependencies**:
+    ```bash
+    uv sync --group dev
+    ```
+
+2.  **Start the viewer**:
+    ```bash
+    make viewer
+    ```
+
+3.  **Open your browser**:
+    Navigate to `http://localhost:6333`

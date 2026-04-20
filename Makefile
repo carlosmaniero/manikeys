@@ -1,6 +1,6 @@
 SIMPLIFY ?= 1
 
-.PHONY: build test lint render clean sphere build_watch
+.PHONY: build test lint render clean sphere build_watch viewer
 
 build: build/main.stl build/main.3mf build/main.wrl \
 	build/cad/full_keyboard_main.stl \
@@ -157,6 +157,9 @@ test:
 lint:
 	uv run ruff check .
 	uv run ruff format --check .
+
+viewer:
+	uv run python viewer/server.py
 
 clean:
 	rm -rf build/
