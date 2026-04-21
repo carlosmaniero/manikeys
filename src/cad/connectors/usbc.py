@@ -55,7 +55,7 @@ class USBCCAD(ManifoldObject):
             [
                 0,
                 self.model.pcb_width / 2 - depth / 2 + 1.5,
-                self.model.pcb_height / 2 + height / 2,
+                -self.model.pcb_height / 2 - height / 2,
             ]
         )
 

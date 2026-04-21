@@ -43,7 +43,7 @@ class USBCConnectorMaskCAD(ManifoldObject):
         left_cyl = cylinder.translate([-x_offset, 0, 0])
         right_cyl = cylinder.translate([x_offset, 0, 0])
 
-        # Translate to the +Y edge of the PCB
+        # Translate to the +Y edge of the PCB and -Z side
         return manifold3d.Manifold.hull(left_cyl + right_cyl).translate(
             [
                 0,
@@ -51,7 +51,7 @@ class USBCConnectorMaskCAD(ManifoldObject):
                 + depth / 2
                 - self.model.connector_depth
                 + 1.5,
-                self.model.pcb_height / 2 + self.model.connector_height / 2,
+                -self.model.pcb_height / 2 - self.model.connector_height / 2,
             ]
         )
 

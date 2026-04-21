@@ -24,10 +24,7 @@ class USBCModel:
         return [
             self.body_model.start_x() + self.parameters.body.fillet + max_x,
             self.body_model.end_y() - max_y,
-            self.body_model.bottom_z
-            + thickness
-            + self.pcb_height / 2
-            + self.usbc.height,
+            self.body_model.bottom_z + self.usbc.height + self.pcb_height / 2,
         ]
 
     @property

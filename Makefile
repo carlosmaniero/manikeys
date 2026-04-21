@@ -47,7 +47,7 @@ build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/bo
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
 build/cad/body_bottom.stl: src/cad/body_bottom.py build/cad/body.stl
-build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl
+build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/socket_placement_inner_sections.stl: src/cad/socket_placement_inner_sections.py build/cad/socket_placement_inner.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
@@ -59,7 +59,8 @@ build/cad/socket_adapter_grid.stl: src/cad/socket_adapter_grid.py build/cad/sock
 build/cad/connectors/rj11_adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/cad/connectors/rj11_adapter.stl build/cad/body.stl
 build/cad/connectors/usbc_adapter.stl: src/cad/connectors/usbc_adapter.py build/cad/connectors/usbc_connector_mask.stl
 build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/cad/connectors/usbc_adapter.stl build/cad/body.stl
-build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py
+build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py build/cad/connectors/usbc_connector_mask.stl
+build/cad/connectors/usbc_placement_mask.stl: src/cad/connectors/usbc_placement_mask.py
 
 build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
 build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
