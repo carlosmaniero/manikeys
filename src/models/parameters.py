@@ -93,6 +93,7 @@ class USBCParameters:
     hole_spacing: float
     aperture: float
     num_holes: int
+    error_margin: float
 
 
 @dataclass

@@ -40,7 +40,7 @@ build/sphere.wrl: src/openscad_ext/demo.py
 
 build/main.stl build/main.3mf build/main.wrl: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl
+build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl
 build/cad/cable_path.stl: src/cad/cable_path.py
 build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
 build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/body.stl
@@ -57,6 +57,9 @@ build/cad/cap_thumb_hole.stl: src/cad/cap_thumb_hole.py build/cad/cap_hole.stl
 build/cad/socket_adapter_grid.stl: src/cad/socket_adapter_grid.py build/cad/socket_adapter.stl
 
 build/cad/connectors/rj11_adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/cad/connectors/rj11_adapter.stl build/cad/body.stl
+build/cad/connectors/usbc_adapter.stl: src/cad/connectors/usbc_adapter.py build/cad/connectors/usbc_connector_mask.stl
+build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/cad/connectors/usbc_adapter.stl build/cad/body.stl
+build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py
 
 build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
 build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl

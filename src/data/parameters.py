@@ -82,5 +82,6 @@ class ParametersModule(Module):
                 hole_spacing=2.54,
                 aperture=1.0,
                 num_holes=6,
+                error_margin=0.25,
             ),
         )
