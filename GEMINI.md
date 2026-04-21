@@ -1,5 +1,6 @@
 # Project Guidelines
 
+- **Code Comments**: Do NOT add code comments unless explicitly asked by the user.
 - **Dataclasses**: Prefer using `@dataclass` for data-holding classes to reduce boilerplate (like `__init__` and `__repr__`).
 - **Factory Methods**: When complex initialization is required, prefer using `@classmethod` factory methods (e.g., `from_x`) to keep the primary constructor simple and the class's purpose clear.
 
@@ -63,7 +64,7 @@ To create a new CAD file (e.g., an STL):
 
     ```python
     if __name__ == "__main__":
-        my_part = injector.get(MyPartCAD) # Replace MyPartCAD with your class name
+        my_part = injector.get(MyPartCAD)
         my_part.program(sys.argv)
     ```
 
