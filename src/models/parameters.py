@@ -97,6 +97,23 @@ class USBCParameters:
 
 
 @dataclass
+class PogoPinParameters:
+    body_length: float
+    body_width: float
+    body_height: float
+    flange_thickness: float
+    mounting_hole_diameter: float
+    mounting_hole_distance: float
+    pin_pitch: float
+    pin_count: int
+    magnet_distance: float
+    pin_height: float
+    pin_tip_diameter: float
+    solder_tail_diameter: float
+    solder_tail_length: float
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
@@ -105,3 +122,4 @@ class Parameters:
     socket_adapter: SocketAdapterParameters
     rj11: RJ11Parameters
     usbc: USBCParameters
+    pogo_pin: PogoPinParameters

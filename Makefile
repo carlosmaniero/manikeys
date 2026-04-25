@@ -2,7 +2,7 @@ SIMPLIFY ?= 1
 
 .PHONY: build test lint render clean sphere build_watch viewer
 
-build: build/main.stl build/main.3mf build/main.wrl \
+build: build/main.stl build/main.3mf \
 	build/cad/full_keyboard_main.stl \
 	build/cad/full_keyboard_hand.stl \
 	build/cad/full_keyboard_side.stl
@@ -24,7 +24,7 @@ build_watch:
 		src/
 
 
-sphere: build/sphere.wrl build/sphere.png
+sphere: build/sphere.png
 
 render: build/render.png build/render_back.png build/render_top.png build/render_side.png build/render_side_inv.png \
 	build/render_angle0.png build/render_angle45.png build/render_angle90.png build/render_angle135.png \
@@ -34,14 +34,10 @@ build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run python $< -o $@
 
-build/sphere.wrl: src/openscad_ext/demo.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
-
-build/main.stl build/main.3mf build/main.wrl: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
+build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf build/full_keyboard.wrl: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl
-build/cad/cable_path.stl: src/cad/cable_path.py
+build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl
+build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
 build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
 build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/body.stl
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
@@ -62,13 +58,12 @@ build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_t
 build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py build/cad/connectors/usbc_connector_mask.stl
 build/cad/connectors/usbc_placement_mask.stl: src/cad/connectors/usbc_placement_mask.py
 
+build/cad/connectors/pogo_pin_mask.stl: src/cad/connectors/pogo_pin_mask.py
+build/cad/connectors/pogo_pin_adapter.stl: src/cad/connectors/pogo_pin_adapter.py build/cad/connectors/pogo_pin_mask.stl
+
 build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
 build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
 build/cad/full_keyboard_side.stl: src/cad/full_keyboard_side.py build/full_keyboard.stl
-
-build/%.wrl: src/%.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
 
 build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
@@ -89,8 +84,6 @@ build_with_pythonscad:
 		$(MAKE) _pythonscad_stl FILE=$(FILE); \
 	elif [ "$(suffix $(FILE))" = ".3mf" ]; then \
 		$(MAKE) _pythonscad_3mf FILE=$(FILE); \
-	elif [ "$(suffix $(FILE))" = ".wrl" ]; then \
-		$(MAKE) _pythonscad_wrl FILE=$(FILE); \
 	else \
 		$(MAKE) _pythonscad_other FILE=$(FILE); \
 	fi
@@ -103,10 +96,6 @@ _pythonscad_stl:
 _pythonscad_3mf:
 	mkdir -p $(dir $(FILE))
 	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) -O export-3mf/material-type=color
-
-_pythonscad_wrl:
-	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE)
 
 _pythonscad_other:
 	mkdir -p $(dir $(FILE))

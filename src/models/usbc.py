@@ -13,9 +13,7 @@ class USBCModel:
 
     @property
     def body_offset(self) -> list[float]:
-        # Centering logic for the new orientation (long side is X)
         thickness = self.parameters.body.thickness
-        # Now Y is the short side (pcb_width)
         full_length = self.pcb_width + thickness * 2
 
         max_x = (self.pcb_length + thickness * 2) / 2
