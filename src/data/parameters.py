@@ -10,6 +10,7 @@ from models.parameters import (
     RJ11Parameters,
     USBCParameters,
     PogoPinParameters,
+    MagnetParameters,
 )
 
 
@@ -99,5 +100,10 @@ class ParametersModule(Module):
                 pin_tip_diameter=0.90,
                 solder_tail_diameter=0.70,
                 solder_tail_length=1.50,
+            ),
+            magnet=MagnetParameters(
+                diameter=4.0,
+                height=2.0,
+                error_margin=0.15,
             ),
         )

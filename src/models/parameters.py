@@ -114,6 +114,13 @@ class PogoPinParameters:
 
 
 @dataclass
+class MagnetParameters:
+    diameter: float
+    height: float
+    error_margin: float
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
@@ -123,3 +130,4 @@ class Parameters:
     rj11: RJ11Parameters
     usbc: USBCParameters
     pogo_pin: PogoPinParameters
+    magnet: MagnetParameters
