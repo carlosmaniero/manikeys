@@ -36,7 +36,7 @@ build/sphere.3mf: src/openscad_ext/demo.py
 
 build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_mask.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl
+build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/socket_placement_shell.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_trimmed.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl
 build/cad/magnet_snap.stl: src/cad/magnet_snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
@@ -45,7 +45,7 @@ build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/bo
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
 build/cad/body_bottom.stl: src/cad/body_bottom.py build/cad/body.stl
-build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl
+build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl build/cad/body_screw_mask.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/socket_placement_inner_sections.stl: src/cad/socket_placement_inner_sections.py build/cad/socket_placement_inner.stl
 build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl

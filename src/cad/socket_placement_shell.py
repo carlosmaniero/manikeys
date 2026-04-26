@@ -71,6 +71,7 @@ class SocketPlacementShell(ManifoldObject):
             - load_stl_to_manifold(
                 "build/cad/connectors/usbc_placement_mask.stl"
             )
+            - load_stl_to_manifold("build/cad/body_screw_mask.stl")
         )
 
 
