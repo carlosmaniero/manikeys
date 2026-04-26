@@ -130,7 +130,7 @@ class BodyModel:
 
     @property
     def divider_y(self) -> float:
-        return self.sphere.start_y()
+        return self.sphere.start_y() - self.parameters.body.thickness
 
     @property
     def highest(self) -> float:
