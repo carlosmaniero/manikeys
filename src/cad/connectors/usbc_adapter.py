@@ -25,30 +25,22 @@ class USBCAdapterCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        # Long side is now X
+
         return self.model.pcb_length + self.thickness * 2
 
     @property
     def length(self) -> float:
-        # Wall thickness + Hole diameter + thickness
-        # Short side is now Y
         return (
             self.thickness + self.model.mounting_hole_diameter + self.thickness
         )
 
     @property
     def adapter_height(self) -> float:
-        # Ceiling + PCB + Connector space
         return self.thickness + self.model.pcb_height + self.model.usbc.height
 
     @property
     def main_block(self) -> manifold3d.Manifold:
-        # Positioned relative to PCB center (0,0,0)
-        # Wall is at +Y (pcb_width/2)
         y_center = self.model.pcb_width / 2 + self.thickness - self.length / 2
-
-        # Top of block is at pcb_height/2 + thickness
-        # Bottom of block is at pcb_height/2 + thickness - adapter_height
         z_center = (
             self.model.pcb_height / 2 + self.thickness - self.adapter_height / 2
         )
@@ -57,14 +49,14 @@ class USBCAdapterCAD(ManifoldObject):
             [
                 self.width,
                 self.length,
-                self.adapter_height,
+                self.adapter_height + self.body_model.highest,
             ],
             center=True,
         ).translate(
             [
                 0,
                 y_center,
-                z_center,
+                z_center + self.body_model.highest / 2,
             ]
         )
 
@@ -74,12 +66,9 @@ class USBCAdapterCAD(ManifoldObject):
 
     @property
     def internal_mask(self) -> manifold3d.Manifold:
-        # Opens bottom, back, and sides by extending the mask.
-        # It needs to leave the TOP wall (ceiling) and the front wall (+Y).
+
         y_start = self.model.pcb_width / 2
 
-        # Mask should leave the top thickness (ceiling)
-        # Top of mask = pcb_height/2
         z_mask_top = self.model.pcb_height / 2
         z_mask_center = z_mask_top - self.adapter_height / 2
 
@@ -110,7 +99,6 @@ class USBCAdapterCAD(ManifoldObject):
         diameter = 1.8
         radius = diameter / 2
 
-        # Tall enough to cut through the ceiling
         height = self.thickness + 5.0
         x_pos = self.model.mounting_hole_x
         y_pos = self.model.mounting_hole_y
@@ -123,7 +111,6 @@ class USBCAdapterCAD(ManifoldObject):
             center=True,
         )
 
-        # Positioned in the ceiling
         z_holes = self.model.pcb_height / 2 + self.thickness / 2
 
         return (
@@ -132,7 +119,6 @@ class USBCAdapterCAD(ManifoldObject):
         ).translate([0, 0, z_holes])
 
     def assemble(self) -> manifold3d.Manifold:
-        # Align with the same world position as USBCCAD
         return (self.body - self.screw_holes).translate(self.model.body_offset)
 
 

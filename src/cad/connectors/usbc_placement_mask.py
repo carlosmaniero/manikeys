@@ -70,14 +70,14 @@ class USBCPlacementMaskCAD(ManifoldObject):
             [
                 self.width,
                 self.length,
-                self.mask_height,
+                self.mask_height + self.body_model.highest,
             ],
             center=True,
         ).translate(
             [
                 0,
                 y_center,
-                z_center,
+                z_center + self.body_model.highest / 2,
             ]
         )
 
