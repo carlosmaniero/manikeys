@@ -75,10 +75,10 @@ class RJ11AdapterCAD(ManifoldObject):
             [
                 self.width,
                 self.model.rj11.length + self.parameters.body.thickness * 2,
-                self.model.rj11.height,
+                self.model.rj11.height + self.body_model.highest,
             ],
             center=True,
-        )
+        ).translate([0, 0, self.body_model.highest / 2])
 
     @property
     def body(self) -> manifold3d.Manifold:
@@ -91,13 +91,17 @@ class RJ11AdapterCAD(ManifoldObject):
 
     @property
     def body_mask(self) -> manifold3d.Manifold:
-        return manifold3d.Manifold.cube(
+        mask = manifold3d.Manifold.cube(
             [
                 self.model.rj11.width + self.model.rj11.error_margin * 2,
                 self.model.rj11.length + self.model.rj11.error_margin * 2,
-                self.model.rj11.height,
+                self.model.rj11.height + self.body_model.highest,
             ],
             center=True,
+        ).translate([0, 0, self.body_model.highest / 2])
+
+        return mask + mask.translate(
+            [0, -self.parameters.body.thickness, self.model.rj11.height]
         )
 
     @property

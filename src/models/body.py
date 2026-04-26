@@ -132,6 +132,10 @@ class BodyModel:
     def divider_y(self) -> float:
         return self.sphere.start_y()
 
+    @property
+    def highest(self) -> float:
+        return self.sphere.highest + self.offset
+
     def hand_support_z(self, coords: list[np.ndarray]) -> np.ndarray:
         x_ratio = lerp.x_factor(
             coords,

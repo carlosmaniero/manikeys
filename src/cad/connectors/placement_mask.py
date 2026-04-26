@@ -44,10 +44,10 @@ class PlacementMaskCAD(ManifoldObject):
             [
                 self.width,
                 self.model.rj11.length + self.parameters.body.thickness * 4,
-                self.total_height,
+                self.total_height + self.body_model.highest,
             ],
             center=True,
-        )
+        ).translate([0, 0, self.body_model.highest / 2])
 
     def assemble(self) -> manifold3d.Manifold:
         rj11_mask_width = (
