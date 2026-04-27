@@ -22,7 +22,6 @@ class FullKeyboard(ManifoldObject):
             "build/cad/body.stl",
             "build/cad/body_inner_sections.stl",
             "build/cad/body_screw_placement.stl",
-            "build/cad/socket_placement_shell.stl",
             "build/cad/cap_grid.stl",
             "build/cad/cap_hole_grid.stl",
             "build/cad/cap_thumb.stl",
@@ -42,7 +41,6 @@ class FullKeyboard(ManifoldObject):
             body,
             body_inner_sections,
             body_screw_placement,
-            socket_shell,
             cap_grid,
             cap_hole_grid,
             cap_thumb,
@@ -58,7 +56,6 @@ class FullKeyboard(ManifoldObject):
 
         body = body - body_inner_sections
         body = body + body_screw_placement
-        body = body + socket_shell
         body = body + cap_grid
         body = body - cap_hole_grid
         body = body + cap_thumb

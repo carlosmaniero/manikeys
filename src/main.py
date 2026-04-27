@@ -17,13 +17,15 @@ class Keyboard(OSCObject):
         paths = [
             "build/full_keyboard.stl",
             "build/cad/body_bottom.stl",
+            "build/cad/socket_placement_shell.stl",
             "build/cad/socket_adapter_grid.stl",
             "build/cad/cap_top_grid.stl",
         ]
-        body_part, bottom, sockets, caps = load_many_stl(paths)
+        body_part, bottom, socket_shell, sockets, caps = load_many_stl(paths)
 
         yield body_part.color("#c0b89b")
         yield bottom.color("#c0b89b")
+        yield socket_shell.color("#c0b89b")
         yield sockets.color("#c0b89b")
         yield caps.color("#bec0b1")
 
