@@ -17,7 +17,6 @@ class MagnetSnapCAD(ManifoldObject):
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
-        # Create a single magnet cylinder with error margin
         radius = (
             self.parameters.magnet.diameter
             + self.parameters.magnet.error_margin
@@ -30,7 +29,7 @@ class MagnetSnapCAD(ManifoldObject):
             height=height,
             circular_segments=64,
             center=True,
-        ).rotate([90, 0, 0])  # Rotate to face the junction
+        ).rotate([90, 0, 0])
 
         positions = self.model.get_all_positions()
 

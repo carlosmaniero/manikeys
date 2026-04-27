@@ -31,9 +31,13 @@ class MagnetSnapModel:
         )
 
     def _get_z_positions(self, x: float, y: float) -> tuple[float, float]:
-        top_z = self.model.sphere.z(
-            np.array([x]), np.array([y]), -self.thickness * 3
-        )[0]
+        top_z = (
+            self.model.z(
+                np.array([x]),
+                np.array([y]),
+            )[0]
+            - self.thickness * 3
+        )
         bottom_z = self.model.bottom_z + self.thickness * 2
         return top_z, bottom_z
 
@@ -76,11 +80,11 @@ class MagnetSnapModel:
             top_z, bottom_z = self._get_z_positions(x, divider_y)
             y_offset = self.full_magnet_height / 2
 
-            positions.append([x, divider_y + y_offset, top_z])  # Main side
-            positions.append([x, divider_y - y_offset, top_z])  # Side side
+            positions.append([x, divider_y + y_offset, top_z])
+            positions.append([x, divider_y - y_offset, top_z])
 
-            positions.append([x, divider_y + y_offset, bottom_z])  # Main side
-            positions.append([x, divider_y - y_offset, bottom_z])  # Side side
+            positions.append([x, divider_y + y_offset, bottom_z])
+            positions.append([x, divider_y - y_offset, bottom_z])
 
         return positions
 
