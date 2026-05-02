@@ -4,6 +4,7 @@ SIMPLIFY ?= 1
 
 build: build/main.stl build/main.3mf \
 	build/cad/full_keyboard_main.stl \
+	build/cad/full_keyboard_main_with_supports.stl \
 	build/cad/full_keyboard_hand.stl \
 	build/cad/full_keyboard_side.stl
 
@@ -64,6 +65,7 @@ build/cad/connectors/pogo_pin_mask.stl: src/cad/connectors/pogo_pin_mask.py
 build/cad/connectors/pogo_pin_adapter.stl: src/cad/connectors/pogo_pin_adapter.py build/cad/connectors/pogo_pin_mask.stl
 
 build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
+build/cad/full_keyboard_main_with_supports.stl: src/cad/full_keyboard_main_with_supports.py build/cad/full_keyboard_main.stl build/cad/body_inner.stl
 build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
 build/cad/full_keyboard_side.stl: src/cad/full_keyboard_side.py build/full_keyboard.stl
 
