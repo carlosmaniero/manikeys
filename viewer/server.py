@@ -3,11 +3,12 @@ from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 import os
 import asyncio
 import signal
+import json
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from contextlib import asynccontextmanager
-from typing import Set
+from typing import Set, Optional
 
 # Get the directory of the current file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -104,7 +105,9 @@ async def list_files():
 
 
 @app.get("/build-stl")
-async def build_stl(file_path: str, force: bool = False):
+async def build_stl(
+    file_path: str, force: bool = False, env: Optional[str] = None
+):
     if not file_path.startswith(SRC_DIR):
         raise HTTPException(status_code=400, detail="Invalid file path")
 
@@ -119,6 +122,44 @@ async def build_stl(file_path: str, force: bool = False):
     if force:
         cmd.append("-B")
     cmd.append(build_rel_path)
+
+    custom_env = os.environ.copy()
+    if env:
+        try:
+            parsed_env = json.loads(env)
+            if isinstance(parsed_env, dict):
+                for k, v in parsed_env.items():
+                    custom_env[str(k)] = str(v)
+        except json.JSONDecodeError:
+            pass
+
+    async def generate():
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            cwd=PROJECT_ROOT,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+            env=custom_env,
+        )
+
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                break
+            yield line.decode()
+
+        await process.wait()
+        if process.returncode != 0:
+            yield f"\nERROR: Build failed with return code {process.returncode}\n"
+        else:
+            yield "\nSUCCESS: Build completed.\n"
+
+    return StreamingResponse(generate(), media_type="text/plain")
+
+
+@app.get("/clean")
+async def clean_build():
+    cmd = ["make", "clean"]
 
     async def generate():
         process = await asyncio.create_subprocess_exec(
@@ -136,9 +177,9 @@ async def build_stl(file_path: str, force: bool = False):
 
         await process.wait()
         if process.returncode != 0:
-            yield f"\nERROR: Build failed with return code {process.returncode}\n"
+            yield f"\nERROR: Clean failed with return code {process.returncode}\n"
         else:
-            yield "\nSUCCESS: Build completed.\n"
+            yield "\nSUCCESS: Clean completed.\n"
 
     return StreamingResponse(generate(), media_type="text/plain")
 
