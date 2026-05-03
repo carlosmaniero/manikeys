@@ -27,6 +27,10 @@ class RJ11AdapterCAD(ManifoldObject):
         )
 
     @property
+    def width(self) -> float:
+        return self.model.rj11.width + self.parameters.body.thickness * 2
+
+    @property
     def socket(self) -> manifold3d.Manifold:
         height = self.model.rj11.socket_height
         diameter = self.model.rj11.adapter_socket_diameter
@@ -49,45 +53,28 @@ class RJ11AdapterCAD(ManifoldObject):
         )
 
     @property
-    def bottom_pocket(self) -> manifold3d.Manifold:
+    def main_block(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
-                self.model.bottom_pocket_width,
-                self.parameters.body.thickness,
-                self.model.bottom_pocket_height,
+                self.width,
+                self.model.rj11.length
+                + self.parameters.body.thickness
+                + self.model.rj11.error_margin * 2,
+                self.model.rj11.height,
             ],
             center=True,
         ).translate(
             [
                 0,
-                self.model.rj11.length / 2
-                + self.parameters.body.thickness / 2
-                + self.model.rj11.error_margin,
-                self.model.bottom_pocket_height / 2
-                - self.model.rj11.height
-                - self.height / 2,
+                -self.parameters.body.thickness / 2
+                + self.model.rj11.error_margin * 2,
+                0,
             ]
         )
 
     @property
-    def main_block(self) -> manifold3d.Manifold:
-        return manifold3d.Manifold.cube(
-            [
-                self.width,
-                self.model.rj11.length + self.parameters.body.thickness * 2,
-                self.model.rj11.height + self.body_model.highest,
-            ],
-            center=True,
-        ).translate([0, 0, self.body_model.highest / 2])
-
-    @property
     def body(self) -> manifold3d.Manifold:
-        return (
-            self.main_block
-            - self.bottom_notch_mask
-            - self.body_mask
-            - self.inner_mask
-        )
+        return self.main_block - self.body_mask
 
     @property
     def body_mask(self) -> manifold3d.Manifold:
@@ -98,72 +85,23 @@ class RJ11AdapterCAD(ManifoldObject):
                 self.model.rj11.height + self.body_model.highest,
             ],
             center=True,
-        ).translate([0, 0, self.body_model.highest / 2])
-
-        return mask + mask.translate(
-            [0, -self.parameters.body.thickness, self.model.rj11.height]
-        )
-
-    @property
-    def bottom_notch_mask(self) -> manifold3d.Manifold:
-        return manifold3d.Manifold.cube(
-            [
-                self.model.rj11.width + self.model.rj11.error_margin * 2,
-                self.model.rj11.bottom_notch_length,
-                self.model.rj11.bottom_notch_height,
-            ],
-            center=True,
         ).translate(
-            [
-                0,
-                self.model.notch_start_y,
-                (self.model.rj11.height - self.model.rj11.bottom_notch_height)
-                / -2,
-            ]
+            [0, self.parameters.body.thickness, self.body_model.highest / 2]
         )
 
-    @property
-    def inner_mask(self) -> manifold3d.Manifold:
-        padding_bottom = self.model.rj11.inner_paddings[2]
-        width = self.model.inner_width + self.model.rj11.error_margin * 2
-        height = (
-            self.model.inner_height
-            + self.model.rj11.error_margin * 4
-            + padding_bottom / 2
-        )
-
-        return manifold3d.Manifold.cube(
-            [
-                width,
-                self.model.rj11.inner_length,
-                height,
-            ],
-            center=True,
-        ).translate(
-            [
-                0,
-                self.model.rj11.inner_length / 2
-                + self.model.rj11.error_margin / 2,
-                -self.model.rj11.error_margin * 2,
-            ]
-        )
-
-    @property
-    def width(self) -> float:
-        return self.model.rj11.width + self.parameters.body.thickness * 2
+        return mask + mask.translate([0, -self.parameters.body.thickness, 0])
 
     @property
     def bottom_base(self) -> manifold3d.Manifold:
         length = (
             self.model.rj11.bottom_notch_start_y
             + self.model.rj11.bottom_notch_length
-            + self.parameters.body.thickness
         )
 
         return manifold3d.Manifold.cube(
             [
                 self.width,
-                length,
+                length + self.model.rj11.error_margin * 2,
                 self.height,
             ],
             center=True,
@@ -172,7 +110,7 @@ class RJ11AdapterCAD(ManifoldObject):
                 0,
                 self.model.rj11.length / 2
                 - length / 2
-                + self.parameters.body.thickness,
+                + self.model.rj11.error_margin * 2,
                 -self.model.rj11.height / 2 - self.height / 2,
             ]
         )
@@ -204,15 +142,14 @@ class RJ11AdapterCAD(ManifoldObject):
         max_x = self.width / 2
         max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
         return (
-            self.bottom_base
-            + self.body
-            + self.bottom_notch
-            - self.sockets
-            - self.bottom_pocket
+            self.body + self.bottom_base + self.bottom_notch - self.sockets
         ).translate(
             [
                 self.body_model.end_x() - self.parameters.body.fillet - max_x,
-                self.body_model.end_y() - max_y,
+                self.body_model.end_y()
+                - max_y
+                + self.parameters.body.thickness
+                - self.model.rj11.error_margin * 2,
                 self.body_model.bottom_z
                 + self.parameters.body.thickness
                 + self.model.rj11.height / 2

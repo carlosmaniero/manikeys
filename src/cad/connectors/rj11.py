@@ -6,6 +6,7 @@ from injector import inject, singleton
 from context import injector
 from models.parameters import Parameters
 from models.rj11 import RJ11Model
+from models.body import BodyModel
 from manifold_ext.object import ManifoldObject
 
 
@@ -15,6 +16,7 @@ from manifold_ext.object import ManifoldObject
 class RJ11CAD(ManifoldObject):
     parameters: Parameters
     model: RJ11Model
+    body_model: BodyModel
 
     @property
     def body(self) -> manifold3d.Manifold:
@@ -142,14 +144,44 @@ class RJ11CAD(ManifoldObject):
     def sockets(self) -> manifold3d.Manifold:
         return self.socket + self.socket.mirror([1, 0, 0])
 
-    def assemble(self) -> manifold3d.Manifold:
+    @property
+    def height(self) -> float:
         return (
-            self.body
-            - self.bottom_notch
-            - self.inner
-            - self.top_pocket
-            - self.bottom_pocket
-        ) + self.sockets
+            self.model.rj11.socket_height
+            - self.model.rj11.bottom_notch_height
+            - self.model.rj11.adapter_head_height
+        )
+
+    @property
+    def width(self) -> float:
+        return self.model.rj11.width + self.parameters.body.thickness * 2
+
+    def assemble(self) -> manifold3d.Manifold:
+        max_x = self.width / 2
+        max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
+
+        return (
+            (
+                self.body
+                - self.bottom_notch
+                - self.inner
+                - self.top_pocket
+                - self.bottom_pocket
+            )
+            + self.sockets
+        ).translate(
+            [
+                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_y()
+                - max_y
+                + self.parameters.body.thickness
+                - self.model.rj11.error_margin * 2,
+                self.body_model.bottom_z
+                + self.parameters.body.thickness
+                + self.model.rj11.height / 2
+                + self.height,
+            ]
+        )
 
 
 if __name__ == "__main__":
