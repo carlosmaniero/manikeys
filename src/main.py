@@ -20,14 +20,26 @@ class Keyboard(OSCObject):
             "build/cad/socket_placement_shell.stl",
             "build/cad/socket_adapter_grid.stl",
             "build/cad/cap_top_grid.stl",
+            "build/cad/connectors/rj11.stl",
+            "build/cad/connectors/rj11_adapter_trimmed.stl",
         ]
-        body_part, bottom, socket_shell, sockets, caps = load_many_stl(paths)
+        (
+            body_part,
+            bottom,
+            socket_shell,
+            sockets,
+            caps,
+            rj11,
+            rj11_adapter,
+        ) = load_many_stl(paths)
 
         yield body_part.color("#c0b89b")
         yield bottom.color("#c0b89b")
         yield socket_shell.color("#c0b89b")
         yield sockets.color("#c0b89b")
         yield caps.color("#bec0b1")
+        yield rj11.color("#5a5a5a")
+        yield rj11_adapter.color("#c0b89b")
 
 
 if __name__ == "__main__":

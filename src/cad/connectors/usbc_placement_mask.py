@@ -24,17 +24,19 @@ class USBCPlacementMaskCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        # Long side is X. Add extra padding for the placement mask.
-        return self.model.pcb_length + self.thickness * 4
+        # Long side is X. Extend to reach start_x and add extra clearance on the other side.
+        return (
+            self.model.pcb_length
+            + self.thickness * 6
+            + self.parameters.body.fillet
+        )
 
     @property
     def length(self) -> float:
-        return (
-            self.thickness
-            + self.model.mounting_hole_diameter
-            + self.thickness
-            + self.thickness * 4  # Increased from * 2 to * 4
+        adapter_base_length = (
+            self.thickness + self.model.mounting_hole_diameter + self.thickness
         )
+        return adapter_base_length + self.thickness
 
     @property
     def mask_height(self) -> float:
@@ -43,7 +45,7 @@ class USBCPlacementMaskCAD(ManifoldObject):
             self.thickness
             + self.model.pcb_height
             + self.model.usbc.height
-            + self.thickness * 2
+            + self.thickness
         )
 
     @property
@@ -57,6 +59,7 @@ class USBCPlacementMaskCAD(ManifoldObject):
         adapter_y_center = (
             self.model.pcb_width / 2 + self.thickness - adapter_base_length / 2
         )
+        # y_center relative to adapter center
         y_center = adapter_y_center - self.thickness
 
         z_center = (
@@ -82,7 +85,16 @@ class USBCPlacementMaskCAD(ManifoldObject):
         )
 
     def assemble(self) -> manifold3d.Manifold:
-        return self.main_block.translate(self.model.body_offset)
+        # Translate so that the left face is at start_x
+        # And the Y/Z match the adapter's body_offset
+        offset = self.model.body_offset
+        return self.main_block.translate(
+            [
+                self.body_model.start_x() + self.width / 2,
+                offset[1],
+                offset[2],
+            ]
+        )
 
 
 if __name__ == "__main__":

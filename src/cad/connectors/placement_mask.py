@@ -28,13 +28,25 @@ class PlacementMaskCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.body.thickness * 4
+        return (
+            self.model.rj11.width
+            + self.parameters.body.thickness * 4
+            + self.tab_width * 2
+            + self.parameters.body.fillet
+        )
+
+    @property
+    def tab_width(self) -> float:
+        return (
+            self.parameters.body.m2_screw_diameter
+            + self.parameters.body.thickness * 2
+        )
 
     @property
     def total_height(self) -> float:
         return (
             self.model.rj11.height
-            + self.parameters.body.thickness * 2
+            + self.parameters.body.thickness
             + self.height
         )
 
@@ -43,22 +55,18 @@ class PlacementMaskCAD(ManifoldObject):
         return manifold3d.Manifold.cube(
             [
                 self.width,
-                self.model.rj11.length + self.parameters.body.thickness * 4,
+                self.model.rj11.length + self.parameters.body.thickness,
                 self.total_height + self.body_model.highest,
             ],
             center=True,
         ).translate([0, 0, self.body_model.highest / 2])
 
     def assemble(self) -> manifold3d.Manifold:
-        rj11_mask_width = (
-            self.model.rj11.width + self.parameters.body.thickness * 2
-        )
-        max_x = rj11_mask_width / 2
         max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
 
         return self.main_block.translate(
             [
-                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_x() - self.width / 2,
                 self.body_model.end_y() - max_y,
                 self.body_model.bottom_z + self.total_height / 2,
             ]

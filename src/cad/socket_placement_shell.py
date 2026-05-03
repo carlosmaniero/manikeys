@@ -72,6 +72,9 @@ class SocketPlacementShell(ManifoldObject):
                 "build/cad/connectors/usbc_placement_mask.stl"
             )
             - load_stl_to_manifold("build/cad/body_screw_mask.stl")
+            - load_stl_to_manifold("build/cad/cap_hole_grid.stl")
+            - load_stl_to_manifold("build/cad/cap_thumb_hole.stl")
+            - load_stl_to_manifold("build/cad/cable_path.stl")
         )
 
 
