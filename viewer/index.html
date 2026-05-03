@@ -7,6 +7,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+        :root {
+            --ui-gap: 0.5rem;
+        }
+
         body {
             margin: 0;
             font-family: 'VT323', monospace;
@@ -57,7 +61,7 @@
         }
 
         section h2 {
-            margin: -1rem -1rem 1rem -1rem;
+            margin: -1rem -1rem var(--ui-gap) -1rem;
             padding: 0.3rem 0.5rem;
             font-size: 1.4rem;
             color: #000;
@@ -105,15 +109,39 @@
             border-radius: 0;
             cursor: pointer;
             width: 100%;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
             font-family: 'VT323', monospace;
             font-size: 1.2rem;
             text-shadow: 0 0 2px #0f0;
         }
 
-        label { display: block; margin-bottom: 0.5rem; font-size: 1.1rem; color: #0f0; }
+        label { display: block; margin-bottom: 0; font-size: 1.1rem; color: #0f0; }
 
         button:hover { background: #0f0; color: #000; }
+
+        button.primary {
+            border-color: #0f0;
+            color: #0f0;
+            text-shadow: 0 0 2px #0f0;
+        }
+        button.primary:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+        }
+
+        button.secondary {
+            border-color: #555;
+            color: #888;
+            text-shadow: none;
+        }
+        button.secondary:hover {
+            background: #888;
+            color: #000;
+            border-color: #888;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
         button.active { background: #0ff; color: #000; font-weight: bold; border-color: #0ff; box-shadow: 0 0 10px #0ff; text-shadow: none; }
 
         #loading {
@@ -147,7 +175,7 @@
             text-shadow: none;
         }
 
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: var(--ui-gap); font-size: 1.2rem; }
         .info-label { color: #0f0; }
         .info-value { color: #0ff; font-weight: bold; }
 
@@ -165,6 +193,50 @@
             white-space: nowrap;
             box-shadow: 0 0 5px #0ff;
         }
+
+        /* Layout Helpers (Semantic) */
+        .controls-group { display: flex; gap: var(--ui-gap); }
+        .controls-stack { display: flex; flex-direction: column; gap: var(--ui-gap); }
+
+        /* Spacing overrides for non-stack contexts */
+        .controls-group, .controls-stack, #measureInfo { margin-top: var(--ui-gap); }
+        #measureInfo { border-top: 1px solid #333; padding-top: var(--ui-gap); }
+        #buildOutput { margin: 0; }
+
+        #swapBtn { width: auto; padding: 0 10px; }
+
+        .checkbox-label { cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1; }
+        .checkbox-label input { width: auto; margin: 0; padding: 0; }
+
+        .info-panel { display: none; padding-bottom: var(--ui-gap); border-bottom: 1px solid #333; }
+
+        /* Semantic Colors */
+        .text-primary { color: #0f0; }
+        .text-secondary { color: #888; }
+        .text-accent { color: #0ff; }
+        .text-highlight { color: #64b5f6; }
+        .text-dim { color: #777; }
+
+        .bg-primary { background: #0f0; }
+
+        .status-mode { font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: bold; }
+        .measure-value { font-size: 1.2rem; }
+        .help-text { font-size: 0.75rem; line-height: 1.4; }
+
+        #details-shortcuts .shortcuts-list { font-size: 0.9rem; line-height: 1.4; }
+
+        #viewer-legend {
+            position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5);
+            padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none;
+        }
+        #viewer-legend .legend-title { margin-bottom: 2px; }
+        #viewer-legend .legend-axes { display: flex; gap: 10px; }
+
+        .axis-x { color: #ff3333; }
+        .axis-y { color: #33ff33; }
+        .axis-z { color: #3333ff; }
+
+        .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ui-gap); }
     </style>
 </head>
 <body>
@@ -174,15 +246,18 @@
         <section>
             <details id="details-model-selection" open>
                 <summary><h2>Model Selection</h2></summary>
-                <form id="fileForm">
+                <form id="fileForm" class="controls-stack">
                     <label for="fileSelect">Source File</label>
                     <select id="fileSelect">
                         <option value="">Loading files...</option>
                     </select>
-                    <label for="refSelect" style="margin-top: 0.5rem;">Reference File (Transparent)</label>
-                    <select id="refSelect">
-                        <option value="">None</option>
-                    </select>
+                    <label for="refSelect">Reference File (Transparent)</label>
+                    <div class="controls-group">
+                        <select id="refSelect">
+                            <option value="">None</option>
+                        </select>
+                        <button type="button" id="swapBtn" class="secondary" title="Swap Source and Reference">⇅</button>
+                    </div>
                 </form>
             </details>
         </section>
@@ -190,42 +265,49 @@
         <section>
             <details id="details-build-control" open>
                 <summary><h2>Build Control</h2></summary>
-                <button type="button" id="buildBtn">Build STL</button>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                        <input type="checkbox" id="forceBuild" style="width: auto; margin: 0;"> Force Rebuild
-                    </label>
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                        <input type="checkbox" id="watchBuild" style="width: auto; margin: 0;"> Watch for Changes
-                    </label>
+                <div class="controls-stack">
+                    <div class="controls-group">
+                        <button type="button" id="buildBtn" class="primary">Build Main</button>
+                        <button type="button" id="buildRefBtn" class="secondary">Build Ref</button>
+                    </div>
+                    <div class="controls-stack">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="forceBuild"> Force Rebuild
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="watchBuild"> Watch for Changes
+                        </label>
+                    </div>
+                    <label>Build Log</label>
+                    <pre id="buildOutput"></pre>
                 </div>
-                <label style="margin-top: 1rem;">Build Log</label>
-                <pre id="buildOutput"></pre>
             </details>
         </section>
 
         <section>
             <details id="details-view" open>
                 <summary><h2>View</h2></summary>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                        <input type="checkbox" id="gridAtBottom" style="width: auto; margin: 0;"> Grid at Bottom
-                    </label>
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0;">
-                        <input type="checkbox" id="invertTransparency" style="width: auto; margin: 0;"> Invert Transparency
-                    </label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button type="button" id="perspBtn">Persp</button>
-                        <button type="button" id="orthoBtn">Ortho</button>
+                <div class="controls-stack">
+                    <div class="controls-stack">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="gridAtBottom"> Grid at Bottom
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="invertTransparency"> Invert Transparency
+                        </label>
                     </div>
-                    <button type="button" id="fitCameraBtn">Fit Camera</button>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                        <button type="button" onclick="window.setView('top')">Top</button>
-                        <button type="button" onclick="window.setView('bottom')">Bottom</button>
-                        <button type="button" onclick="window.setView('front')">Front</button>
-                        <button type="button" onclick="window.setView('back')">Back</button>
-                        <button type="button" onclick="window.setView('left')">Left</button>
-                        <button type="button" onclick="window.setView('right')">Right</button>
+                    <div class="controls-group">
+                        <button type="button" id="perspBtn" class="secondary">Persp</button>
+                        <button type="button" id="orthoBtn" class="secondary">Ortho</button>
+                    </div>
+                    <button type="button" id="fitCameraBtn" class="secondary">Fit Camera</button>
+                    <div class="view-grid">
+                        <button type="button" class="secondary" onclick="window.setView('top')">Top</button>
+                        <button type="button" class="secondary" onclick="window.setView('bottom')">Bottom</button>
+                        <button type="button" class="secondary" onclick="window.setView('front')">Front</button>
+                        <button type="button" class="secondary" onclick="window.setView('back')">Back</button>
+                        <button type="button" class="secondary" onclick="window.setView('left')">Left</button>
+                        <button type="button" class="secondary" onclick="window.setView('right')">Right</button>
                     </div>
                 </div>
             </details>
@@ -234,23 +316,25 @@
         <section>
             <details id="details-measurement-tool" open>
                 <summary><h2>Measurement Tool</h2></summary>
-                <div id="modelInfo" style="display: none; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #333;">
-                    <div class="info-row">
-                        <span class="info-label">Dimensions</span>
-                        <span id="dims" class="info-value">0 x 0 x 0 mm</span>
+                <div class="controls-stack">
+                    <div id="modelInfo" class="info-panel">
+                        <div class="info-row">
+                            <span class="info-label">Dimensions</span>
+                            <span id="dims" class="info-value">0 x 0 x 0 mm</span>
+                        </div>
                     </div>
-                </div>
-                <button id="measureBtn">Activate Measure</button>
-                <div id="measureInfo" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #333;">
-                    <div style="color: #64b5f6; font-size: 0.8rem; margin-bottom: 0.8rem; font-weight: bold;">MODE: SNAPPING ACTIVE</div>
-                    <div class="info-row">
-                        <span class="info-label">Current Distance</span>
-                        <span id="distVal" class="info-value" style="font-size: 1.2rem; color: #64b5f6;">- mm</span>
-                    </div>
-                    <div style="font-size: 0.75rem; color: #777; line-height: 1.4;">
-                        • Green dots: Vertices<br>
-                        • Blue lines: Edges<br>
-                        • Click 2 points to measure
+                    <button id="measureBtn" class="primary">Activate Measure</button>
+                    <div id="measureInfo" class="info-panel">
+                        <div class="status-mode text-highlight">MODE: SNAPPING ACTIVE</div>
+                        <div class="info-row">
+                            <span class="info-label">Current Distance</span>
+                            <span id="distVal" class="info-value measure-value text-highlight">- mm</span>
+                        </div>
+                        <div class="help-text text-dim">
+                            • Green dots: Vertices<br>
+                            • Blue lines: Edges<br>
+                            • Click 2 points to measure
+                        </div>
                     </div>
                 </div>
             </details>
@@ -259,7 +343,7 @@
         <section>
             <details id="details-shortcuts">
                 <summary><h2>Shortcuts</h2></summary>
-                <div style="font-size: 0.9rem; line-height: 1.4; color: #0f0; opacity: 0.8;">
+                <div class="shortcuts-list text-primary">
                     <div class="info-row"><span class="info-label">Measure</span><span class="info-value">M</span></div>
                     <div class="info-row"><span class="info-label">Fit View</span><span class="info-value">F</span></div>
                     <div class="info-row"><span class="info-label">Invert Transp</span><span class="info-value">I</span></div>
@@ -274,12 +358,12 @@
     <div id="viewer">
         <div id="loading">Loading STL...</div>
         <div id="floatingLabel">0.00 mm</div>
-        <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; pointer-events: none;">
-            <div style="margin-bottom: 2px;">Grid: 10mm / unit</div>
-            <div style="display: flex; gap: 10px;">
-                <span><span style="color: #ff3333;">■</span> X (Red)</span>
-                <span><span style="color: #33ff33;">■</span> Y (Green)</span>
-                <span><span style="color: #3333ff;">■</span> Z (Blue)</span>
+        <div id="viewer-legend">
+            <div class="legend-title">Grid: 10mm / unit</div>
+            <div class="legend-axes">
+                <span><span class="axis-x">■</span> X (Red)</span>
+                <span><span class="axis-y">■</span> Y (Green)</span>
+                <span><span class="axis-z">■</span> Z (Blue)</span>
             </div>
         </div>
     </div>
@@ -300,6 +384,7 @@
 
         const fileSelect = document.getElementById('fileSelect');
         const refSelect = document.getElementById('refSelect');
+        const swapBtn = document.getElementById('swapBtn');
         const loading = document.getElementById('loading');
         const container = document.getElementById('viewer');
         const modelInfo = document.getElementById('modelInfo');
@@ -308,6 +393,7 @@
         const measureInfo = document.getElementById('measureInfo');
         const distValDisplay = document.getElementById('distVal');
         const buildBtn = document.getElementById('buildBtn');
+        const buildRefBtn = document.getElementById('buildRefBtn');
         const forceBuild = document.getElementById('forceBuild');
         const watchBuild = document.getElementById('watchBuild');
         const gridAtBottom = document.getElementById('gridAtBottom');
@@ -364,7 +450,33 @@
             container.addEventListener('mousedown', onMouseDown);
             container.addEventListener('mousemove', onMouseMove);
             measureBtn.addEventListener('click', toggleMeasure);
-            buildBtn.addEventListener('click', onBuild);
+            swapBtn.addEventListener('click', () => {
+                const currentFile = fileSelect.value;
+                const currentRef = refSelect.value;
+
+                if (currentFile === currentRef) return;
+
+                fileSelect.value = currentRef;
+                refSelect.value = currentFile;
+
+                localStorage.setItem('selectedFile', fileSelect.value);
+                localStorage.setItem('selectedRefFile', refSelect.value);
+
+                if (fileSelect.value) {
+                    loadSTL(fileSelect.value);
+                } else {
+                    if (mesh) scene.remove(mesh);
+                    if (edgesMesh) scene.remove(edgesMesh);
+                    if (verticesMesh) scene.remove(verticesMesh);
+                    mesh = null;
+                    edgesMesh = null;
+                    verticesMesh = null;
+                    modelInfo.style.display = 'none';
+                }
+                loadRefSTL(refSelect.value);
+            });
+            buildBtn.addEventListener('click', () => onBuild(null, false));
+            buildRefBtn.addEventListener('click', () => onBuild(null, true));
             watchBuild.addEventListener('change', () => {
                 localStorage.setItem('watchBuild', watchBuild.checked);
                 toggleWatch();
@@ -438,7 +550,7 @@
                 switch(event.key.toLowerCase()) {
                     case 'm': toggleMeasure(); break;
                     case 'f': fitCamera(); break;
-                    case 'i': 
+                    case 'i':
                         invertTransparency.checked = !invertTransparency.checked;
                         localStorage.setItem('invertTransparency', invertTransparency.checked);
                         updateMaterials();
@@ -658,11 +770,12 @@
             }
         }
 
-        async function onBuild() {
-            const selectedFile = fileSelect.value;
+        async function onBuild(filePath = null, isRef = false) {
+            const selectedFile = filePath || (isRef ? refSelect.value : fileSelect.value);
             if (!selectedFile) return;
 
-            buildBtn.disabled = true;
+            const btn = isRef ? buildRefBtn : buildBtn;
+            btn.disabled = true;
             buildOutput.style.display = 'block';
             buildOutput.textContent = '';
             buildOutput.style.color = '#0f0';
@@ -704,13 +817,14 @@
                 }
 
                 if (buildSuccessful && !upToDate) {
-                    loadSTL(selectedFile);
+                    if (isRef) loadRefSTL(selectedFile);
+                    else loadSTL(selectedFile);
                 }
             } catch (error) {
                 buildOutput.textContent += `\nError: ${error.message}`;
                 buildOutput.style.color = '#f55';
             } finally {
-                buildBtn.disabled = false;
+                btn.disabled = false;
             }
         }
 
