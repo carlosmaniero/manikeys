@@ -156,8 +156,15 @@ class RJ11CAD(ManifoldObject):
     def width(self) -> float:
         return self.model.rj11.width + self.parameters.body.thickness * 2
 
+    @property
+    def tab_width(self) -> float:
+        return (
+            self.parameters.body.m2_screw_diameter
+            + self.parameters.body.thickness * 2
+        )
+
     def assemble(self) -> manifold3d.Manifold:
-        max_x = self.width / 2
+        max_x = self.width / 2 + self.tab_width
         max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
 
         return (

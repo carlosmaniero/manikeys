@@ -135,14 +135,66 @@ class RJ11AdapterCAD(ManifoldObject):
         )
 
     @property
+    def tab_width(self) -> float:
+        return (
+            self.parameters.body.m2_screw_diameter
+            + self.parameters.body.thickness * 2
+        )
+
+    @property
+    def tab_length(self) -> float:
+        return self.parameters.body.thickness
+
+    @property
+    def tabs(self) -> manifold3d.Manifold:
+        tab = manifold3d.Manifold.cube(
+            [self.tab_width, self.tab_length, self.model.rj11.height],
+            center=True,
+        )
+
+        x_pos = self.width / 2 + self.tab_width / 2
+        y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
+        y_pos = y_front - self.parameters.body.thickness * 3
+
+        return tab.translate([x_pos, y_pos, 0]) + tab.translate(
+            [-x_pos, y_pos, 0]
+        )
+
+    @property
+    def screw_holes(self) -> manifold3d.Manifold:
+        radius = self.parameters.body.m2_screw_diameter / 2
+        height = self.tab_length + 2.0
+
+        hole = manifold3d.Manifold.cylinder(
+            radius_low=radius,
+            radius_high=radius,
+            height=height,
+            center=True,
+            circular_segments=60,
+        ).rotate([90, 0, 0])
+
+        x_pos = self.width / 2 + self.tab_width / 2
+        y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
+        y_pos = y_front - self.parameters.body.thickness * 3
+
+        return hole.translate([x_pos, y_pos, 0]) + hole.translate(
+            [-x_pos, y_pos, 0]
+        )
+
+    @property
     def sockets(self) -> manifold3d.Manifold:
         return self.socket + self.socket.mirror([1, 0, 0])
 
     def assemble(self) -> manifold3d.Manifold:
-        max_x = self.width / 2
+        max_x = self.width / 2 + self.tab_width
         max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
         return (
-            self.body + self.bottom_base + self.bottom_notch - self.sockets
+            self.body
+            + self.bottom_base
+            + self.bottom_notch
+            + self.tabs
+            - self.sockets
+            - self.screw_holes
         ).translate(
             [
                 self.body_model.end_x() - self.parameters.body.fillet - max_x,

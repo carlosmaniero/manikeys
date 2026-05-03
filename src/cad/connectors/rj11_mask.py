@@ -34,15 +34,24 @@ class RJ11MaskCAD(ManifoldObject):
     def main_block(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
-                self.width,
+                self.width + self.model.rj11.error_margin * 2,
                 self.model.rj11.length + self.parameters.body.thickness * 2,
-                self.model.rj11.height,
+                self.model.rj11.height
+                + self.height
+                + self.model.rj11.error_margin * 2,
             ],
             center=True,
+        ).translate([0, 0, -self.height / 2])
+
+    @property
+    def tab_width(self) -> float:
+        return (
+            self.parameters.body.m2_screw_diameter
+            + self.parameters.body.thickness * 2
         )
 
     def assemble(self) -> manifold3d.Manifold:
-        max_x = self.width / 2
+        max_x = self.width / 2 + self.tab_width
         max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
         return self.main_block.translate(
             [
