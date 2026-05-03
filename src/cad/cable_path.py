@@ -79,7 +79,7 @@ class CablePath(ManifoldObject):
         ).translate(
             [
                 self.model.end_x() - self.radius - thickness * 3,
-                self.model.sphere.start_y(),
+                self.model.divider_y,
                 -(height - self.radius - thickness * 2),
             ]
         )
