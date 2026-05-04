@@ -92,14 +92,16 @@ async def list_files():
 
     files = []
 
+    # Files directly in src/
     for p in src_path.glob("*.py"):
         if p.is_file():
-            files.append(str(p.absolute()))
+            files.append(str(p.relative_to(src_path)))
 
+    # Files in src/cad/ recursively
     if cad_path.exists():
         for p in cad_path.rglob("*.py"):
             if p.is_file() and "__pycache__" not in str(p):
-                files.append(str(p.absolute()))
+                files.append(str(p.relative_to(src_path)))
 
     return sorted(list(set(files)))
 
@@ -108,10 +110,16 @@ async def list_files():
 async def build_stl(
     file_path: str, force: bool = False, env: Optional[str] = None
 ):
+    # Resolve relative paths relative to SRC_DIR
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(SRC_DIR, file_path)
+    file_path = os.path.abspath(file_path)
+
     if not file_path.startswith(SRC_DIR):
         raise HTTPException(status_code=400, detail="Invalid file path")
 
     rel_path = os.path.relpath(file_path, SRC_DIR)
+
     if rel_path.startswith(".."):
         raise HTTPException(status_code=400, detail="Invalid file path")
 
@@ -208,6 +216,11 @@ async def watch_changes(request: Request):
 
 @app.get("/get-stl")
 async def get_stl(file_path: str):
+    # Resolve relative paths relative to SRC_DIR
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(SRC_DIR, file_path)
+    file_path = os.path.abspath(file_path)
+
     if not file_path.startswith(SRC_DIR):
         raise HTTPException(status_code=400, detail="Invalid file path")
 

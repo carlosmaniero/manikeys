@@ -113,6 +113,7 @@
             font-family: 'VT323', monospace;
             font-size: 1.2rem;
             text-shadow: 0 0 2px #0f0;
+            box-sizing: border-box;
         }
 
         label { display: block; margin-bottom: 0; font-size: 1.1rem; color: #0f0; }
@@ -265,16 +266,14 @@
                 <summary><h2>Model Selection</h2></summary>
                 <form id="fileForm" class="controls-stack">
                     <label for="fileSelect">Source File</label>
-                    <select id="fileSelect">
-                        <option value="">Loading files...</option>
-                    </select>
+                    <input type="text" id="fileSelect" list="availableFileList" placeholder="Search or select source file..." onfocus="this.select()">
+
                     <label for="refSelect">Reference File (Transparent)</label>
                     <div class="controls-group">
-                        <select id="refSelect">
-                            <option value="">None</option>
-                        </select>
+                        <input type="text" id="refSelect" list="availableFileList" placeholder="Search or select ref file..." onfocus="this.select()">
                         <button type="button" id="swapBtn" class="secondary" title="Swap Source and Reference">⇅</button>
                     </div>
+                    <datalist id="availableFileList"></datalist>
                 </form>
             </details>
         </section>
@@ -1222,34 +1221,20 @@
 
         init();
 
+        const availableFileList = document.getElementById('availableFileList');
+
+        let availableFiles = [];
+
         fetch('/list-files')
             .then(response => response.json())
             .then(files => {
-                fileSelect.innerHTML = '<option value="">-- Select a file --</option>';
-                refSelect.innerHTML = '<option value="">None</option>';
-                const groups = {};
-                files.forEach(file => {
-                    const parts = file.split('/');
-                    const filename = parts.pop();
-                    const directory = parts.join('/');
-                    if (!groups[directory]) groups[directory] = [];
-                    groups[directory].push({ name: filename, path: file });
-                });
+                availableFiles = files;
+                availableFileList.innerHTML = '';
 
-                Object.keys(groups).sort().forEach(dir => {
-                    const optgroup = document.createElement('optgroup');
-                    optgroup.label = dir;
-                    const refOptgroup = optgroup.cloneNode();
-
-                    groups[dir].sort((a, b) => a.name.localeCompare(b.name)).forEach(fileInfo => {
-                        const option = document.createElement('option');
-                        option.value = fileInfo.path;
-                        option.textContent = fileInfo.name;
-                        optgroup.appendChild(option);
-                        refOptgroup.appendChild(option.cloneNode(true));
-                    });
-                    fileSelect.appendChild(optgroup);
-                    refSelect.appendChild(refOptgroup);
+                files.sort().forEach(file => {
+                    const option = document.createElement('option');
+                    option.value = file;
+                    availableFileList.appendChild(option);
                 });
 
                 // Restore selected file
@@ -1268,16 +1253,47 @@
 
         fileSelect.addEventListener('change', (event) => {
             const selectedFile = event.target.value;
-            if (selectedFile) {
+            if (selectedFile === "") {
+                localStorage.setItem('selectedFile', "");
+                if (mesh) scene.remove(mesh);
+                if (edgesMesh) scene.remove(edgesMesh);
+                if (verticesMesh) scene.remove(verticesMesh);
+                mesh = null;
+                edgesMesh = null;
+                verticesMesh = null;
+                modelInfo.style.display = 'none';
+            } else if (availableFiles.includes(selectedFile)) {
                 localStorage.setItem('selectedFile', selectedFile);
                 loadSTL(selectedFile);
             }
         });
 
+        fileSelect.addEventListener('blur', (event) => {
+            const val = event.target.value;
+            if (val !== "" && !availableFiles.includes(val)) {
+                event.target.value = localStorage.getItem('selectedFile') || "";
+            }
+        });
+
         refSelect.addEventListener('change', (event) => {
             const selectedRefFile = event.target.value;
-            localStorage.setItem('selectedRefFile', selectedRefFile);
-            loadRefSTL(selectedRefFile);
+            if (selectedRefFile === "") {
+                localStorage.setItem('selectedRefFile', "");
+                if (refMesh) scene.remove(refMesh);
+                if (refEdgesMesh) scene.remove(refEdgesMesh);
+                refMesh = null;
+                refEdgesMesh = null;
+            } else if (availableFiles.includes(selectedRefFile)) {
+                localStorage.setItem('selectedRefFile', selectedRefFile);
+                loadRefSTL(selectedRefFile);
+            }
+        });
+
+        refSelect.addEventListener('blur', (event) => {
+            const val = event.target.value;
+            if (val !== "" && !availableFiles.includes(val)) {
+                event.target.value = localStorage.getItem('selectedRefFile') || "";
+            }
         });
     </script>
 </body>
