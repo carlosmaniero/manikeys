@@ -854,6 +854,9 @@
             buildOutput.textContent = '';
             buildOutput.style.color = '#0f0';
 
+            loading.textContent = isRef ? 'Building Reference...' : 'Building STL...';
+            loading.style.display = 'block';
+
             try {
                 const force = forceBuild.checked;
                 const activeEnv = envVars.filter(ev => ev.enabled && ev.name.trim()).reduce((acc, ev) => {
@@ -903,12 +906,16 @@
                 if (buildSuccessful && !upToDate) {
                     if (isRef) loadRefSTL(selectedFile);
                     else loadSTL(selectedFile);
+                } else {
+                    loading.style.display = 'none';
                 }
             } catch (error) {
                 buildOutput.textContent += `\nError: ${error.message}`;
                 buildOutput.style.color = '#f55';
+                loading.style.display = 'none';
             } finally {
                 btn.disabled = false;
+                loading.textContent = 'Loading STL...';
             }
         }
 
@@ -1021,6 +1028,9 @@
             if (refEdgesMesh) scene.remove(refEdgesMesh);
             if (!path) return;
 
+            loading.textContent = 'Loading Reference...';
+            loading.style.display = 'block';
+
             const loader = new STLLoader();
             const timestamp = new Date().getTime();
             loader.load(`/get-stl?file_path=${encodeURIComponent(path)}&t=${timestamp}`, (geometry) => {
@@ -1040,8 +1050,13 @@
 
                 updateMaterials();
                 updateMeshPosition();
+                loading.style.display = 'none';
             }, undefined, (error) => {
                 console.error('Error loading reference STL:', error);
+                loading.style.display = 'none';
+                if (confirm(`Reference STL file "${path}" failed to load. Would you like to try building it?`)) {
+                    onBuild(path, true);
+                }
             });
         }
 
@@ -1161,6 +1176,7 @@
             if (verticesMesh) scene.remove(verticesMesh);
             if (hoverPoint) scene.remove(hoverPoint);
             clearMeasure();
+            loading.textContent = 'Loading STL...';
             loading.style.display = 'block';
             modelInfo.style.display = 'none';
 
@@ -1216,6 +1232,11 @@
             }, undefined, (error) => {
                 console.error(error);
                 loading.textContent = 'Error loading STL';
+                if (confirm(`STL file "${path}" failed to load. Would you like to try building it?`)) {
+                    onBuild(path, false);
+                } else {
+                    loading.style.display = 'none';
+                }
             });
         }
 
