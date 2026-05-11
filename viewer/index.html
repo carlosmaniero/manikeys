@@ -437,6 +437,7 @@
         let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh, refMesh, refEdgesMesh;
         let raycaster, mouse;
         let edgesMesh, hoverLine, verticesMesh, hoverPoint, previewLine;
+        let grid, axesHelper;
         let highlightedEdge = null;
         let highlightedVertex = null;
         let measurePoints = [];
@@ -572,13 +573,13 @@
             dirLight3.position.set(0, 1, -1);
             scene.add(dirLight3);
 
-            const grid = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
+            grid = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
             grid.rotation.x = Math.PI / 2;
             grid.material.transparent = true;
             grid.material.opacity = 0.5;
             scene.add(grid);
 
-            const axesHelper = new THREE.AxesHelper(100);
+            axesHelper = new THREE.AxesHelper(100);
             scene.add(axesHelper);
 
             previewLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 }));
@@ -1010,17 +1011,18 @@
             if (!mesh || !mesh.geometry) return;
             mesh.geometry.computeBoundingBox();
             const box = mesh.geometry.boundingBox;
-            const center = new THREE.Vector3();
-            box.getCenter(center);
 
-            const zOffset = gridAtBottom.checked ? -box.min.z : -center.z;
-            const newPos = new THREE.Vector3(-center.x, -center.y, zOffset);
+            const origin = new THREE.Vector3(0, 0, 0);
 
-            mesh.position.copy(newPos);
-            if (edgesMesh) edgesMesh.position.copy(newPos);
-            if (verticesMesh) verticesMesh.position.copy(newPos);
-            if (refMesh) refMesh.position.copy(newPos);
-            if (refEdgesMesh) refEdgesMesh.position.copy(newPos);
+            mesh.position.copy(origin);
+            if (edgesMesh) edgesMesh.position.copy(origin);
+            if (verticesMesh) verticesMesh.position.copy(origin);
+            if (refMesh) refMesh.position.copy(origin);
+            if (refEdgesMesh) refEdgesMesh.position.copy(origin);
+
+            if (grid) {
+                grid.position.z = gridAtBottom.checked ? box.min.z : 0;
+            }
         }
 
         function loadRefSTL(path) {
