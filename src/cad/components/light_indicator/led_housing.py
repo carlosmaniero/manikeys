@@ -13,44 +13,35 @@ from models.parameters import Parameters
 @singleton
 @inject
 @dataclass
-class MainBodyCad(ManifoldObject):
+class LedHousingCad(ManifoldObject):
     model: Led
     params: Parameters
     indicator_model: MainBodyModel
 
     def create_led_mask(self) -> manifold3d.Manifold:
-        pcb_mask_radius = (
-            self.model.pcb_radius + self.indicator_model.led_pcb_error / 2
-        )
+        pcb_mask_radius = self.indicator_model.led_pcb_radius
         pcb_height = self.model.pcb_height
 
-        pcb_mask_height = 20
-        pcb_mask = (
-            manifold3d.Manifold.cylinder(
-                height=pcb_mask_height,
-                radius_low=pcb_mask_radius,
-                radius_high=pcb_mask_radius,
-                center=True,
-                circular_segments=8,
-            )
-            .rotate([0, 0, 45 / 2])
-            .translate([0, 0, pcb_height - pcb_mask_height / 2])
-        )
+        pcb_mask = manifold3d.Manifold.cylinder(
+            height=pcb_height,
+            radius_low=pcb_mask_radius,
+            radius_high=pcb_mask_radius,
+            center=True,
+            circular_segments=8,
+        ).rotate([0, 0, 45 / 2])
 
         led_mask_size = self.model.led_size + self.indicator_model.led_error
-        led_mask_height = 10
 
         led_mask = manifold3d.Manifold.cube(
-            [led_mask_size, led_mask_size, led_mask_height],
+            [led_mask_size, led_mask_size, self.model.led_height],
             center=True,
-        ).translate([0, 0, pcb_height + led_mask_height / 2 - 0.1])
+        ).translate([0, 0, self.model.full_height / 2])
 
         return pcb_mask + led_mask
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        fillet = self.params.body.fillet
-        r = min(fillet, self.indicator_model.body_depth / 2 - 0.1)
+        r = self.indicator_model.body_depth / 2
 
         corner_cyl = manifold3d.Manifold.cylinder(
             height=self.indicator_model.body_thickness,
@@ -104,6 +95,26 @@ class MainBodyCad(ManifoldObject):
         return mask
 
     @property
+    def difuser_hole(self) -> manifold3d.Manifold:
+        filled = self.model.full_height + 1
+
+        mask_cylinder = manifold3d.Manifold.cylinder(
+            self.indicator_model.body_thickness - filled,
+            self.model.pcb_radius,
+            center=True,
+            circular_segments=32,
+        ).translate([0, 0, 1])
+
+        return manifold3d.Manifold.hull(
+            mask_cylinder.translate(
+                [self.indicator_model.led_x_positions[0], 0, 0]
+            )
+            + mask_cylinder.translate(
+                [self.indicator_model.led_x_positions[-1], 0, 0]
+            )
+        )
+
+    @property
     def screw_holes(self) -> manifold3d.Manifold:
         screw_hole = manifold3d.Manifold.cylinder(
             height=self.indicator_model.body_thickness + 0.2,
@@ -114,43 +125,48 @@ class MainBodyCad(ManifoldObject):
         )
 
         mask = manifold3d.Manifold()
-        for x in (
-            self.indicator_model.left_screw_xs
-            + self.indicator_model.right_screw_xs
-        ):
+
+        for x in [
+            self.indicator_model.left_screw_x,
+            self.indicator_model.right_screw_x,
+        ]:
             mask += screw_hole.translate([x, 0, 0])
         return mask
 
     @property
     def lowerings(self) -> manifold3d.Manifold:
+        hole_height = 2.0
         screw_head_radius = self.params.body.m2_screw_head_diameter / 2 + 0.1
-        screw_head_height = self.params.body.m2_screw_head_height + 0.1
-        z_top = self.indicator_model.body_thickness / 2
+        z_top = -hole_height / 2
 
-        # Standard lowering for pan head screws (internal only)
         screw_head_mask = manifold3d.Manifold.cylinder(
-            height=screw_head_height,
+            height=self.indicator_model.body_thickness - hole_height,
             radius_low=screw_head_radius,
             radius_high=screw_head_radius,
             center=True,
             circular_segments=32,
-        ).translate([0, 0, z_top - screw_head_height / 2 + 0.1])
+        ).translate([0, 0, z_top])
 
         mask = manifold3d.Manifold()
-        # Internal screws (closest to center)
         mask += screw_head_mask.translate(
-            [self.indicator_model.left_screw_xs[0], 0, 0]
+            [self.indicator_model.left_screw_x, 0, 0]
         )
         mask += screw_head_mask.translate(
-            [self.indicator_model.right_screw_xs[0], 0, 0]
+            [self.indicator_model.right_screw_x, 0, 0]
         )
 
         return mask
 
     def assemble(self) -> manifold3d.Manifold:
-        return self.body_hull - self.masks - self.screw_holes - self.lowerings
+        return (
+            self.body_hull
+            - self.masks
+            - self.screw_holes
+            - self.lowerings
+            - self.difuser_hole
+        )
 
 
 if __name__ == "__main__":
-    main_body = injector.get(MainBodyCad)
+    main_body = injector.get(LedHousingCad)
     main_body.program(sys.argv)

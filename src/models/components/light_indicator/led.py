@@ -13,7 +13,7 @@ class Led:
 
     @property
     def pcb_height(self) -> float:
-        return 1
+        return 2
 
     @property
     def led_size(self) -> float:
@@ -22,3 +22,7 @@ class Led:
     @property
     def led_height(self) -> float:
         return 1
+
+    @property
+    def full_height(self) -> float:
+        return self.pcb_height + self.led_height

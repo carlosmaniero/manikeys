@@ -68,6 +68,9 @@ class NumPyCapsBottomSphere:
     def divider_x_main(self, offset: float) -> float:
         return self.highest_x + self.parameters.caps.size / 2 - offset
 
+    def start_fixed_x(self, offset: float) -> float:
+        return self.divider_x_main(offset) + self.parameters.caps.gap
+
     def z(self, x: np.ndarray, y: np.ndarray, offset: float) -> np.ndarray:
         radius = self.parameters.body.radius - offset
         distance = np.sqrt(x**2 + y**2)
@@ -75,7 +78,7 @@ class NumPyCapsBottomSphere:
 
         interpolation = Interpolator(
             start=start_fixed,
-            end=start_fixed + self.parameters.caps.gap,
+            end=self.start_fixed_x(offset),
             base=radius - np.sqrt(radius**2 - distance**2) + offset,
             algorithm=lerp.reverse_cubic,
         )
@@ -115,6 +118,10 @@ class BodyModel:
     @property
     def divider_x_main(self) -> float:
         return self.sphere.divider_x_main(self.offset)
+
+    @property
+    def start_fixed_x(self) -> float:
+        return self.sphere.start_fixed_x(self.offset)
 
     @property
     def hand_support_start_x(self) -> float:

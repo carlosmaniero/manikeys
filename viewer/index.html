@@ -354,12 +354,15 @@
                     <div id="measureInfo" class="info-panel">
                         <div class="status-mode text-highlight">MODE: SNAPPING ACTIVE</div>
                         <div class="info-row">
-                            <span class="info-label">Current Distance</span>
+                            <span class="info-label">Current Point</span>
+                            <span id="pointVal" class="info-value measure-value text-accent">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Distance</span>
                             <span id="distVal" class="info-value measure-value text-highlight">- mm</span>
                         </div>
                         <div class="help-text text-dim">
                             • Green dots: Vertices<br>
-                            • Blue lines: Edges<br>
                             • Click 2 points to measure
                         </div>
                     </div>
@@ -419,6 +422,7 @@
         const measureBtn = document.getElementById('measureBtn');
         const measureInfo = document.getElementById('measureInfo');
         const distValDisplay = document.getElementById('distVal');
+        const pointValDisplay = document.getElementById('pointVal');
         const buildBtn = document.getElementById('buildBtn');
         const buildRefBtn = document.getElementById('buildRefBtn');
         const cleanBtn = document.getElementById('cleanBtn');
@@ -710,6 +714,7 @@
             measureMarkers.forEach(m => scene.remove(m));
             measureMarkers = [];
             distValDisplay.textContent = '-';
+            pointValDisplay.textContent = '-';
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
             if (previewLine) previewLine.visible = false;
@@ -743,10 +748,21 @@
                 hoverPoint.visible = true;
                 highlightedVertex = p;
 
+                const pStr = `${p.x.toFixed(2)}, ${p.y.toFixed(2)}, ${p.z.toFixed(2)}`;
+                pointValDisplay.textContent = pStr;
+
+                if (measurePoints.length === 0 || measurePoints.length === 2) {
+                    floatingLabel.textContent = pStr;
+                    floatingLabel.style.display = 'block';
+                    floatingLabel.style.left = (event.clientX - rect.left + 20) + 'px';
+                    floatingLabel.style.top = (event.clientY - rect.top + 20) + 'px';
+                }
+
                 container.style.cursor = 'crosshair';
             } else {
                 hoverPoint.visible = false;
                 highlightedVertex = null;
+                pointValDisplay.textContent = '-';
                 container.style.cursor = isMeasuring ? 'crosshair' : 'default';
             }
 
@@ -772,7 +788,7 @@
                     distValDisplay.textContent = '-';
                     floatingLabel.style.display = 'none';
                 }
-            } else if (floatingLabel) {
+            } else if (floatingLabel && !highlightedVertex) {
                 floatingLabel.style.display = 'none';
             }
         }
@@ -1011,6 +1027,8 @@
             if (!mesh || !mesh.geometry) return;
             mesh.geometry.computeBoundingBox();
             const box = mesh.geometry.boundingBox;
+            const center = new THREE.Vector3();
+            box.getCenter(center);
 
             const origin = new THREE.Vector3(0, 0, 0);
 
@@ -1021,6 +1039,8 @@
             if (refEdgesMesh) refEdgesMesh.position.copy(origin);
 
             if (grid) {
+                grid.position.x = center.x;
+                grid.position.y = center.y;
                 grid.position.z = gridAtBottom.checked ? box.min.z : 0;
             }
         }

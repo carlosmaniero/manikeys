@@ -13,7 +13,7 @@ from models.parameters import Parameters
 @singleton
 @inject
 @dataclass
-class BottomLidCad(ManifoldObject):
+class ControllerHousingCad(ManifoldObject):
     model: Led
     parameters: Parameters
     indicator_model: MainBodyModel
@@ -106,7 +106,7 @@ class BottomLidCad(ManifoldObject):
 
     @property
     def pcb_mounting_towers(self) -> manifold3d.Manifold:
-        tower_height = 2.0
+        tower_height = self.indicator_model.body_thickness
         tower_dia = 4.0
         tower_radius = tower_dia / 2
         z_bottom = -self.indicator_model.lid_height / 2
@@ -131,7 +131,7 @@ class BottomLidCad(ManifoldObject):
     def pcb_mounting_holes(self) -> manifold3d.Manifold:
         corner_offset = 1.26
         hole_dia = 1.2
-        tower_height = 2.0
+        tower_height = self.indicator_model.body_thickness
         hole_radius = hole_dia / 2
         z_pocket_bottom = (
             self.indicator_model.lid_height / 2
@@ -177,6 +177,31 @@ class BottomLidCad(ManifoldObject):
         return mask
 
     @property
+    def lowerings(self) -> manifold3d.Manifold:
+        screw_head_radius = (
+            self.parameters.body.m2_screw_head_diameter / 2 + 0.1
+        )
+        lowering_depth = self.indicator_model.lid_height - 2.0
+        z_top = self.indicator_model.lid_height / 2
+
+        lowering_cyl = manifold3d.Manifold.cylinder(
+            height=lowering_depth + 0.2,
+            radius_low=screw_head_radius,
+            radius_high=screw_head_radius,
+            center=True,
+            circular_segments=32,
+        ).translate([0, 0, z_top - lowering_depth / 2 + 0.1])
+
+        mask = manifold3d.Manifold()
+        mask += lowering_cyl.translate(
+            [self.indicator_model.left_screw_xs[1], 0, 0]
+        )
+        mask += lowering_cyl.translate(
+            [self.indicator_model.right_screw_xs[1], 0, 0]
+        )
+        return mask
+
+    @property
     def cable_path(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
@@ -202,10 +227,11 @@ class BottomLidCad(ManifoldObject):
             - self.pan_lid_mask
             - self.pcb_mounting_holes
             - self.lid_screw_holes
+            - self.lowerings
             - self.cable_path
         ).translate([0, 0, -self.indicator_model.body_thickness * 1.5])
 
 
 if __name__ == "__main__":
-    bottom_lid = injector.get(BottomLidCad)
-    bottom_lid.program(sys.argv)
+    controller_housing = injector.get(ControllerHousingCad)
+    controller_housing.program(sys.argv)

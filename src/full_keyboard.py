@@ -33,6 +33,8 @@ class FullKeyboard(ManifoldObject):
             "build/cad/connectors/usbc_mask.stl",
             "build/cad/connectors/usbc_adapter_trimmed.stl",
             "build/cad/magnet_snap.stl",
+            "build/cad/components/light_indicator/body_mask.stl",
+            "build/cad/components/light_indicator/panel_frame.stl",
         ]
 
         manifolds = load_many_stl_to_manifold(paths)
@@ -52,6 +54,8 @@ class FullKeyboard(ManifoldObject):
             usbc_mask,
             usbc_adapter,
             magnet_snap,
+            light_indicator_body_mask,
+            light_indicator_panel_frame,
         ) = manifolds
 
         body = body - body_inner_sections
@@ -69,6 +73,9 @@ class FullKeyboard(ManifoldObject):
 
         body = body - usbc_mask
         body = body + usbc_adapter
+
+        body = body - light_indicator_body_mask
+        body = body + light_indicator_panel_frame
 
         return body
 
