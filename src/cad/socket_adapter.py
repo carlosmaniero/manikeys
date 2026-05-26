@@ -62,7 +62,6 @@ class SocketAdapterCAD(ManifoldObject):
                 ).translate([point[0], point[1], 0.5 - 0.1])
                 for point in p
             ]
-            # OpenSCAD hull of children
             combined = manifold3d.Manifold.batch_boolean(
                 h_children, manifold3d.OpType.Add
             )
@@ -99,11 +98,11 @@ class SocketAdapterCAD(ManifoldObject):
             [
                 self.p.cap_socket_width,
                 self.p.cube_size,
-                self.p.cap_socket_height,
+                self.p.cap_socket_height / 2,
             ],
             center=True,
         )
-        return c.translate([0, 0, self.p.cap_socket_height / 2 + 1])
+        return c.translate([0, 0, self.p.cap_socket_height / 4 - 2])
 
     def led_placement(self) -> manifold3d.Manifold:
         pcb_radius = 5.05
@@ -119,17 +118,17 @@ class SocketAdapterCAD(ManifoldObject):
             [light_path, light_path, 200], center=True
         )
         res += manifold3d.Manifold.cylinder(
-            radius_low=pcb_radius, height=pcb_thickness, circular_segments=fn
-        )
+            radius_low=pcb_radius, height=pcb_thickness, circular_segments=8
+        ).rotate([0, 0, 45])
 
         return res.translate([0, -pcb_radius, 4.5])
 
     def body(self) -> manifold3d.Manifold:
         c = manifold3d.Manifold.cube(
-            [self.p.cube_size, self.p.cube_size, self.p.body_thickness],
+            [self.p.cube_size, self.p.cube_size, self.p.body_thickness + 1],
             center=True,
         )
-        return c.translate([0, 0, self.p.body_thickness / 2])
+        return c.translate([0, 0, self.p.body_thickness / 2 - 0.5])
 
     def full_body(self) -> manifold3d.Manifold:
         return self.body() + self.cap_socket()

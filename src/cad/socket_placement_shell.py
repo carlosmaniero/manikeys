@@ -75,6 +75,9 @@ class SocketPlacementShell(ManifoldObject):
             - load_stl_to_manifold("build/cad/cap_hole_grid.stl")
             - load_stl_to_manifold("build/cad/cap_thumb_hole.stl")
             - load_stl_to_manifold("build/cad/cable_path.stl")
+            - load_stl_to_manifold(
+                "build/cad/components/light_indicator/body_shell_mask.stl"
+            )
         )
 
 

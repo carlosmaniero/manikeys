@@ -23,14 +23,12 @@ class USBCConnectorMaskCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         wall_thickness = self.thickness + self.model.error_margin
 
-        # depth is now along Y
         depth = self.model.connector_depth + wall_thickness
         height = self.model.connector_height + self.model.error_margin * 2
         width = self.model.connector_width + self.model.error_margin * 2
 
         radius = height / 2
 
-        # Cylinder axis is now along X (width)
         cylinder = manifold3d.Manifold.cylinder(
             radius_low=radius,
             radius_high=radius,
@@ -43,7 +41,6 @@ class USBCConnectorMaskCAD(ManifoldObject):
         left_cyl = cylinder.translate([-x_offset, 0, 0])
         right_cyl = cylinder.translate([x_offset, 0, 0])
 
-        # Translate to the +Y edge of the PCB and -Z side
         return manifold3d.Manifold.hull(left_cyl + right_cyl).translate(
             [
                 0,

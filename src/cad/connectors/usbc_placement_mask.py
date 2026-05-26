@@ -24,7 +24,6 @@ class USBCPlacementMaskCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        # Long side is X. Extend to reach start_x and add extra clearance on the other side.
         return (
             self.model.pcb_length
             + self.thickness * 6
@@ -36,11 +35,10 @@ class USBCPlacementMaskCAD(ManifoldObject):
         adapter_base_length = (
             self.thickness + self.model.mounting_hole_diameter + self.thickness
         )
-        return adapter_base_length + self.thickness
+        return adapter_base_length + self.thickness * 8
 
     @property
     def mask_height(self) -> float:
-        # Cover the whole height of the adapter and then some
         return (
             self.thickness
             + self.model.pcb_height
@@ -85,8 +83,6 @@ class USBCPlacementMaskCAD(ManifoldObject):
         )
 
     def assemble(self) -> manifold3d.Manifold:
-        # Translate so that the left face is at start_x
-        # And the Y/Z match the adapter's body_offset
         offset = self.model.body_offset
         return self.main_block.translate(
             [

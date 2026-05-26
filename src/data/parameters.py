@@ -34,7 +34,7 @@ class ParametersModule(Module):
                 depth=130,
                 height=15,
                 fillet=10,
-                cabe_hole_radius=10,
+                cabe_hole_radius=13,
                 clearance=2,
                 m2_screw_diameter=2.0,
                 m2_screw_length=8.0,

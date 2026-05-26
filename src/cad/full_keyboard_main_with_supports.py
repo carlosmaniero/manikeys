@@ -56,6 +56,26 @@ class FullKeyboardMainWithSupports(ManifoldObject):
 
         return support.translate([x_pos, self.model.divider_y, z_pos])
 
+    def _create_support_y_inv(
+        self, x_pos: float, angle: float
+    ) -> manifold3d.Manifold:
+        radius = self.parameters.body.thickness / 2
+        depth = self.model.end_y() - self.model.divider_y + 20
+
+        support = manifold3d.Manifold.cylinder(
+            height=depth,
+            radius_low=radius,
+            radius_high=radius,
+            circular_segments=64,
+            center=False,
+        )
+
+        support = support.rotate([90, 0, angle])
+
+        z_pos = self.model.bottom_z + radius
+
+        return support.translate([x_pos, self.model.end_y(), z_pos])
+
     def _create_mask(self) -> manifold3d.Manifold:
         divider_y = self.model.divider_y
 
@@ -85,16 +105,22 @@ class FullKeyboardMainWithSupports(ManifoldObject):
 
         center_x = self.model.start_x() + self.model.width / 2
 
-        supports = (
-            self._create_support(self.model.divider_y + y_range * 0.25)
-            + self._create_support(self.model.divider_y + y_range * 0.375)
-            + self._create_support(self.model.divider_y + y_range * 0.50)
-            + self._create_support(self.model.divider_y + y_range * 0.625)
-            + self._create_support(self.model.divider_y + y_range * 0.75)
-            + self._create_support_y(center_x, 20)
-            + self._create_support_y(center_x, -20)
-            + self._create_support_y(center_x, 0)
-        )
+        supports = manifold3d.Manifold()
+
+        num_horizontal_supports = 7
+        for i in range(num_horizontal_supports):
+            y_pos = self.model.divider_y + y_range * (i + 1) / (
+                num_horizontal_supports + 1
+            )
+            supports += self._create_support(y_pos)
+
+        supports += self._create_support_y(center_x, 20)
+        supports += self._create_support_y(center_x, -20)
+        supports += self._create_support_y(center_x, 0)
+
+        supports += self._create_support_y_inv(center_x, 20)
+        supports += self._create_support_y_inv(center_x, -20)
+        supports += self._create_support_y_inv(center_x, 0)
 
         support = supports ^ (inner ^ mask)
 
