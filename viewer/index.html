@@ -221,7 +221,7 @@
         #measureInfo { border-top: 1px solid #333; padding-top: var(--ui-gap); }
         #buildOutput { margin: 0; }
 
-        #swapBtn { width: auto; padding: 0 10px; }
+        #swapBtn, .swap-ref-btn, .remove-ref-btn { width: auto; padding: 0 10px; }
 
         .checkbox-label { cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 0; line-height: 1; }
         .checkbox-label input { width: auto; margin: 0; padding: 0; }
@@ -268,11 +268,8 @@
                     <label for="fileSelect">Source File</label>
                     <input type="text" id="fileSelect" list="availableFileList" placeholder="Search or select source file..." onfocus="this.select()">
 
-                    <label for="refSelect">Reference File (Transparent)</label>
-                    <div class="controls-group">
-                        <input type="text" id="refSelect" list="availableFileList" placeholder="Search or select ref file..." onfocus="this.select()">
-                        <button type="button" id="swapBtn" class="secondary" title="Swap Source and Reference">⇅</button>
-                    </div>
+                    <label>Reference Files (Transparent)</label>
+                    <div id="refInputsContainer" class="controls-stack" style="margin-top: 0;"></div>
                     <datalist id="availableFileList"></datalist>
                 </form>
             </details>
@@ -413,8 +410,7 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         const fileSelect = document.getElementById('fileSelect');
-        const refSelect = document.getElementById('refSelect');
-        const swapBtn = document.getElementById('swapBtn');
+        const refInputsContainer = document.getElementById('refInputsContainer');
         const loading = document.getElementById('loading');
         const container = document.getElementById('viewer');
         const modelInfo = document.getElementById('modelInfo');
@@ -438,7 +434,13 @@
         const envVarsContainer = document.getElementById('envVarsContainer');
         const addEnvVarBtn = document.getElementById('addEnvVarBtn');
 
-        let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh, refMesh, refEdgesMesh;
+        let scene, camera, cameraPersp, cameraOrtho, renderer, controls, mesh;
+        let refInputs = [];
+        let refMeshes = {};
+        let refEdgesMeshes = {};
+        let nextRefInputId = 1;
+        const REF_COLORS_HEX = ['#00ffff', '#ffff00', '#33ff33', '#ffaa00', '#3388ff', '#ff5555'];
+        const REF_COLORS = [0x00ffff, 0xffff00, 0x33ff33, 0xffaa00, 0x3388ff, 0xff5555];
         let raycaster, mouse;
         let edgesMesh, hoverLine, verticesMesh, hoverPoint, previewLine;
         let grid, axesHelper;
@@ -496,33 +498,14 @@
             container.addEventListener('mousedown', onMouseDown);
             container.addEventListener('mousemove', onMouseMove);
             measureBtn.addEventListener('click', toggleMeasure);
-            swapBtn.addEventListener('click', () => {
-                const currentFile = fileSelect.value;
-                const currentRef = refSelect.value;
-
-                if (currentFile === currentRef) return;
-
-                fileSelect.value = currentRef;
-                refSelect.value = currentFile;
-
-                localStorage.setItem('selectedFile', fileSelect.value);
-                localStorage.setItem('selectedRefFile', refSelect.value);
-
-                if (fileSelect.value) {
-                    loadSTL(fileSelect.value);
-                } else {
-                    if (mesh) scene.remove(mesh);
-                    if (edgesMesh) scene.remove(edgesMesh);
-                    if (verticesMesh) scene.remove(verticesMesh);
-                    mesh = null;
-                    edgesMesh = null;
-                    verticesMesh = null;
-                    modelInfo.style.display = 'none';
-                }
-                loadRefSTL(refSelect.value);
-            });
             buildBtn.addEventListener('click', () => onBuild(null, false));
-            buildRefBtn.addEventListener('click', () => onBuild(null, true));
+            buildRefBtn.addEventListener('click', () => {
+                refInputs.forEach(ref => {
+                    if (ref.value) {
+                        onBuild(ref.value, true, ref.id);
+                    }
+                });
+            });
             cleanBtn.addEventListener('click', onClean);
             watchBuild.addEventListener('change', () => {
                 localStorage.setItem('watchBuild', watchBuild.checked);
@@ -658,11 +641,13 @@
                 mesh.material.opacity = inverted ? 0.3 : 1.0;
                 mesh.material.needsUpdate = true;
             }
-            if (refMesh && refMesh.material) {
-                refMesh.material.transparent = !inverted;
-                refMesh.material.opacity = !inverted ? 0.3 : 1.0;
-                refMesh.material.needsUpdate = true;
-            }
+            Object.values(refMeshes).forEach(rm => {
+                if (rm && rm.material) {
+                    rm.material.transparent = !inverted;
+                    rm.material.opacity = !inverted ? 0.3 : 1.0;
+                    rm.material.needsUpdate = true;
+                }
+            });
         }
 
         function animate() {
@@ -861,8 +846,21 @@
             }
         }
 
-        async function onBuild(filePath = null, isRef = false) {
-            const selectedFile = filePath || (isRef ? refSelect.value : fileSelect.value);
+        async function onBuild(filePath = null, isRef = false, refId = null) {
+            let selectedFile = filePath;
+            if (!selectedFile) {
+                if (isRef) {
+                    if (refId !== null) {
+                        const ref = refInputs.find(r => r.id === refId);
+                        selectedFile = ref ? ref.value : null;
+                    } else {
+                        const ref = refInputs.find(r => r.value);
+                        selectedFile = ref ? ref.value : null;
+                    }
+                } else {
+                    selectedFile = fileSelect.value;
+                }
+            }
             if (!selectedFile) return;
 
             const btn = isRef ? buildRefBtn : buildBtn;
@@ -921,8 +919,18 @@
                 }
 
                 if (buildSuccessful && !upToDate) {
-                    if (isRef) loadRefSTL(selectedFile);
-                    else loadSTL(selectedFile);
+                    if (isRef) {
+                        if (refId !== null) {
+                            loadRefSTL(refId, selectedFile);
+                        } else {
+                            const found = refInputs.find(r => r.value === selectedFile);
+                            if (found) {
+                                loadRefSTL(found.id, selectedFile);
+                            }
+                        }
+                    } else {
+                        loadSTL(selectedFile);
+                    }
                 } else {
                     loading.style.display = 'none';
                 }
@@ -1035,8 +1043,12 @@
             mesh.position.copy(origin);
             if (edgesMesh) edgesMesh.position.copy(origin);
             if (verticesMesh) verticesMesh.position.copy(origin);
-            if (refMesh) refMesh.position.copy(origin);
-            if (refEdgesMesh) refEdgesMesh.position.copy(origin);
+            Object.values(refMeshes).forEach(rm => {
+                if (rm) rm.position.copy(origin);
+            });
+            Object.values(refEdgesMeshes).forEach(rem => {
+                if (rem) rem.position.copy(origin);
+            });
 
             if (grid) {
                 grid.position.x = center.x;
@@ -1045,10 +1057,23 @@
             }
         }
 
-        function loadRefSTL(path) {
-            if (refMesh) scene.remove(refMesh);
-            if (refEdgesMesh) scene.remove(refEdgesMesh);
+        function unloadRefSTL(id) {
+            if (refMeshes[id]) {
+                scene.remove(refMeshes[id]);
+                delete refMeshes[id];
+            }
+            if (refEdgesMeshes[id]) {
+                scene.remove(refEdgesMeshes[id]);
+                delete refEdgesMeshes[id];
+            }
+        }
+
+        function loadRefSTL(id, path) {
+            unloadRefSTL(id);
             if (!path) return;
+
+            const idx = refInputs.findIndex(r => r.id === id);
+            const colorVal = REF_COLORS[idx !== -1 ? (idx % REF_COLORS.length) : 0];
 
             loading.textContent = 'Loading Reference...';
             loading.style.display = 'block';
@@ -1057,18 +1082,20 @@
             const timestamp = new Date().getTime();
             loader.load(`/get-stl?file_path=${encodeURIComponent(path)}&t=${timestamp}`, (geometry) => {
                 const material = new THREE.MeshPhongMaterial({
-                    color: 0x00ffff,
+                    color: colorVal,
                     transparent: true,
                     opacity: 0.3,
                     specular: 0x004444,
                     shininess: 5
                 });
-                refMesh = new THREE.Mesh(geometry, material);
-                scene.add(refMesh);
+                const meshObj = new THREE.Mesh(geometry, material);
+                refMeshes[id] = meshObj;
+                scene.add(meshObj);
 
                 const edgesGeom = new THREE.EdgesGeometry(geometry);
-                refEdgesMesh = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 }));
-                scene.add(refEdgesMesh);
+                const edgesObj = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: colorVal, transparent: true, opacity: 0.2 }));
+                refEdgesMeshes[id] = edgesObj;
+                scene.add(edgesObj);
 
                 updateMaterials();
                 updateMeshPosition();
@@ -1077,7 +1104,7 @@
                 console.error('Error loading reference STL:', error);
                 loading.style.display = 'none';
                 if (confirm(`Reference STL file "${path}" failed to load. Would you like to try building it?`)) {
-                    onBuild(path, true);
+                    onBuild(path, true, id);
                 }
             });
         }
@@ -1262,6 +1289,155 @@
             });
         }
 
+        function ensureEmptySlot() {
+            if (refInputs.length === 0) {
+                refInputs.push({ id: nextRefInputId++, value: '' });
+                return;
+            }
+            const last = refInputs[refInputs.length - 1];
+            if (last.value !== '' && refInputs.length < 6) {
+                refInputs.push({ id: nextRefInputId++, value: '' });
+            }
+        }
+
+        function saveRefFiles() {
+            const files = refInputs.map(r => r.value).filter(val => val !== '');
+            localStorage.setItem('selectedRefFiles', JSON.stringify(files));
+            localStorage.setItem('selectedRefFile', files[0] || '');
+        }
+
+        function renderRefInputs() {
+            refInputsContainer.innerHTML = '';
+
+            refInputs.forEach((ref, index) => {
+                const colorHex = REF_COLORS_HEX[index % REF_COLORS_HEX.length];
+
+                const row = document.createElement('div');
+                row.className = 'controls-group ref-row';
+                row.dataset.id = ref.id;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'ref-input';
+                input.setAttribute('list', 'availableFileList');
+                input.placeholder = 'Search or select ref file...';
+                input.value = ref.value;
+                input.style.borderColor = colorHex;
+                input.style.color = colorHex;
+                input.style.textShadow = `0 0 5px ${colorHex}`;
+
+                input.onfocus = () => input.select();
+
+                input.onchange = (e) => {
+                    const val = e.target.value;
+                    if (val === "" || availableFiles.includes(val)) {
+                        handleRefValueChange(ref.id, val);
+                    } else {
+                        e.target.value = ref.value;
+                    }
+                };
+
+                const swapBtn = document.createElement('button');
+                swapBtn.type = 'button';
+                swapBtn.className = 'secondary swap-ref-btn';
+                swapBtn.title = 'Swap Source and Reference';
+                swapBtn.textContent = '⇅';
+                swapBtn.style.borderColor = colorHex;
+                swapBtn.style.color = colorHex;
+                swapBtn.onclick = () => {
+                    swapSourceWithRef(ref.id);
+                };
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'danger remove-ref-btn';
+                removeBtn.title = 'Remove Reference';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => {
+                    removeRefInput(ref.id);
+                };
+
+                row.appendChild(input);
+                row.appendChild(swapBtn);
+                row.appendChild(removeBtn);
+                refInputsContainer.appendChild(row);
+            });
+        }
+
+        function handleRefValueChange(id, value) {
+            const ref = refInputs.find(r => r.id === id);
+            if (!ref) return;
+
+            if (value !== '') {
+                ref.value = value;
+                loadRefSTL(id, value);
+                ensureEmptySlot();
+                saveRefFiles();
+                renderRefInputs();
+            } else {
+                unloadRefSTL(id);
+                if (refInputs.length > 1) {
+                    refInputs = refInputs.filter(r => r.id !== id);
+                } else {
+                    ref.value = '';
+                }
+                ensureEmptySlot();
+                saveRefFiles();
+                renderRefInputs();
+            }
+        }
+
+        function removeRefInput(id) {
+            unloadRefSTL(id);
+            if (refInputs.length > 1) {
+                refInputs = refInputs.filter(r => r.id !== id);
+            } else {
+                const ref = refInputs.find(r => r.id === id);
+                if (ref) {
+                    ref.value = '';
+                }
+            }
+            ensureEmptySlot();
+            saveRefFiles();
+            renderRefInputs();
+        }
+
+        function swapSourceWithRef(id) {
+            const ref = refInputs.find(r => r.id === id);
+            if (!ref) return;
+
+            const currentFile = fileSelect.value;
+            const currentRef = ref.value;
+
+            if (currentFile === currentRef) return;
+
+            fileSelect.value = currentRef;
+            ref.value = currentFile;
+
+            localStorage.setItem('selectedFile', fileSelect.value);
+
+            if (fileSelect.value) {
+                loadSTL(fileSelect.value);
+            } else {
+                if (mesh) scene.remove(mesh);
+                if (edgesMesh) scene.remove(edgesMesh);
+                if (verticesMesh) scene.remove(verticesMesh);
+                mesh = null;
+                edgesMesh = null;
+                verticesMesh = null;
+                modelInfo.style.display = 'none';
+            }
+
+            unloadRefSTL(id);
+            if (ref.value) {
+                loadRefSTL(id, ref.value);
+            }
+
+            ensureEmptySlot();
+            saveRefFiles();
+            renderRefInputs();
+        }
+
         init();
 
         const availableFileList = document.getElementById('availableFileList');
@@ -1280,18 +1456,33 @@
                     availableFileList.appendChild(option);
                 });
 
-                // Restore selected file
                 const lastFile = localStorage.getItem('selectedFile');
                 if (lastFile && files.includes(lastFile)) {
                     fileSelect.value = lastFile;
                     loadSTL(lastFile);
                 }
 
-                const lastRefFile = localStorage.getItem('selectedRefFile');
-                if (lastRefFile && files.includes(lastRefFile)) {
-                    refSelect.value = lastRefFile;
-                    loadRefSTL(lastRefFile);
+                let savedRefs = [];
+                try {
+                    savedRefs = JSON.parse(localStorage.getItem('selectedRefFiles')) || [];
+                } catch (e) {
+                    savedRefs = [];
                 }
+                if (savedRefs.length === 0) {
+                    const lastRefFile = localStorage.getItem('selectedRefFile');
+                    if (lastRefFile) {
+                        savedRefs = [lastRefFile];
+                    }
+                }
+                savedRefs = savedRefs.filter(f => files.includes(f));
+                refInputs = savedRefs.map(f => ({ id: nextRefInputId++, value: f }));
+                ensureEmptySlot();
+                renderRefInputs();
+                refInputs.forEach(ref => {
+                    if (ref.value) {
+                        loadRefSTL(ref.id, ref.value);
+                    }
+                });
             });
 
         fileSelect.addEventListener('change', (event) => {
@@ -1315,27 +1506,6 @@
             const val = event.target.value;
             if (val !== "" && !availableFiles.includes(val)) {
                 event.target.value = localStorage.getItem('selectedFile') || "";
-            }
-        });
-
-        refSelect.addEventListener('change', (event) => {
-            const selectedRefFile = event.target.value;
-            if (selectedRefFile === "") {
-                localStorage.setItem('selectedRefFile', "");
-                if (refMesh) scene.remove(refMesh);
-                if (refEdgesMesh) scene.remove(refEdgesMesh);
-                refMesh = null;
-                refEdgesMesh = null;
-            } else if (availableFiles.includes(selectedRefFile)) {
-                localStorage.setItem('selectedRefFile', selectedRefFile);
-                loadRefSTL(selectedRefFile);
-            }
-        });
-
-        refSelect.addEventListener('blur', (event) => {
-            const val = event.target.value;
-            if (val !== "" && !availableFiles.includes(val)) {
-                event.target.value = localStorage.getItem('selectedRefFile') || "";
             }
         });
     </script>
