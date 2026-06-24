@@ -694,6 +694,7 @@
             measureBtn.classList.toggle('active', isMeasuring);
             measureInfo.style.display = isMeasuring ? 'inline' : 'none';
             if (verticesMesh) verticesMesh.visible = isMeasuring;
+            if (edgesMesh) edgesMesh.visible = isMeasuring;
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
             container.style.cursor = isMeasuring ? 'crosshair' : 'default';
@@ -728,7 +729,6 @@
 
             raycaster.setFromCamera(mouse, camera);
 
-            // Check vertices first
             const vIntersects = raycaster.intersectObject(verticesMesh);
             if (vIntersects.length > 0) {
                 const index = vIntersects[0].index;
@@ -760,16 +760,60 @@
             if (hoverLine) hoverLine.visible = false;
             highlightedEdge = null;
 
+            if (!highlightedVertex) {
+                const eIntersects = raycaster.intersectObject(edgesMesh);
+                if (eIntersects.length > 0) {
+                    const intersect = eIntersects[0];
+                    const idx = intersect.index;
+                    const posAttr = edgesMesh.geometry.attributes.position;
+                    const A = new THREE.Vector3().fromBufferAttribute(posAttr, idx).applyMatrix4(edgesMesh.matrixWorld);
+                    const B = new THREE.Vector3().fromBufferAttribute(posAttr, idx + 1).applyMatrix4(edgesMesh.matrixWorld);
+
+                    hoverLine.geometry.setFromPoints([A, B]);
+                    hoverLine.visible = true;
+                    highlightedEdge = { A, B };
+
+                    const midPoint = new THREE.Vector3().addVectors(A, B).multiplyScalar(0.5);
+                    const eStr = `${midPoint.x.toFixed(2)}, ${midPoint.y.toFixed(2)}, ${midPoint.z.toFixed(2)}`;
+                    pointValDisplay.textContent = eStr;
+
+                    if (measurePoints.length === 0 || measurePoints.length === 2) {
+                        floatingLabel.textContent = eStr;
+                        floatingLabel.style.display = 'block';
+                        floatingLabel.style.left = (event.clientX - rect.left + 20) + 'px';
+                        floatingLabel.style.top = (event.clientY - rect.top + 20) + 'px';
+                    }
+                }
+            }
+
             if (isMeasuring && measurePoints.length === 1) {
-                const currentPoint = getPointUnderMouse();
-                if (currentPoint) {
+                if (highlightedVertex) {
+                    const currentPoint = highlightedVertex;
                     const dist = measurePoints[0].distanceTo(currentPoint);
                     const distStr = dist.toFixed(2) + ' mm';
                     distValDisplay.textContent = dist.toFixed(2);
                     previewLine.geometry.setFromPoints([measurePoints[0], currentPoint]);
                     previewLine.visible = true;
 
-                    // Update floating label
+                    floatingLabel.textContent = distStr;
+                    floatingLabel.style.display = 'block';
+                    floatingLabel.style.left = (event.clientX - rect.left + 20) + 'px';
+                    floatingLabel.style.top = (event.clientY - rect.top + 20) + 'px';
+                } else if (highlightedEdge) {
+                    const P = measurePoints[0];
+                    const A = highlightedEdge.A;
+                    const B = highlightedEdge.B;
+                    const v = new THREE.Vector3().subVectors(B, A);
+                    const u = new THREE.Vector3().subVectors(P, A);
+                    const t = u.dot(v) / v.dot(v);
+                    const F = new THREE.Vector3().addVectors(A, v.multiplyScalar(t));
+
+                    const dist = P.distanceTo(F);
+                    const distStr = dist.toFixed(2) + ' mm (perp)';
+                    distValDisplay.textContent = dist.toFixed(2);
+                    previewLine.geometry.setFromPoints([P, F]);
+                    previewLine.visible = true;
+
                     floatingLabel.textContent = distStr;
                     floatingLabel.style.display = 'block';
                     floatingLabel.style.left = (event.clientX - rect.left + 20) + 'px';
@@ -779,7 +823,7 @@
                     distValDisplay.textContent = '-';
                     floatingLabel.style.display = 'none';
                 }
-            } else if (floatingLabel && !highlightedVertex) {
+            } else if (floatingLabel && !highlightedVertex && !highlightedEdge) {
                 floatingLabel.style.display = 'none';
             }
         }
@@ -792,7 +836,25 @@
             mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
 
-            const point = getPointUnderMouse();
+            let point = null;
+            if (highlightedVertex) {
+                point = highlightedVertex.clone();
+            } else if (highlightedEdge) {
+                if (measurePoints.length === 1) {
+                    const P = measurePoints[0];
+                    const A = highlightedEdge.A;
+                    const B = highlightedEdge.B;
+                    const v = new THREE.Vector3().subVectors(B, A);
+                    const u = new THREE.Vector3().subVectors(P, A);
+                    const t = u.dot(v) / v.dot(v);
+                    point = new THREE.Vector3().addVectors(A, v.multiplyScalar(t));
+                } else {
+                    const eIntersects = raycaster.intersectObject(edgesMesh);
+                    if (eIntersects.length > 0) {
+                        point = eIntersects[0].point.clone();
+                    }
+                }
+            }
 
             if (point) {
                 if (measurePoints.length >= 2) clearMeasure();
