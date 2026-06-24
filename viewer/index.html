@@ -407,7 +407,7 @@
     <script type="module">
         import * as THREE from 'three';
         import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
         const fileSelect = document.getElementById('fileSelect');
         const refInputsContainer = document.getElementById('refInputsContainer');
@@ -483,8 +483,11 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
 
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
+            controls = new TrackballControls(camera, renderer.domElement);
+            controls.rotateSpeed = 3.0;
+            controls.zoomSpeed = 1.2;
+            controls.panSpeed = 0.8;
+            controls.dynamicDampingFactor = 0.3;
             controls.addEventListener('change', () => {
                 savedCameraPosition = camera.position.clone();
                 savedCameraTarget = controls.target.clone();
@@ -613,6 +616,9 @@
             cameraOrtho.updateProjectionMatrix();
 
             renderer.setSize(container.clientWidth, container.clientHeight);
+            if (controls && controls.handleResize) {
+                controls.handleResize();
+            }
         }
 
         function setCameraType(type) {
