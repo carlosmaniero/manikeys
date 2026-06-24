@@ -78,6 +78,9 @@ class SocketPlacementShell(ManifoldObject):
             - load_stl_to_manifold(
                 "build/cad/components/light_indicator/body_shell_mask.stl"
             )
+            - load_stl_to_manifold(
+                "build/cad/components/oled_096_placement_shell_mask.stl"
+            )
         )
 
 

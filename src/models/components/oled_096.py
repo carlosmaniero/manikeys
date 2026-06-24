@@ -2,6 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Oled096Parameters, Parameters
+from models.cap_thumb import CapThumbModel
+from models.body import BodyModel
 import math
 
 
@@ -113,3 +115,62 @@ class Oled096Model:
             0.0,
             -self.body[2] / 2 + self.thickness / 2,
         ]
+
+
+@singleton
+@inject
+@dataclass
+class Oled096PlacementModel:
+    global_parameters: Parameters
+    oled: Oled096Model
+    cap_thumb: CapThumbModel
+
+    @property
+    def thickness(self) -> float:
+        return self.global_parameters.body.thickness
+
+    @property
+    def body_model(self) -> BodyModel:
+        return self.cap_thumb.body_model
+
+    @property
+    def placement_position(self) -> list[float]:
+        positions = self.cap_thumb.get_positions()
+        x = (
+            positions[0][0]
+            + self.global_parameters.caps.size / 2
+            + self.oled.body[0] / 2
+            + self.thickness
+        )
+        y = positions[0][1]
+        z = positions[0][2] - self.oled.body[2] / 2
+        return [x, y, z]
+
+    @property
+    def mask_size(self) -> list[float]:
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        return [
+            self.oled.body[0],
+            self.oled.body[1] - self.thickness * 2,
+            height_z,
+        ]
+
+    @property
+    def mask_coords(self) -> list[float]:
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        x = self.placement_position[0]
+        y = self.placement_position[1] - self.thickness
+        z = self.body_model.highest - height_z / 2
+        return [x, y, z]
+
+    @property
+    def shell_mask_size(self) -> list[float]:
+        return [
+            self.oled.body[0] + self.thickness,
+            self.oled.body[1] + self.thickness,
+            self.oled.body[2] + self.thickness,
+        ]
+
+    @property
+    def shell_mask_coords(self) -> list[float]:
+        return self.placement_position

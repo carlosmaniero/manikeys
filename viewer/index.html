@@ -489,6 +489,9 @@
             controls.panSpeed = 0.8;
             controls.dynamicDampingFactor = 0.3;
             controls.addEventListener('change', () => {
+                if (camera instanceof THREE.OrthographicCamera) {
+                    camera.updateProjectionMatrix();
+                }
                 savedCameraPosition = camera.position.clone();
                 savedCameraTarget = controls.target.clone();
             });
@@ -629,15 +632,53 @@
             const oldCamera = camera;
             camera = type === 'persp' ? cameraPersp : cameraOrtho;
 
+            const aspect = container.clientWidth / container.clientHeight;
+            const target = controls ? controls.target.clone() : new THREE.Vector3(0, 0, 0);
+
             if (oldCamera) {
                 camera.position.copy(oldCamera.position);
                 camera.up.copy(oldCamera.up);
+
+                if (type === 'ortho') {
+                    const d = oldCamera.position.distanceTo(target);
+                    const height = 2 * d * Math.tan(cameraPersp.fov * Math.PI / 360);
+                    const width = height * aspect;
+                    cameraOrtho.left = -width / 2;
+                    cameraOrtho.right = width / 2;
+                    cameraOrtho.top = height / 2;
+                    cameraOrtho.bottom = -height / 2;
+                    cameraOrtho.zoom = 1;
+                    cameraOrtho.updateProjectionMatrix();
+                } else {
+                    const height = (cameraOrtho.top - cameraOrtho.bottom) / cameraOrtho.zoom;
+                    const d = height / (2 * Math.tan(cameraPersp.fov * Math.PI / 360));
+                    const dir = new THREE.Vector3().subVectors(cameraOrtho.position, target).normalize();
+                    cameraPersp.position.copy(target).addScaledVector(dir, d);
+                    cameraPersp.updateProjectionMatrix();
+                }
             }
 
             if (controls) {
-                controls.object = camera;
-                controls.update();
+                controls.dispose();
             }
+
+            controls = new TrackballControls(camera, renderer.domElement);
+            controls.rotateSpeed = 3.0;
+            controls.zoomSpeed = 1.2;
+            controls.panSpeed = 0.8;
+            controls.dynamicDampingFactor = 0.3;
+            controls.target.copy(target);
+
+            controls.addEventListener('change', () => {
+                if (camera instanceof THREE.OrthographicCamera) {
+                    camera.updateProjectionMatrix();
+                }
+                savedCameraPosition = camera.position.clone();
+                savedCameraTarget = controls.target.clone();
+            });
+
+            controls.handleResize();
+            controls.update();
         }
 
         function updateMaterials() {
@@ -1029,6 +1070,7 @@
                     const result = await response.json();
 
                     if (isWatching && result.file) {
+                        await refreshFileList();
                         onBuild();
                     }
                 } catch (error) {
@@ -1512,46 +1554,52 @@
 
         let availableFiles = [];
 
-        fetch('/list-files')
-            .then(response => response.json())
-            .then(files => {
+        async function refreshFileList() {
+            try {
+                const response = await fetch('/list-files');
+                if (!response.ok) return;
+                const files = await response.json();
                 availableFiles = files;
                 availableFileList.innerHTML = '';
-
                 files.sort().forEach(file => {
                     const option = document.createElement('option');
                     option.value = file;
                     availableFileList.appendChild(option);
                 });
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
-                const lastFile = localStorage.getItem('selectedFile');
-                if (lastFile && files.includes(lastFile)) {
-                    fileSelect.value = lastFile;
-                    loadSTL(lastFile);
-                }
+        refreshFileList().then(() => {
+            const lastFile = localStorage.getItem('selectedFile');
+            if (lastFile && availableFiles.includes(lastFile)) {
+                fileSelect.value = lastFile;
+                loadSTL(lastFile);
+            }
 
-                let savedRefs = [];
-                try {
-                    savedRefs = JSON.parse(localStorage.getItem('selectedRefFiles')) || [];
-                } catch (e) {
-                    savedRefs = [];
+            let savedRefs = [];
+            try {
+                savedRefs = JSON.parse(localStorage.getItem('selectedRefFiles')) || [];
+            } catch (e) {
+                savedRefs = [];
+            }
+            if (savedRefs.length === 0) {
+                const lastRefFile = localStorage.getItem('selectedRefFile');
+                if (lastRefFile) {
+                    savedRefs = [lastRefFile];
                 }
-                if (savedRefs.length === 0) {
-                    const lastRefFile = localStorage.getItem('selectedRefFile');
-                    if (lastRefFile) {
-                        savedRefs = [lastRefFile];
-                    }
+            }
+            savedRefs = savedRefs.filter(f => availableFiles.includes(f));
+            refInputs = savedRefs.map(f => ({ id: nextRefInputId++, value: f }));
+            ensureEmptySlot();
+            renderRefInputs();
+            refInputs.forEach(ref => {
+                if (ref.value) {
+                    loadRefSTL(ref.id, ref.value);
                 }
-                savedRefs = savedRefs.filter(f => files.includes(f));
-                refInputs = savedRefs.map(f => ({ id: nextRefInputId++, value: f }));
-                ensureEmptySlot();
-                renderRefInputs();
-                refInputs.forEach(ref => {
-                    if (ref.value) {
-                        loadRefSTL(ref.id, ref.value);
-                    }
-                });
             });
+        });
 
         fileSelect.addEventListener('change', (event) => {
             const selectedFile = event.target.value;

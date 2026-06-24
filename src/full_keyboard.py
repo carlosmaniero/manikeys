@@ -35,6 +35,8 @@ class FullKeyboard(ManifoldObject):
             "build/cad/magnet_snap.stl",
             "build/cad/components/light_indicator/body_mask.stl",
             "build/cad/components/light_indicator/panel_frame.stl",
+            "build/cad/components/oled_096_placement_body_mask.stl",
+            "build/cad/components/oled_096_placement.stl",
         ]
 
         manifolds = load_many_stl_to_manifold(paths)
@@ -56,6 +58,8 @@ class FullKeyboard(ManifoldObject):
             magnet_snap,
             light_indicator_body_mask,
             light_indicator_panel_frame,
+            oled_placement_body_mask,
+            oled_placement,
         ) = manifolds
 
         body = body - body_inner_sections
@@ -76,6 +80,9 @@ class FullKeyboard(ManifoldObject):
 
         body = body - light_indicator_body_mask
         body = body + light_indicator_panel_frame
+
+        body = body - oled_placement_body_mask
+        body = body + oled_placement
 
         return body
 
