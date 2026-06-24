@@ -12,7 +12,15 @@ class Led:
         return 5
 
     @property
+    def pcb_enty_radius(self) -> float:
+        return 7
+
+    @property
     def pcb_height(self) -> float:
+        return 4
+
+    @property
+    def pcb_actual_height(self) -> float:
         return 2
 
     @property

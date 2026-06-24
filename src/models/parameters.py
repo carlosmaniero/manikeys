@@ -65,6 +65,7 @@ class SocketAdapterParameters:
     body_thickness: float
     cap_socket_height: float
     cap_socket_width: float
+    center_hole_radius: float
 
 
 @dataclass
@@ -121,6 +122,49 @@ class MagnetParameters:
 
 
 @dataclass
+class Oled096Parameters:
+    @property
+    def display_height(self) -> float:
+        return 1.5
+
+    @property
+    def pcb(self) -> list[float]:
+        return [24.7, 27, 1.5]
+
+    @property
+    def panel(self) -> list[float]:
+        return [24.74, 16.9, self.display_height]
+
+    @property
+    def clearance(self) -> float:
+        return 0.5
+
+    @property
+    def screw_hole_offset(self) -> float:
+        return 2
+
+    @property
+    def screw_hole_radius(self) -> float:
+        return 0.9
+
+    @property
+    def screw_hole_depth(self) -> float:
+        return 2
+
+    @property
+    def flat_cable_clearance(self) -> float:
+        return 0.25
+
+    @property
+    def flat_cable_width(self) -> float:
+        return 9.0
+
+    @property
+    def cable_clearance(self) -> list[float]:
+        return [10.0, 2.0]
+
+
+@dataclass
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
@@ -131,3 +175,4 @@ class Parameters:
     usbc: USBCParameters
     pogo_pin: PogoPinParameters
     magnet: MagnetParameters
+    oled096: Oled096Parameters

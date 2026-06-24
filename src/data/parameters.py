@@ -11,6 +11,7 @@ from models.parameters import (
     USBCParameters,
     PogoPinParameters,
     MagnetParameters,
+    Oled096Parameters,
 )
 
 
@@ -53,13 +54,14 @@ class ParametersModule(Module):
                 border=2,
                 offset_fix=0.1,
                 diode_r=1.4,
-                diode_wire_r=0.5,
+                diode_wire_r=0.75,
                 diode_l=5,
                 diode_x=-2.54 - 2,
                 cube_size=cube_size,
-                body_thickness=6,
-                cap_socket_height=2,
+                body_thickness=10,
+                cap_socket_height=1,
                 cap_socket_width=cube_size + 4,
+                center_hole_radius=2.0,
             ),
             rj11=RJ11Parameters(
                 width=11.0,
@@ -106,4 +108,5 @@ class ParametersModule(Module):
                 height=2.0,
                 error_margin=0.15,
             ),
+            oled096=Oled096Parameters(),
         )
