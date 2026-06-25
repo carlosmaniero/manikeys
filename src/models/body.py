@@ -256,6 +256,10 @@ class BodyModel:
     def bottom_z(self) -> float:
         return -self.parameters.body.height
 
+    @property
+    def height(self) -> float:
+        return self.highest - self.bottom_z
+
 
 @singleton
 @inject

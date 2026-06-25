@@ -7,6 +7,7 @@ from context import injector
 from models.parameters import Parameters
 from models.socket_placement import SocketPlacementInner
 from models.pogo_pin import PogoPinModel
+from models.body import BodyModel
 from manifold_ext.object import ManifoldObject
 from loader import load_stl_to_manifold
 
@@ -17,6 +18,7 @@ from loader import load_stl_to_manifold
 class CablePath(ManifoldObject):
     model: SocketPlacementInner
     pogo_model: PogoPinModel
+    body_model: BodyModel
     parameters: Parameters
 
     @property
@@ -25,7 +27,7 @@ class CablePath(ManifoldObject):
             size=[
                 self.radius * 2,
                 self.parameters.body.thickness * 2,
-                self.radius * 2,
+                self.body_model.height * 2,
             ],
             center=True,
         )
@@ -61,11 +63,17 @@ class CablePath(ManifoldObject):
 
     @property
     def radius(self) -> float:
-        return self.parameters.body.cabe_hole_radius
+        return self.pogo_model.adapter_width / 2
 
     def assemble(self) -> manifold3d.Manifold:
         thickness = self.parameters.body.thickness
         height = self.parameters.body.height
+
+        cylinder_top = manifold3d.Manifold.cylinder(
+            radius_low=self.radius / 2,
+            height=self.length,
+            center=True,
+        ).rotate([90, 0, 0])
 
         cylinder = manifold3d.Manifold.cylinder(
             radius_low=self.radius,
@@ -75,7 +83,9 @@ class CablePath(ManifoldObject):
 
         return (
             manifold3d.Manifold.hull(
-                cylinder + cylinder.translate([0, 0, -height * 2])
+                cylinder_top
+                + cylinder.translate([0, 0, -height * 0.75])
+                + cylinder.translate([0, 0, -height * 2])
             )
             - self.pogo_location_mask
             + self.pogo_mask
