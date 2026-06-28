@@ -63,13 +63,11 @@ class FullKeyboard(ManifoldObject):
         ) = manifolds
 
         body = body - body_inner_sections
-        body = body + body_screw_placement
         body = body + cap_grid
         body = body - cap_hole_grid
         body = body + cap_thumb
         body = body - cap_thumb_hole
         body = body - cable_path
-        body = body - body_screw_hole
         body = body - magnet_snap
 
         body = body - rj11_mask
@@ -83,6 +81,9 @@ class FullKeyboard(ManifoldObject):
 
         body = body - oled_placement_body_mask
         body = body + oled_placement
+
+        body = body + body_screw_placement
+        body = body - body_screw_hole
 
         return body
 

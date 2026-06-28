@@ -78,11 +78,15 @@ def test_oled_096_cable_clearance():
 def test_oled_096_placement_position():
     mock_params = create_mock_parameters()
     mock_params.caps.size = 14.0
+    mock_params.caps.full_offset = 20.0
     mock_params.body.thickness = 3.0
 
     mock_body_model = Mock()
     mock_body_model.highest = 350.0
+    mock_body_model.sphere.highest = 350.0
     mock_body_model.bottom_z = -10.0
+    mock_body_model.hand_support_end_x = 100.0
+    mock_body_model.divider_y = 200.0
 
     mock_cap_thumb = Mock()
     mock_cap_thumb.body_model = mock_body_model
@@ -97,8 +101,8 @@ def test_oled_096_placement_position():
         global_parameters=mock_params, oled=oled_model, cap_thumb=mock_cap_thumb
     )
 
-    assert model.placement_position == [126.25, 200.0, 297.0]
+    assert model.placement_position == [129.0, 177.0, 347.0]
     assert model.mask_size == [32.5, 36.5, 360.0]
-    assert model.mask_coords == [126.25, 197.0, 170.0]
+    assert model.mask_coords == [129.0, 174.0, 170.0]
     assert model.shell_mask_size == [35.5, 45.5, 9.0]
-    assert model.shell_mask_coords == [126.25, 200.0, 297.0]
+    assert model.shell_mask_coords == [129.0, 177.0, 347.0]

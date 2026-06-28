@@ -88,5 +88,29 @@ class MagnetSnapModel:
 
         return positions
 
-    def get_all_positions(self) -> list[list[float]]:
+    def get_hand_side_positions(self) -> list[list[float]]:
+        x = self.model.hand_support_end_x
+        y_start = self.model.start_y()
+        y_end = self.model.divider_y
+
+        y_positions = [
+            y_start + self.thickness * 4,
+            y_end - self.thickness * 4,
+        ]
+
+        positions = []
+        for y in y_positions:
+            top_z, bottom_z = self._get_z_positions(x, y)
+            middle_z = (top_z + bottom_z) / 2
+            x_offset = self.full_magnet_height / 2
+
+            positions.append([x + x_offset, y, middle_z])
+            positions.append([x - x_offset, y, middle_z])
+
+        return positions
+
+    def get_y_axis_positions(self) -> list[list[float]]:
         return self.get_main_hand_positions() + self.get_main_side_positions()
+
+    def get_x_axis_positions(self) -> list[list[float]]:
+        return self.get_hand_side_positions()

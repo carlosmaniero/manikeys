@@ -135,15 +135,17 @@ class Oled096PlacementModel:
 
     @property
     def placement_position(self) -> list[float]:
-        positions = self.cap_thumb.get_positions()
         x = (
-            positions[0][0]
-            + self.global_parameters.caps.size / 2
-            + self.oled.body[0] / 2
-            + self.thickness
+            self.body_model.hand_support_end_x
+            + self.global_parameters.caps.full_offset
+            + self.thickness * 3
         )
-        y = positions[0][1]
-        z = positions[0][2] - self.oled.body[2] / 2
+        y = (
+            self.body_model.divider_y
+            - self.global_parameters.caps.full_offset
+            - self.thickness
+        )
+        z = self.body_model.sphere.highest - self.oled.body[2] / 2
         return [x, y, z]
 
     @property

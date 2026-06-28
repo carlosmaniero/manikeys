@@ -23,7 +23,7 @@ class MagnetSnapCAD(ManifoldObject):
         ) / 2
         height = self.model.full_magnet_height
 
-        magnet = manifold3d.Manifold.cylinder(
+        magnet_y = manifold3d.Manifold.cylinder(
             radius_low=radius,
             radius_high=radius,
             height=height,
@@ -31,11 +31,23 @@ class MagnetSnapCAD(ManifoldObject):
             center=True,
         ).rotate([90, 0, 0])
 
-        positions = self.model.get_all_positions()
+        magnet_x = manifold3d.Manifold.cylinder(
+            radius_low=radius,
+            radius_high=radius,
+            height=height,
+            circular_segments=64,
+            center=True,
+        ).rotate([0, 90, 0])
 
-        result = magnet.translate(positions[0])
-        for pos in positions[1:]:
-            result += magnet.translate(pos)
+        result = manifold3d.Manifold()
+
+        for pos in self.model.get_y_axis_positions():
+            m = magnet_y.translate(pos)
+            result += m
+
+        for pos in self.model.get_x_axis_positions():
+            m = magnet_x.translate(pos)
+            result += m
 
         return result
 

@@ -59,6 +59,7 @@ build/cad/components/oled_096_placement_body_mask.stl: src/cad/components/oled_0
 build/cad/components/oled_096_placement_shell_mask.stl: src/cad/components/oled_096_placement_shell_mask.py
 
 build/cad/connectors/rj11_adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/cad/connectors/rj11_adapter.stl build/cad/body.stl
+build/cad/connectors/rj11_adapter_placement.stl: src/cad/connectors/rj11_adapter_placement.py build/cad/body.stl
 build/cad/connectors/usbc_adapter.stl: src/cad/connectors/usbc_adapter.py build/cad/connectors/usbc_connector_mask.stl
 build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/cad/connectors/usbc_adapter.stl build/cad/body.stl
 build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py build/cad/connectors/usbc_connector_mask.stl

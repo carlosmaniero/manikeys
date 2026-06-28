@@ -69,12 +69,6 @@ class CablePath(ManifoldObject):
         thickness = self.parameters.body.thickness
         height = self.parameters.body.height
 
-        cylinder_top = manifold3d.Manifold.cylinder(
-            radius_low=self.radius / 2,
-            height=self.length,
-            center=True,
-        ).rotate([90, 0, 0])
-
         cylinder = manifold3d.Manifold.cylinder(
             radius_low=self.radius,
             height=self.length,
@@ -83,8 +77,7 @@ class CablePath(ManifoldObject):
 
         return (
             manifold3d.Manifold.hull(
-                cylinder_top
-                + cylinder.translate([0, 0, -height * 0.75])
+                cylinder
                 + cylinder.translate([0, 0, -height * 2])
             )
             - self.pogo_location_mask
@@ -94,7 +87,7 @@ class CablePath(ManifoldObject):
             [
                 self.model.end_x() - self.radius - thickness * 3,
                 self.model.divider_y,
-                -(height - self.radius - thickness * 2),
+                self.body_model.bottom_z + thickness * 2,
             ]
         )
 
