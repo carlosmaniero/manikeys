@@ -37,7 +37,7 @@ build/sphere.3mf: src/openscad_ext/demo.py
 
 build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_placement_shell.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl
+build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
 build/cad/magnet_snap.stl: src/cad/magnet_snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
@@ -65,6 +65,7 @@ build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_t
 build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py build/cad/connectors/usbc_connector_mask.stl
 build/cad/connectors/usbc_placement_mask.stl: src/cad/connectors/usbc_placement_mask.py
 
+build/cad/connectors/rj45_adapter_front_placement.stl: src/cad/connectors/rj45_adapter_front_placement.py build/cad/connectors/rj45_adapter_front.stl build/cad/body.stl
 build/cad/connectors/pogo_pin_mask.stl: src/cad/connectors/pogo_pin_mask.py
 build/cad/connectors/pogo_pin_adapter.stl: src/cad/connectors/pogo_pin_adapter.py build/cad/connectors/pogo_pin_mask.stl
 
