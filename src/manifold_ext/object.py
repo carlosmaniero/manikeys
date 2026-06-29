@@ -41,6 +41,10 @@ class ManifoldObject(Object[manifold3d.Manifold]):
     def program(self, argv: Sequence[str]):
         try:
             super().program(argv)
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.stdout.flush()
+            os._exit(1)
         finally:
             sys.stdout.flush()
             os._exit(0)
