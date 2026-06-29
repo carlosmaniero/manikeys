@@ -28,8 +28,8 @@ class FullKeyboard(ManifoldObject):
             "build/cad/cap_thumb_hole.stl",
             "build/cad/cable_path.stl",
             "build/cad/body_screw_hole.stl",
-            "build/cad/connectors/rj11_mask.stl",
-            "build/cad/connectors/rj11_adapter_placement.stl",
+            "build/cad/connectors/rj45_adapter_body_mask.stl",
+            "build/cad/connectors/rj45_adapter_front_placement.stl",
             "build/cad/connectors/usbc_mask.stl",
             "build/cad/connectors/usbc_adapter_trimmed.stl",
             "build/cad/magnet_snap.stl",
@@ -51,8 +51,8 @@ class FullKeyboard(ManifoldObject):
             cap_thumb_hole,
             cable_path,
             body_screw_hole,
-            rj11_mask,
-            rj11_adapter_placement,
+            rj45_mask,
+            rj45_adapter_placement,
             usbc_mask,
             usbc_adapter,
             magnet_snap,
@@ -70,8 +70,8 @@ class FullKeyboard(ManifoldObject):
         body = body - cable_path
         body = body - magnet_snap
 
-        body = body - rj11_mask
-        body = body + rj11_adapter_placement
+        body = body - rj45_mask
+        body = body + rj45_adapter_placement
 
         body = body - usbc_mask
         body = body + usbc_adapter

@@ -12,6 +12,10 @@ class USBCModel:
     body_model: BodyModel
 
     @property
+    def inner_offset(self) -> float:
+        return self.parameters.body.thickness / 2
+
+    @property
     def body_offset(self) -> list[float]:
         thickness = self.parameters.body.thickness
         full_length = self.pcb_width + thickness * 2
@@ -21,7 +25,7 @@ class USBCModel:
 
         return [
             self.body_model.start_x() + self.parameters.body.fillet + max_x,
-            self.body_model.end_y() - max_y,
+            self.body_model.end_y() - max_y + self.inner_offset,
             self.body_model.bottom_z + self.usbc.height + self.pcb_height / 2,
         ]
 
@@ -67,10 +71,8 @@ class USBCModel:
 
     @property
     def mounting_hole_x(self) -> float:
-        # Long side (X) symmetry
         return self.pcb_length / 2 - 1.0 - self.mounting_hole_radius
 
     @property
     def mounting_hole_y(self) -> float:
-        # Near the connector (Y side)
         return self.pcb_width / 2 - 1.0 - self.mounting_hole_radius

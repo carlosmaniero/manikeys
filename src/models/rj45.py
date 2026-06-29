@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from injector import inject, singleton
 from .parameters import Parameters, RJ45Parameters
+from .body import BodyModel
 
 
 @singleton
@@ -180,6 +181,31 @@ class RJ45Model:
     @property
     def front_screw_hole_coords(self) -> list[list[float]]:
         return [
-            [coords[0], coords[1] + self.thickness, coords[2]]
+            [coords[0], coords[1] - self.thickness, coords[2]]
             for coords in self.screw_hole_coords
+        ]
+
+
+@singleton
+@inject
+@dataclass
+class RJ45PlacementModel:
+    parameters: Parameters
+    rj45_model: RJ45Model
+    body_model: BodyModel
+
+    @property
+    def max_x(self) -> float:
+        return self.rj45_model.screw_tabs[0] / 2
+
+    @property
+    def max_y(self) -> float:
+        return self.rj45_model.body[1] / 2
+
+    @property
+    def translation_coords(self) -> list[float]:
+        return [
+            self.body_model.end_x() - self.parameters.body.fillet - self.max_x,
+            self.body_model.end_y() - self.max_y,
+            self.body_model.bottom_z + self.rj45_model.body[2] / 2,
         ]
