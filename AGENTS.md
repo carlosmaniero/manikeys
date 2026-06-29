@@ -8,6 +8,7 @@
 
 Before performing any change in the code:
 1.  **Sync**: Read the file again to ensure you have the latest version, as it may have been edited manually.
+2.  **Confirm**: Always show a diff of the proposed changes and ask for confirmation before performing the changes.
 
 After completing any code modifications:
 1.  **Format**: Run `uv run ruff format .` to ensure consistent styling.

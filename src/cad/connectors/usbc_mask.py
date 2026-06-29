@@ -20,36 +20,23 @@ class USBCMaskCAD(ManifoldObject):
     body_model: BodyModel
 
     @property
-    def thickness(self) -> float:
-        return self.parameters.body.thickness
-
-    @property
-    def length(self) -> float:
-        return (
-            self.thickness + self.model.mounting_hole_diameter + self.thickness
-        )
-
-    @property
-    def adapter_height(self) -> float:
-        return self.thickness + self.model.pcb_height + self.model.usbc.height
-
-    @property
-    def width(self) -> float:
-
-        return self.model.pcb_length + self.thickness * 2
-
-    @property
     def main_block(self) -> manifold3d.Manifold:
-        y_center = self.model.pcb_width / 2 + self.thickness - self.length / 2
+        y_center = (
+            self.model.pcb_width / 2
+            + self.model.thickness
+            - self.model.length / 2
+        )
         z_center = (
-            self.model.pcb_height / 2 + self.thickness - self.adapter_height / 2
+            self.model.pcb_height / 2
+            + self.model.thickness
+            - self.model.adapter_height / 2
         )
 
         return manifold3d.Manifold.cube(
             [
-                self.width,
-                self.length,
-                self.adapter_height + self.body_model.highest,
+                self.model.width,
+                self.model.length,
+                self.model.adapter_height + self.body_model.highest,
             ],
             center=True,
         ).translate(

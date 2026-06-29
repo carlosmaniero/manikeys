@@ -20,36 +20,23 @@ class USBCAdapterCAD(ManifoldObject):
     body_model: BodyModel
 
     @property
-    def thickness(self) -> float:
-        return self.parameters.body.thickness
-
-    @property
-    def width(self) -> float:
-
-        return self.model.pcb_length + self.thickness * 2
-
-    @property
-    def length(self) -> float:
-        return (
-            self.thickness + self.model.mounting_hole_diameter + self.thickness
-        )
-
-    @property
-    def adapter_height(self) -> float:
-        return self.thickness + self.model.pcb_height + self.model.usbc.height
-
-    @property
     def main_block(self) -> manifold3d.Manifold:
-        y_center = self.model.pcb_width / 2 + self.thickness - self.length / 2
+        y_center = (
+            self.model.pcb_width / 2
+            + self.model.thickness
+            - self.model.length / 2
+        )
         z_center = (
-            self.model.pcb_height / 2 + self.thickness - self.adapter_height / 2
+            self.model.pcb_height / 2
+            + self.model.thickness
+            - self.model.adapter_height / 2
         )
 
         return manifold3d.Manifold.cube(
             [
-                self.width,
-                self.length,
-                self.adapter_height + self.body_model.highest,
+                self.model.width,
+                self.model.length,
+                self.model.adapter_height + self.body_model.highest,
             ],
             center=True,
         ).translate(
@@ -70,14 +57,14 @@ class USBCAdapterCAD(ManifoldObject):
         y_start = self.model.pcb_width / 2
 
         z_mask_top = self.model.pcb_height / 2
-        z_mask_center = z_mask_top - self.adapter_height / 2
+        z_mask_center = z_mask_top - self.model.adapter_height / 2
 
-        mask_length = self.length + self.model.pcb_length
+        mask_length = self.model.length + self.model.pcb_length
         return manifold3d.Manifold.cube(
             [
-                self.width + 0.1,
+                self.model.width + 0.1,
                 mask_length,
-                self.adapter_height,
+                self.model.adapter_height,
             ],
             center=True,
         ).translate(
@@ -99,7 +86,7 @@ class USBCAdapterCAD(ManifoldObject):
         diameter = 1.8
         radius = diameter / 2
 
-        height = self.thickness + 5.0
+        height = self.model.thickness + 5.0
         x_pos = self.model.mounting_hole_x
         y_pos = self.model.mounting_hole_y
 
@@ -111,7 +98,7 @@ class USBCAdapterCAD(ManifoldObject):
             center=True,
         )
 
-        z_holes = self.model.pcb_height / 2 + self.thickness / 2
+        z_holes = self.model.pcb_height / 2 + self.model.thickness / 2
 
         return (
             hole.translate([x_pos, y_pos, 0])

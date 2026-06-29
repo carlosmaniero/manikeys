@@ -12,6 +12,22 @@ class USBCModel:
     body_model: BodyModel
 
     @property
+    def thickness(self) -> float:
+        return self.parameters.body.thickness
+
+    @property
+    def width(self) -> float:
+        return self.pcb_length + self.thickness * 2
+
+    @property
+    def length(self) -> float:
+        return self.thickness + self.mounting_hole_diameter + self.thickness
+
+    @property
+    def adapter_height(self) -> float:
+        return self.thickness + self.pcb_height + self.usbc.height
+
+    @property
     def inner_offset(self) -> float:
         return self.parameters.body.thickness / 2
 
