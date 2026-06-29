@@ -8,6 +8,7 @@ from models.parameters import (
     HandSupportParameters,
     SocketAdapterParameters,
     RJ11Parameters,
+    RJ45Parameters,
     USBCParameters,
     PogoPinParameters,
     MagnetParameters,
@@ -78,6 +79,7 @@ class ParametersModule(Module):
                 adapter_head_height=2.5,
                 adapter_socket_diameter=3.0,
             ),
+            rj45=RJ45Parameters(),
             usbc=USBCParameters(
                 width=13.0,
                 height=4.8,

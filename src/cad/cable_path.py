@@ -77,8 +77,7 @@ class CablePath(ManifoldObject):
 
         return (
             manifold3d.Manifold.hull(
-                cylinder
-                + cylinder.translate([0, 0, -height * 2])
+                cylinder + cylinder.translate([0, 0, -height * 2])
             )
             - self.pogo_location_mask
             + self.pogo_mask

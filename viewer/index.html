@@ -438,6 +438,10 @@
         let refInputs = [];
         let refMeshes = {};
         let refEdgesMeshes = {};
+        let refVerticesMeshes = {};
+        let activeMesh = null;
+        let activeEdgesMesh = null;
+        let activeVerticesMesh = null;
         let nextRefInputId = 1;
         const REF_COLORS_HEX = ['#00ffff', '#ffff00', '#33ff33', '#ffaa00', '#3388ff', '#ff5555'];
         const REF_COLORS = [0x00ffff, 0xffff00, 0x33ff33, 0xffaa00, 0x3388ff, 0xff5555];
@@ -734,8 +738,15 @@
             isMeasuring = !isMeasuring;
             measureBtn.classList.toggle('active', isMeasuring);
             measureInfo.style.display = isMeasuring ? 'inline' : 'none';
-            if (verticesMesh) verticesMesh.visible = isMeasuring;
-            if (edgesMesh) edgesMesh.visible = isMeasuring;
+
+            if (verticesMesh) verticesMesh.visible = false;
+            if (edgesMesh) edgesMesh.visible = false;
+            Object.values(refVerticesMeshes).forEach(v => v.visible = false);
+            Object.values(refEdgesMeshes).forEach(e => e.visible = false);
+
+            if (isMeasuring && activeVerticesMesh) activeVerticesMesh.visible = true;
+            if (isMeasuring && activeEdgesMesh) activeEdgesMesh.visible = true;
+
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
             container.style.cursor = isMeasuring ? 'crosshair' : 'default';
@@ -762,7 +773,7 @@
         }
 
         function onMouseMove(event) {
-            if (!isMeasuring || !edgesMesh || !verticesMesh) return;
+            if (!isMeasuring || !activeEdgesMesh || !activeVerticesMesh) return;
 
             const rect = container.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
@@ -770,11 +781,11 @@
 
             raycaster.setFromCamera(mouse, camera);
 
-            const vIntersects = raycaster.intersectObject(verticesMesh);
+            const vIntersects = raycaster.intersectObject(activeVerticesMesh);
             if (vIntersects.length > 0) {
                 const index = vIntersects[0].index;
-                const pos = verticesMesh.geometry.attributes.position;
-                const p = new THREE.Vector3().fromBufferAttribute(pos, index).applyMatrix4(verticesMesh.matrixWorld);
+                const pos = activeVerticesMesh.geometry.attributes.position;
+                const p = new THREE.Vector3().fromBufferAttribute(pos, index).applyMatrix4(activeVerticesMesh.matrixWorld);
 
                 hoverPoint.position.copy(p);
                 hoverPoint.visible = true;
@@ -802,13 +813,13 @@
             highlightedEdge = null;
 
             if (!highlightedVertex) {
-                const eIntersects = raycaster.intersectObject(edgesMesh);
+                const eIntersects = raycaster.intersectObject(activeEdgesMesh);
                 if (eIntersects.length > 0) {
                     const intersect = eIntersects[0];
                     const idx = intersect.index;
-                    const posAttr = edgesMesh.geometry.attributes.position;
-                    const A = new THREE.Vector3().fromBufferAttribute(posAttr, idx).applyMatrix4(edgesMesh.matrixWorld);
-                    const B = new THREE.Vector3().fromBufferAttribute(posAttr, idx + 1).applyMatrix4(edgesMesh.matrixWorld);
+                    const posAttr = activeEdgesMesh.geometry.attributes.position;
+                    const A = new THREE.Vector3().fromBufferAttribute(posAttr, idx).applyMatrix4(activeEdgesMesh.matrixWorld);
+                    const B = new THREE.Vector3().fromBufferAttribute(posAttr, idx + 1).applyMatrix4(activeEdgesMesh.matrixWorld);
 
                     hoverLine.geometry.setFromPoints([A, B]);
                     hoverLine.visible = true;
@@ -869,56 +880,104 @@
             }
         }
 
-        function onMouseDown(event) {
-            if (!isMeasuring || !mesh) return;
+        function selectMesh(hitMesh, hitEdges, hitVertices) {
+            activeMesh = hitMesh;
+            activeEdgesMesh = hitEdges;
+            activeVerticesMesh = hitVertices;
 
+            if (isMeasuring) {
+                if (verticesMesh) verticesMesh.visible = false;
+                if (edgesMesh) edgesMesh.visible = false;
+                Object.values(refVerticesMeshes).forEach(v => v.visible = false);
+                Object.values(refEdgesMeshes).forEach(e => e.visible = false);
+
+                if (activeVerticesMesh) activeVerticesMesh.visible = true;
+                if (activeEdgesMesh) activeEdgesMesh.visible = true;
+            }
+
+            if (hitMesh && hitMesh.geometry && hitMesh.geometry.boundingBox) {
+                const size = new THREE.Vector3();
+                hitMesh.geometry.boundingBox.getSize(size);
+                dimsDisplay.textContent = `${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)}`;
+                modelInfo.style.display = 'block';
+            }
+
+            if (hitMesh && hitMesh.material) {
+                const oldEmissive = hitMesh.material.emissive ? hitMesh.material.emissive.getHex() : 0x000000;
+                if (hitMesh.material.emissive !== undefined) {
+                    hitMesh.material.emissive.setHex(0x555555);
+                    setTimeout(() => { if (hitMesh.material && hitMesh.material.emissive) hitMesh.material.emissive.setHex(oldEmissive); }, 150);
+                }
+            }
+        }
+
+        function onMouseDown(event) {
             const rect = container.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
             mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
 
             let point = null;
-            if (highlightedVertex) {
-                point = highlightedVertex.clone();
-            } else if (highlightedEdge) {
-                if (measurePoints.length === 1) {
-                    const P = measurePoints[0];
-                    const A = highlightedEdge.A;
-                    const B = highlightedEdge.B;
-                    const v = new THREE.Vector3().subVectors(B, A);
-                    const u = new THREE.Vector3().subVectors(P, A);
-                    const t = u.dot(v) / v.dot(v);
-                    point = new THREE.Vector3().addVectors(A, v.multiplyScalar(t));
-                } else {
-                    const eIntersects = raycaster.intersectObject(edgesMesh);
-                    if (eIntersects.length > 0) {
-                        point = eIntersects[0].point.clone();
+
+            if (isMeasuring && activeMesh) {
+                if (highlightedVertex) {
+                    point = highlightedVertex.clone();
+                } else if (highlightedEdge) {
+                    if (measurePoints.length === 1) {
+                        const P = measurePoints[0];
+                        const A = highlightedEdge.A;
+                        const B = highlightedEdge.B;
+                        const v = new THREE.Vector3().subVectors(B, A);
+                        const u = new THREE.Vector3().subVectors(P, A);
+                        const t = u.dot(v) / v.dot(v);
+                        point = new THREE.Vector3().addVectors(A, v.multiplyScalar(t));
+                    } else {
+                        const eIntersects = raycaster.intersectObject(activeEdgesMesh);
+                        if (eIntersects.length > 0) {
+                            point = eIntersects[0].point.clone();
+                        }
                     }
+                }
+
+                if (point) {
+                    if (measurePoints.length >= 2) clearMeasure();
+                    measurePoints.push(point);
+
+                    const markerGeom = new THREE.SphereGeometry(1);
+                    const markerMat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.6 });
+                    const marker = new THREE.Mesh(markerGeom, markerMat);
+                    marker.position.copy(point);
+                    scene.add(marker);
+                    measureMarkers.push(marker);
+
+                    if (measurePoints.length === 2) {
+                        const dist = measurePoints[0].distanceTo(measurePoints[1]);
+                        distValDisplay.textContent = dist.toFixed(2);
+                        previewLine.visible = false;
+                        if (floatingLabel) floatingLabel.style.display = 'none';
+
+                        const lineGeom = new THREE.BufferGeometry().setFromPoints(measurePoints);
+                        const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
+                        const line = new THREE.Line(lineGeom, lineMat);
+                        scene.add(line);
+                        measureMarkers.push(line);
+                    }
+                    return; // Handled measurement point click
                 }
             }
 
-            if (point) {
-                if (measurePoints.length >= 2) clearMeasure();
-                measurePoints.push(point);
+            const selectableMeshes = [];
+            if (mesh) selectableMeshes.push({ m: mesh, e: edgesMesh, v: verticesMesh });
+            Object.keys(refMeshes).forEach(id => {
+                if (refMeshes[id]) selectableMeshes.push({ m: refMeshes[id], e: refEdgesMeshes[id], v: refVerticesMeshes[id] });
+            });
 
-                const markerGeom = new THREE.SphereGeometry(1);
-                const markerMat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.6 });
-                const marker = new THREE.Mesh(markerGeom, markerMat);
-                marker.position.copy(point);
-                scene.add(marker);
-                measureMarkers.push(marker);
-
-                if (measurePoints.length === 2) {
-                    const dist = measurePoints[0].distanceTo(measurePoints[1]);
-                    distValDisplay.textContent = dist.toFixed(2);
-                    previewLine.visible = false;
-                    if (floatingLabel) floatingLabel.style.display = 'none';
-
-                    const lineGeom = new THREE.BufferGeometry().setFromPoints(measurePoints);
-                    const lineMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
-                    const line = new THREE.Line(lineGeom, lineMat);
-                    scene.add(line);
-                    measureMarkers.push(line);
+            const intersects = raycaster.intersectObjects(selectableMeshes.map(sm => sm.m));
+            if (intersects.length > 0) {
+                const hit = intersects[0].object;
+                const sm = selectableMeshes.find(s => s.m === hit);
+                if (sm && sm.m !== activeMesh) {
+                    selectMesh(sm.m, sm.e, sm.v);
                 }
             }
         }
@@ -1159,6 +1218,9 @@
             Object.values(refEdgesMeshes).forEach(rem => {
                 if (rem) rem.position.copy(origin);
             });
+            Object.values(refVerticesMeshes).forEach(rvm => {
+                if (rvm) rvm.position.copy(origin);
+            });
 
             if (grid) {
                 grid.position.x = center.x;
@@ -1175,6 +1237,14 @@
             if (refEdgesMeshes[id]) {
                 scene.remove(refEdgesMeshes[id]);
                 delete refEdgesMeshes[id];
+            }
+            if (refVerticesMeshes[id]) {
+                scene.remove(refVerticesMeshes[id]);
+                delete refVerticesMeshes[id];
+            }
+
+            if (activeMesh && !Object.values(refMeshes).includes(activeMesh) && activeMesh !== mesh) {
+                selectMesh(mesh, edgesMesh, verticesMesh);
             }
         }
 
@@ -1206,6 +1276,18 @@
                 const edgesObj = new THREE.LineSegments(edgesGeom, new THREE.LineBasicMaterial({ color: colorVal, transparent: true, opacity: 0.2 }));
                 refEdgesMeshes[id] = edgesObj;
                 scene.add(edgesObj);
+
+                const pointsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 4, sizeAttenuation: false, transparent: true, opacity: 0.5 });
+                const verticesObj = new THREE.Points(geometry, pointsMat);
+                verticesObj.visible = false;
+                refVerticesMeshes[id] = verticesObj;
+                scene.add(verticesObj);
+
+                if (!activeMesh && mesh) {
+                    selectMesh(mesh, edgesMesh, verticesMesh);
+                } else if (!activeMesh && !mesh) {
+                    selectMesh(meshObj, edgesObj, verticesObj);
+                }
 
                 updateMaterials();
                 updateMeshPosition();
@@ -1364,6 +1446,15 @@
                 updateMaterials();
                 updateMeshPosition();
 
+                const box = geometry.boundingBox;
+                const size = new THREE.Vector3();
+                box.getSize(size);
+
+                dimsDisplay.textContent = `${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)}`;
+                modelInfo.style.display = 'block';
+
+                selectMesh(mesh, edgesMesh, verticesMesh);
+
                 hoverLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x00aaff, linewidth: 2 }));
                 hoverLine.visible = false;
                 scene.add(hoverLine);
@@ -1372,13 +1463,6 @@
 
                 hoverPoint.visible = false;
                 scene.add(hoverPoint);
-
-                const box = geometry.boundingBox;
-                const size = new THREE.Vector3();
-                box.getSize(size);
-
-                dimsDisplay.textContent = `${size.x.toFixed(1)} x ${size.y.toFixed(1)} x ${size.z.toFixed(1)}`;
-                modelInfo.style.display = 'block';
 
                 loading.style.display = 'none';
 
