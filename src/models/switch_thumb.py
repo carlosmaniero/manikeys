@@ -9,30 +9,30 @@ from .parameters import Parameters
 @singleton
 @inject
 @dataclass
-class CapThumbModel:
+class SwitchThumbModel:
     body_model: BodyModel
     parameters: Parameters
 
     def get_positions(self) -> list[list[float]]:
         pos1 = [
             self.body_model.end_x()
-            - self.parameters.caps.full_offset
+            - self.parameters.switches.full_offset
             - self.parameters.wall.thickness * 3,
             self.body_model.divider_y
-            - self.parameters.caps.full_offset
+            - self.parameters.switches.full_offset
             - self.parameters.wall.thickness,
             self.body_model.sphere.highest,
         ]
 
         pos2 = [
             pos1[0],
-            pos1[1] - self.parameters.caps.next_offset,
+            pos1[1] - self.parameters.switches.next_offset,
             pos1[2],
         ]
 
         pos3 = [
             pos1[0],
-            pos2[1] - self.parameters.caps.next_offset,
+            pos2[1] - self.parameters.switches.next_offset,
             pos1[2],
         ]
 

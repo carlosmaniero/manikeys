@@ -2,8 +2,8 @@ import sys
 from dataclasses import dataclass
 import manifold3d
 from injector import inject, singleton
-from models.layout import Layout
-from models.cap_thumb import CapThumbModel
+from switches.model import Layout
+from models.switch_thumb import SwitchThumbModel
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 from core.loader import load_stl_to_manifold
@@ -14,23 +14,23 @@ from core.loader import load_stl_to_manifold
 @dataclass
 class SocketGrid(ManifoldObject):
     layout: Layout
-    cad_thump: CapThumbModel
+    cad_thump: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
-        cap = load_stl_to_manifold("build/cad/socket_adapter.stl").rotate(
+        socket_adapter = load_stl_to_manifold("build/cad/socket_adapter.stl").rotate(
             [180, 0, 180]
         )
 
         offset = [0, 0, -2]
-        cap = cap.translate(offset)
+        socket_adapter = socket_adapter.translate(offset)
 
         for column in self.layout.grid:
             for key in column:
-                grid.append(cap.rotate(key.rotation).translate(key.position))
+                grid.append(socket_adapter.rotate(key.rotation).translate(key.position))
 
         for position in self.cad_thump.get_positions():
-            grid.append(cap.translate(position))
+            grid.append(socket_adapter.translate(position))
 
         return manifold3d.Manifold.batch_boolean(grid, manifold3d.OpType.Add)
 

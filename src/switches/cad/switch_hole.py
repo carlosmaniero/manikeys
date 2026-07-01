@@ -10,20 +10,20 @@ from core.context import injector
 @singleton
 @inject
 @dataclass
-class CapHoleCAD(ManifoldObject):
+class SwitchHoleCAD(ManifoldObject):
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
-                self.parameters.caps.size,
-                self.parameters.caps.size,
-                self.parameters.caps.thickness * 2,
+                self.parameters.switches.size,
+                self.parameters.switches.size,
+                self.parameters.switches.thickness * 2,
             ],
             center=True,
         )
 
 
 if __name__ == "__main__":
-    cap_hole = injector.get(CapHoleCAD)
-    cap_hole.program(sys.argv)
+    switch_hole = injector.get(SwitchHoleCAD)
+    switch_hole.program(sys.argv)

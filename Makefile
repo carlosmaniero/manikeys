@@ -36,9 +36,9 @@ build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_placement_shell.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
+build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_placement_shell.stl build/cad/socket_adapter_grid.stl build/switches/cad/keycap_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/structure/body/shape.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
+build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/structure/body/shape.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
 build/cad/magnet_snap.stl: src/cad/magnet_snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
@@ -47,13 +47,13 @@ build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/struct
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
 build/cad/body_bottom.stl: src/cad/body_bottom.py build/structure/body/shape.stl
-build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl build/cad/body_screw_mask.stl build/cad/cap_hole_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/components/light_indicator/body_shell_mask.stl build/cad/components/oled_096_placement_shell_mask.stl
+build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl build/cad/body_screw_mask.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/cad/cable_path.stl build/cad/components/light_indicator/body_shell_mask.stl build/cad/components/oled_096_placement_shell_mask.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/socket_placement_inner_sections.stl: src/cad/socket_placement_inner_sections.py build/cad/socket_placement_inner.stl
-build/cad/cap_grid.stl: src/cad/cap_grid.py build/cad/cap.stl
-build/cad/cap_hole_grid.stl: src/cad/cap_hole_grid.py build/cad/cap_hole.stl
-build/cad/cap_thumb.stl: src/cad/cap_thumb.py build/cad/cap.stl
-build/cad/cap_thumb_hole.stl: src/cad/cap_thumb_hole.py build/cad/cap_hole.stl
+build/switches/cad/switch_hole_decorator_grid.stl: src/switches/cad/switch_hole_decorator_grid.py build/switches/cad/switch_hole_decorator.stl
+build/switches/cad/switch_hole_grid.stl: src/switches/cad/switch_hole_grid.py build/switches/cad/switch_hole.stl
+build/switches/cad/switch_decorator_thumb_grid.stl: src/switches/cad/switch_decorator_thumb_grid.py build/switches/cad/switch_hole_decorator.stl
+build/switches/cad/switch_thumb_hole.stl: src/switches/cad/switch_thumb_hole.py build/switches/cad/switch_hole.stl
 build/cad/socket_adapter_grid.stl: src/cad/socket_adapter_grid.py build/cad/socket_adapter.stl
 build/cad/components/oled_096_placement.stl: src/cad/components/oled_096_placement.py build/cad/components/oled_096.stl
 build/cad/components/oled_096_placement_body_mask.stl: src/cad/components/oled_096_placement_body_mask.py

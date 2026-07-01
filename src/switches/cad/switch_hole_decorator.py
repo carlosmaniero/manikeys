@@ -10,7 +10,7 @@ from core.context import injector
 @singleton
 @inject
 @dataclass
-class CapCAD(OSCObject):
+class SwitchHoleDecoratorCAD(OSCObject):
     parameters: Parameters
     fn: int = field(default=20, init=False)
 
@@ -19,28 +19,28 @@ class CapCAD(OSCObject):
 
         squared_bottom = osc.cube(
             [
-                p.caps.size + p.caps.border * 2,
-                p.caps.size + p.caps.border * 2,
-                p.caps.thickness / 2,
+                p.switches.size + p.switches.border * 2,
+                p.switches.size + p.switches.border * 2,
+                p.switches.thickness / 2,
             ],
             center=True,
         )
 
-        squared_bottom += [0, 0, -p.caps.thickness / 4]
+        squared_bottom += [0, 0, -p.switches.thickness / 4]
 
         obj = osc.cube(
             [
-                p.caps.size + p.caps.border * 2,
-                p.caps.size + p.caps.border * 2,
-                p.caps.thickness,
+                p.switches.size + p.switches.border * 2,
+                p.switches.size + p.switches.border * 2,
+                p.switches.thickness,
             ],
             center=True,
         )
-        obj = obj.fillet(p.caps.border / 4, fn=self.fn)
+        obj = obj.fillet(p.switches.border / 4, fn=self.fn)
 
         obj |= squared_bottom
 
-        obj -= [0, 0, p.caps.thickness / 2 - p.caps.outer.thickness]
+        obj -= [0, 0, p.switches.thickness / 2 - p.switches.outer.thickness]
 
         return self.colorize(obj)
 
@@ -49,5 +49,5 @@ class CapCAD(OSCObject):
 
 
 if __name__ == "__main__":
-    cap = injector.get(CapCAD)
-    cap.program(sys.argv)
+    switch_hole_decorator = injector.get(SwitchHoleDecoratorCAD)
+    switch_hole_decorator.program(sys.argv)

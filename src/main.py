@@ -19,7 +19,7 @@ class Keyboard(OSCObject):
             "build/cad/body_bottom.stl",
             "build/cad/socket_placement_shell.stl",
             "build/cad/socket_adapter_grid.stl",
-            "build/cad/cap_top_grid.stl",
+            "build/switches/cad/switch_top_grid.stl",
             "build/cad/connectors/rj11.stl",
             "build/cad/connectors/rj11_adapter_trimmed.stl",
         ]
@@ -28,7 +28,7 @@ class Keyboard(OSCObject):
             bottom,
             socket_shell,
             sockets,
-            caps,
+            switches,
             rj11,
             rj11_adapter,
         ) = load_many_stl(paths)
@@ -37,7 +37,7 @@ class Keyboard(OSCObject):
         yield bottom.color("#c0b89b")
         yield socket_shell.color("#c0b89b")
         yield sockets.color("#c0b89b")
-        yield caps.color("#bec0b1")
+        yield switches.color("#bec0b1")
         yield rj11.color("#5a5a5a")
         yield rj11_adapter.color("#c0b89b")
 

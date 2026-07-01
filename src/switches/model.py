@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Protocol
-from .projection import SphereProjection
-from .parameters import Parameters
+from models.projection import SphereProjection
+from models.parameters import Parameters
 from dataclasses import field
 
 
@@ -20,13 +20,13 @@ class LayoutColumn:
     offsetY: float = 0
 
 
-class CapSize(Protocol):
+class SwitchDimensions(Protocol):
     size: float
     gap: float
 
 
 @dataclass
-class LayoutPositioning:
+class LayoutBounds:
     left: list[float] = field(default_factory=lambda: [float("inf"), 0, 0])
     right: list[float] = field(default_factory=lambda: [float("-inf"), 0, 0])
     top: list[float] = field(default_factory=lambda: [0, float("inf"), 0])
@@ -64,20 +64,20 @@ class LayoutPositioning:
 class Layout:
     columns: List[LayoutColumn]
     grid: List[List[Key]]
-    positioning: LayoutPositioning
+    bounds: LayoutBounds
 
     @classmethod
     def from_spherical_projection(
         cls,
         columns: List[LayoutColumn],
         projection: SphereProjection,
-        cap: CapSize,
+        switch: SwitchDimensions,
     ) -> "Layout":
-        length = cap.size + cap.gap
+        length = switch.size + switch.gap
         initial_column_position = [0, 0, -projection.radius]
 
         grid = []
-        positioning = LayoutPositioning()
+        bounds = LayoutBounds()
 
         for col_index, column in enumerate(columns):
             keys_in_col = []
@@ -87,7 +87,7 @@ class Layout:
                 if row_index == 0:
                     position = projection.move_constant_x(
                         position,
-                        (column.offsetY - columns[0].offsetY) * cap.size,
+                        (column.offsetY - columns[0].offsetY) * switch.size,
                         direction=1,
                     )
 
@@ -105,7 +105,7 @@ class Layout:
                     offsetY=column.offsetY,
                 )
 
-                positioning.update(key.position)
+                bounds.update(key.position)
 
                 keys_in_col.append(key)
 
@@ -119,55 +119,50 @@ class Layout:
                 initial_column_position, length, direction=1
             )
 
-        return cls(columns=columns, grid=grid, positioning=positioning)
+        return cls(columns=columns, grid=grid, bounds=bounds)
 
-
-@dataclass
-class MainBody:
-    positioning: LayoutPositioning
-
-    def corners(
-        self, parameters: Parameters, layout: Layout
+    def get_main_cluster_corners(
+        self, parameters: Parameters
     ) -> List[List[float]]:
         top_left = [
-            self.positioning.left[0]
-            - parameters.caps.size
-            - parameters.caps.gap,
-            self.positioning.top[1]
-            - parameters.caps.size
-            - parameters.caps.gap,
+            self.bounds.left[0]
+            - parameters.switches.size
+            - parameters.switches.gap,
+            self.bounds.top[1]
+            - parameters.switches.size
+            - parameters.switches.gap,
         ]
         top_right = [
-            self.positioning.right[0]
-            + parameters.caps.size
-            + parameters.caps.gap,
-            self.positioning.top[1]
-            - parameters.caps.size
-            - parameters.caps.gap,
+            self.bounds.right[0]
+            + parameters.switches.size
+            + parameters.switches.gap,
+            self.bounds.top[1]
+            - parameters.switches.size
+            - parameters.switches.gap,
         ]
         bottom_left = [
-            self.positioning.left[0]
-            - parameters.caps.size
-            - parameters.caps.gap,
-            self.positioning.bottom[1]
-            + parameters.caps.size
-            + parameters.caps.gap,
+            self.bounds.left[0]
+            - parameters.switches.size
+            - parameters.switches.gap,
+            self.bounds.bottom[1]
+            + parameters.switches.size
+            + parameters.switches.gap,
         ]
         bottom_right = [
-            self.positioning.right[0]
-            + parameters.caps.size
-            + parameters.caps.gap,
-            self.positioning.bottom[1]
-            + parameters.caps.size
-            + parameters.caps.gap,
+            self.bounds.right[0]
+            + parameters.switches.size
+            + parameters.switches.gap,
+            self.bounds.bottom[1]
+            + parameters.switches.size
+            + parameters.switches.gap,
         ]
 
-        top_first_key = list(layout.grid[0][0].position)
+        top_first_key = list(self.grid[0][0].position)
         top_first_key[0] = top_left[0]
-        top_first_key[1] -= parameters.caps.size + parameters.caps.gap
+        top_first_key[1] -= parameters.switches.size + parameters.switches.gap
 
-        top_third_key = list(layout.grid[3][0].position)
-        top_third_key[0] -= parameters.caps.size + parameters.caps.gap
+        top_third_key = list(self.grid[3][0].position)
+        top_third_key[0] -= parameters.switches.size + parameters.switches.gap
         top_third_key[1] = top_left[1]
 
         return [

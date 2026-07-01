@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Oled096Parameters, Parameters
-from models.cap_thumb import CapThumbModel
+from models.switch_thumb import SwitchThumbModel
 from structure.body.models import BodyModel
 import math
 
@@ -123,7 +123,7 @@ class Oled096Model:
 class Oled096PlacementModel:
     global_parameters: Parameters
     oled: Oled096Model
-    cap_thumb: CapThumbModel
+    switch_thumb: SwitchThumbModel
 
     @property
     def thickness(self) -> float:
@@ -131,18 +131,18 @@ class Oled096PlacementModel:
 
     @property
     def body_model(self) -> BodyModel:
-        return self.cap_thumb.body_model
+        return self.switch_thumb.body_model
 
     @property
     def placement_position(self) -> list[float]:
         x = (
             self.body_model.hand_support_end_x
-            + self.global_parameters.caps.full_offset
+            + self.global_parameters.switches.full_offset
             + self.thickness * 3
         )
         y = (
             self.body_model.divider_y
-            - self.global_parameters.caps.full_offset
+            - self.global_parameters.switches.full_offset
             - self.thickness
         )
         z = self.body_model.sphere.highest - self.oled.body[2] / 2

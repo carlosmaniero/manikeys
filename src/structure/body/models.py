@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import numpy as np
 from injector import inject, singleton
-from models.layout import Layout
+from switches.model import Layout
 from models.parameters import Parameters
 from core.interpolation import lerp, Interpolator, InterpolationChain
 
@@ -14,62 +14,62 @@ class NumPyCapsBottomSphere:
     parameters: Parameters
 
     @property
-    def cap_offset(self) -> float:
+    def switch_offset(self) -> float:
         return (
-            self.parameters.caps.size / 2
-            + self.parameters.caps.border
+            self.parameters.switches.size / 2
+            + self.parameters.switches.border
             + self.parameters.wall.fillet
         )
 
     def start_x(self) -> float:
         return (
-            self.layout.positioning.left[0]
-            - self.cap_offset
+            self.layout.bounds.left[0]
+            - self.switch_offset
             - self.parameters.wall.thickness
         )
 
     def end_x(self) -> float:
-        return self.layout.positioning.right[0] + self.cap_offset
+        return self.layout.bounds.right[0] + self.switch_offset
 
     def start_y(self) -> float:
         return (
-            self.layout.positioning.top[1]
-            - self.cap_offset
+            self.layout.bounds.top[1]
+            - self.switch_offset
             - self.parameters.wall.thickness
         )
 
     def end_y(self) -> float:
         return (
-            self.layout.positioning.bottom[1]
-            + self.cap_offset
+            self.layout.bounds.bottom[1]
+            + self.switch_offset
             + self.parameters.wall.thickness * 2
         )
 
     @property
     def highest(self) -> float:
-        # TODO: calculate the actual highest point based the cap position and
+        # TODO: calculate the actual highest point based the switch position and
         # rotation.
         return (
-            self.layout.positioning.highest[2] + self.parameters.caps.border * 5
+            self.layout.bounds.highest[2] + self.parameters.switches.border * 5
         )
 
     @property
     def highest_x(self) -> float:
-        return self.layout.positioning.highest[0]
+        return self.layout.bounds.highest[0]
 
     @property
     def lowest(self) -> float:
-        return self.layout.positioning.lowest[2]
+        return self.layout.bounds.lowest[2]
 
     @property
     def lowest_x(self) -> float:
-        return self.layout.positioning.lowest[0]
+        return self.layout.bounds.lowest[0]
 
     def divider_x_main(self, offset: float) -> float:
-        return self.highest_x + self.parameters.caps.size / 2 - offset
+        return self.highest_x + self.parameters.switches.size / 2 - offset
 
     def start_fixed_x(self, offset: float) -> float:
-        return self.divider_x_main(offset) + self.parameters.caps.gap
+        return self.divider_x_main(offset) + self.parameters.switches.gap
 
     def z(self, x: np.ndarray, y: np.ndarray, offset: float) -> np.ndarray:
         radius = self.parameters.body.radius - offset

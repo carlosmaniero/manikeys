@@ -2,8 +2,8 @@ import sys
 from dataclasses import dataclass
 import manifold3d
 from injector import inject, singleton
-from models.layout import Layout
-from models.cap_thumb import CapThumbModel
+from switches.model import Layout
+from models.switch_thumb import SwitchThumbModel
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 from core.loader import load_stl_to_manifold
@@ -15,9 +15,9 @@ DEBUG = os.getenv("DEBUG", "false") == "true"
 @singleton
 @inject
 @dataclass
-class CapTopGridCAD(ManifoldObject):
+class KeycapGridCAD(ManifoldObject):
     layout: Layout
-    cad_thump: CapThumbModel
+    cad_thump: SwitchThumbModel
 
     def show(self):
         if DEBUG:
@@ -33,24 +33,24 @@ class CapTopGridCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
-        cap = load_stl_to_manifold("dist/Simple-CherryMX-Keycap.stl")
+        keycap = load_stl_to_manifold("dist/Simple-CherryMX-Keycap.stl")
 
         offset = [3, -1.25, 4]
 
         for column in self.layout.grid:
             for key in column:
                 grid.append(
-                    cap.rotate(key.rotation)
+                    keycap.rotate(key.rotation)
                     .translate(key.position)
                     .translate(offset)
                 )
 
         for position in self.cad_thump.get_positions():
-            grid.append(cap.translate(position).translate(offset))
+            grid.append(keycap.translate(position).translate(offset))
 
         return manifold3d.Manifold.batch_boolean(grid, manifold3d.OpType.Add)
 
 
 if __name__ == "__main__":
-    cap_grid = injector.get(CapTopGridCAD)
-    cap_grid.program(sys.argv)
+    keycap_grid = injector.get(KeycapGridCAD)
+    keycap_grid.program(sys.argv)

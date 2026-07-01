@@ -22,10 +22,10 @@ class FullKeyboard(ManifoldObject):
             "build/structure/body/shape.stl",
             "build/cad/body_inner_sections.stl",
             "build/cad/body_screw_placement.stl",
-            "build/cad/cap_grid.stl",
-            "build/cad/cap_hole_grid.stl",
-            "build/cad/cap_thumb.stl",
-            "build/cad/cap_thumb_hole.stl",
+            "build/switches/cad/switch_hole_decorator_grid.stl",
+            "build/switches/cad/switch_hole_grid.stl",
+            "build/switches/cad/switch_decorator_thumb_grid.stl",
+            "build/switches/cad/switch_thumb_hole.stl",
             "build/cad/cable_path.stl",
             "build/cad/body_screw_hole.stl",
             "build/cad/connectors/rj45_adapter_body_mask.stl",
@@ -45,10 +45,10 @@ class FullKeyboard(ManifoldObject):
             body,
             body_inner_sections,
             body_screw_placement,
-            cap_grid,
-            cap_hole_grid,
-            cap_thumb,
-            cap_thumb_hole,
+            switch_grid,
+            switch_hole_grid,
+            switch_thumb,
+            switch_thumb_hole,
             cable_path,
             body_screw_hole,
             rj45_mask,
@@ -63,10 +63,10 @@ class FullKeyboard(ManifoldObject):
         ) = manifolds
 
         body = body - body_inner_sections
-        body = body + cap_grid
-        body = body - cap_hole_grid
-        body = body + cap_thumb
-        body = body - cap_thumb_hole
+        body = body + switch_grid
+        body = body - switch_hole_grid
+        body = body + switch_thumb
+        body = body - switch_thumb_hole
         body = body - cable_path
         body = body - magnet_snap
 

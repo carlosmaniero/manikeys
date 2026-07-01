@@ -3,7 +3,7 @@ from globals.wall.parameters import WallParameters
 from injector import Module, provider, singleton
 from models.parameters import (
     Parameters,
-    CapsParameters,
+    SwitchesParameters,
     CapsOuterParameters,
     HandSupportParameters,
     SocketAdapterParameters,
@@ -23,7 +23,7 @@ class ParametersModule(Module):
     def provide_parameters(self) -> Parameters:
         cube_size = 13.6
         return Parameters(
-            caps=CapsParameters(
+            switches=SwitchesParameters(
                 size=14,
                 thickness=5,
                 border=2,
@@ -48,8 +48,8 @@ class ParametersModule(Module):
                 diode_x=-2.54 - 2,
                 cube_size=cube_size,
                 body_thickness=10,
-                cap_socket_height=1,
-                cap_socket_width=cube_size + 4,
+                switch_socket_height=1,
+                switch_socket_width=cube_size + 4,
                 center_hole_radius=2.0,
             ),
             rj11=RJ11Parameters(

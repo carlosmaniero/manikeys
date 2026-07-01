@@ -99,34 +99,34 @@ class SocketAdapter2CAD(ManifoldObject):
             self.led_placement_pcb() + self.led_placement_hole()
         )
 
-    def cap_socket(self) -> Manifold:
+    def switch_socket(self) -> Manifold:
         body_holder = Manifold.cube(
             [
                 self.parameters.socket_adapter.cube_size,
                 self.parameters.socket_adapter.cube_size,
-                self.parameters.socket_adapter.cap_socket_height,
+                self.parameters.socket_adapter.switch_socket_height,
             ],
             center=True,
         ).translate(
             [
                 0,
                 0,
-                self.parameters.socket_adapter.cap_socket_height,
+                self.parameters.socket_adapter.switch_socket_height,
             ]
         )
         cube = (
             Manifold.cube(
                 [
-                    self.parameters.socket_adapter.cap_socket_width,
+                    self.parameters.socket_adapter.switch_socket_width,
                     self.parameters.socket_adapter.cube_size,
-                    self.parameters.socket_adapter.cap_socket_height,
+                    self.parameters.socket_adapter.switch_socket_height,
                 ],
                 center=True,
             )
             + body_holder
         )
         return cube.translate(
-            [0, 0, self.parameters.socket_adapter.cap_socket_height / 2]
+            [0, 0, self.parameters.socket_adapter.switch_socket_height / 2]
         )
 
     def countersink(
@@ -261,7 +261,7 @@ class SocketAdapter2CAD(ManifoldObject):
         return (
             self.body()
             + self.led_placement_top()
-            + self.cap_socket()
+            + self.switch_socket()
             - self.led_placement()
             - self.center_hole()
             - self.pin_holes()

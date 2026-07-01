@@ -1,7 +1,7 @@
 from injector import Module, provider, singleton
 from models.parameters import Parameters
 from models.projection import SphereProjection
-from models.layout import Layout, LayoutColumn
+from switches.model import Layout, LayoutColumn
 
 
 class LayoutModule(Module):
@@ -21,5 +21,5 @@ class LayoutModule(Module):
                 LayoutColumn(keys=5, offsetY=0),
             ],
             projection=projection,
-            cap=parameters.caps,
+            switch=parameters.switches,
         )

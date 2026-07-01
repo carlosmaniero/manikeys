@@ -10,7 +10,7 @@ class CapsOuterParameters:
 
 
 @dataclass
-class CapsParameters:
+class SwitchesParameters:
     size: float
     thickness: float
     border: float
@@ -44,8 +44,8 @@ class SocketAdapterParameters:
     diode_x: float
     cube_size: float
     body_thickness: float
-    cap_socket_height: float
-    cap_socket_width: float
+    switch_socket_height: float
+    switch_socket_width: float
     center_hole_radius: float
 
 
@@ -184,7 +184,7 @@ class Oled096Parameters:
 class Parameters:
     screw: ScrewParameters
     wall: WallParameters
-    caps: CapsParameters
+    switches: SwitchesParameters
     body: BodyParameters
     hand_support: HandSupportParameters
     socket_adapter: SocketAdapterParameters

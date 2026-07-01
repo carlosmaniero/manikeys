@@ -93,16 +93,16 @@ class SocketAdapterCAD(ManifoldObject):
         ).translate([self.p.diode_x, self.p.cube_size / 2, 0])
         return c1 + c2
 
-    def cap_socket(self) -> manifold3d.Manifold:
+    def switch_socket(self) -> manifold3d.Manifold:
         c = manifold3d.Manifold.cube(
             [
-                self.p.cap_socket_width,
+                self.p.switch_socket_width,
                 self.p.cube_size,
-                self.p.cap_socket_height / 2,
+                self.p.switch_socket_height / 2,
             ],
             center=True,
         )
-        return c.translate([0, 0, self.p.cap_socket_height / 4 - 2])
+        return c.translate([0, 0, self.p.switch_socket_height / 4 - 2])
 
     def led_placement(self) -> manifold3d.Manifold:
         pcb_radius = 5.05
@@ -131,7 +131,7 @@ class SocketAdapterCAD(ManifoldObject):
         return c.translate([0, 0, self.p.body_thickness / 2 - 0.5])
 
     def full_body(self) -> manifold3d.Manifold:
-        return self.body() + self.cap_socket()
+        return self.body() + self.switch_socket()
 
     def assemble(self) -> manifold3d.Manifold:
         obj = self.full_body()
@@ -150,15 +150,15 @@ class SocketAdapterCAD(ManifoldObject):
         return obj
 
     def socket(self) -> manifold3d.Manifold:
-        size = self.p.cube_size + self.p.cap_socket_height * 2
+        size = self.p.cube_size + self.p.switch_socket_height * 2
         c = manifold3d.Manifold.cube(
-            [size, size, self.p.cap_socket_height], center=True
+            [size, size, self.p.switch_socket_height], center=True
         )
         return c.translate(
             [
                 -size / 2,
                 -size / 2,
-                self.p.body_thickness - self.p.cap_socket_height / 2,
+                self.p.body_thickness - self.p.switch_socket_height / 2,
             ]
         )
 

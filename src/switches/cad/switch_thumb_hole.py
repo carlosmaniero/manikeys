@@ -4,18 +4,18 @@ import manifold3d
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.cap_thumb import CapThumbModel
+from models.switch_thumb import SwitchThumbModel
 from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class CapThumbHoleCAD(ManifoldObject):
-    model: CapThumbModel
+class SwitchThumbHoleCAD(ManifoldObject):
+    model: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
-        hole = load_stl_to_manifold("build/cad/cap_hole.stl")
+        hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
         positions = self.model.get_positions()
 
         holes = [hole.translate(pos) for pos in positions]
@@ -24,5 +24,5 @@ class CapThumbHoleCAD(ManifoldObject):
 
 
 if __name__ == "__main__":
-    cap_thumb_hole = injector.get(CapThumbHoleCAD)
-    cap_thumb_hole.program(sys.argv)
+    switch_thumb_hole = injector.get(SwitchThumbHoleCAD)
+    switch_thumb_hole.program(sys.argv)

@@ -1,7 +1,7 @@
 import math
-from models.layout import LayoutColumn, Layout
+from switches.model import LayoutColumn, Layout
 from models.projection import SphereProjection
-from models.parameters import CapsParameters
+from models.parameters import SwitchesParameters
 
 
 def assert_pos_equal(pos1, pos2):
@@ -11,7 +11,7 @@ def assert_pos_equal(pos1, pos2):
 
 
 def test_layout_grid():
-    caps = CapsParameters(
+    caps = SwitchesParameters(
         size=14.0, thickness=5.0, border=0.5, gap=2.5, outer=None
     )
     columns = [
@@ -22,7 +22,7 @@ def test_layout_grid():
     projection = SphereProjection(radius)
 
     layout = Layout.from_spherical_projection(
-        columns=columns, projection=projection, cap=caps
+        columns=columns, projection=projection, switch=caps
     )
 
     grid = list(layout.grid)

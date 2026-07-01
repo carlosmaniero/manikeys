@@ -83,8 +83,8 @@ def test_oled_096_cable_clearance():
 
 def test_oled_096_placement_position():
     mock_params = create_mock_parameters()
-    mock_params.caps.size = 14.0
-    mock_params.caps.full_offset = 20.0
+    mock_params.switches.size = 14.0
+    mock_params.switches.full_offset = 20.0
     mock_params.wall.thickness = 3.0
 
     mock_body_model = Mock()
@@ -94,9 +94,9 @@ def test_oled_096_placement_position():
     mock_body_model.hand_support_end_x = 100.0
     mock_body_model.divider_y = 200.0
 
-    mock_cap_thumb = Mock()
-    mock_cap_thumb.body_model = mock_body_model
-    mock_cap_thumb.get_positions.return_value = [
+    mock_switch_thumb = Mock()
+    mock_switch_thumb.body_model = mock_body_model
+    mock_switch_thumb.get_positions.return_value = [
         [100.0, 200.0, 300.0],
         [100.0, 180.0, 300.0],
         [100.0, 160.0, 300.0],
@@ -104,7 +104,7 @@ def test_oled_096_placement_position():
 
     oled_model = Oled096Model(global_parameters=mock_params)
     model = Oled096PlacementModel(
-        global_parameters=mock_params, oled=oled_model, cap_thumb=mock_cap_thumb
+        global_parameters=mock_params, oled=oled_model, switch_thumb=mock_switch_thumb
     )
 
     assert model.placement_position == [129.0, 177.0, 347.0]
