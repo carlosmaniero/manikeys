@@ -18,7 +18,7 @@ class SwitchHoleCAD(ManifoldObject):
             [
                 self.parameters.switches.size,
                 self.parameters.switches.size,
-                self.parameters.switches.thickness * 2,
+                self.parameters.switches.thickness * 4,
             ],
             center=True,
         )
