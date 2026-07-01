@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from switches.socket.parameters import HotSwapParameters
 from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
+from connectors.magnet.parameters import MagnetParameters
 
 
 @dataclass
@@ -105,13 +106,6 @@ class USBCParameters:
     hole_spacing: float
     aperture: float
     num_holes: int
-    error_margin: float
-
-
-@dataclass
-class MagnetParameters:
-    diameter: float
-    height: float
     error_margin: float
 
 

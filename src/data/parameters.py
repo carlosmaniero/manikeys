@@ -10,11 +10,11 @@ from models.parameters import (
     RJ11Parameters,
     RJ45Parameters,
     USBCParameters,
-    MagnetParameters,
     Oled096Parameters,
 )
 from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
+from connectors.magnet.parameters import MagnetParameters
 
 
 class ParametersModule(Module):
@@ -66,10 +66,6 @@ class ParametersModule(Module):
                 error_margin=0.25,
             ),
             pogo_pin=PogoPinParameters(),
-            magnet=MagnetParameters(
-                diameter=4.0,
-                height=2.0,
-                error_margin=0.15,
-            ),
+            magnet=MagnetParameters(),
             oled096=Oled096Parameters(),
         )

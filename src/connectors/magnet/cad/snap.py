@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
-from models.magnet_snap import MagnetSnapModel
+from connectors.magnet.models import MagnetSnapModel
 from core.manifold_ext.object import ManifoldObject
 
 
