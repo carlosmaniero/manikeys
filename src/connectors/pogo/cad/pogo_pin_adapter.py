@@ -6,7 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from models.parameters import Parameters
-from models.pogo_pin import PogoPinModel
+from connectors.pogo.models import PogoPinModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -38,7 +38,9 @@ class PogoPinAdapterCAD(ManifoldObject):
 
     @property
     def internal_mask(self) -> manifold3d.Manifold:
-        return load_stl_to_manifold("build/cad/connectors/pogo_pin_mask.stl")
+        return load_stl_to_manifold(
+            "build/connectors/pogo/cad/pogo_pin_mask.stl"
+        )
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:

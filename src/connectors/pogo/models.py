@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from injector import inject, singleton
-from .parameters import Parameters, PogoPinParameters
+from models.parameters import Parameters
+from connectors.pogo.parameters import PogoPinParameters
 from structure.body.models import BodyModel
 
 

@@ -10,11 +10,11 @@ from models.parameters import (
     RJ11Parameters,
     RJ45Parameters,
     USBCParameters,
-    PogoPinParameters,
     MagnetParameters,
     Oled096Parameters,
 )
 from structure.body.parameters import BodyParameters
+from connectors.pogo.parameters import PogoPinParameters
 
 
 class ParametersModule(Module):
@@ -65,21 +65,7 @@ class ParametersModule(Module):
                 num_holes=6,
                 error_margin=0.25,
             ),
-            pogo_pin=PogoPinParameters(
-                body_length=31.00,
-                body_width=4.50,
-                body_height=4.00,
-                flange_thickness=1.00,
-                mounting_hole_diameter=1.50,
-                mounting_hole_distance=34.50,
-                pin_pitch=2.54,
-                pin_count=9,
-                magnet_distance=27.00,
-                pin_height=5.00,
-                pin_tip_diameter=0.90,
-                solder_tail_diameter=0.70,
-                solder_tail_length=1.50,
-            ),
+            pogo_pin=PogoPinParameters(),
             magnet=MagnetParameters(
                 diameter=4.0,
                 height=2.0,

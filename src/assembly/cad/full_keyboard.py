@@ -26,7 +26,7 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             "build/switches/cad/switch_hole_grid.stl",
             "build/switches/cad/switch_decorator_thumb_grid.stl",
             "build/switches/cad/switch_thumb_hole.stl",
-            "build/cad/cable_path.stl",
+            "build/connectors/pogo/cad/cable_path.stl",
             "build/structure/body/screws/cad/hole.stl",
             "build/cad/connectors/rj45_adapter_body_mask.stl",
             "build/cad/connectors/rj45_adapter_front_placement.stl",

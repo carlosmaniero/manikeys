@@ -6,7 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
 from switches.socket.mount.models import MountCavityModel
-from models.pogo_pin import PogoPinModel
+from connectors.pogo.models import PogoPinModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 from core.loader import load_stl_to_manifold
@@ -50,7 +50,7 @@ class CablePath(ManifoldObject):
     @property
     def pogo_adapter(self):
         return load_stl_to_manifold(
-            "build/cad/connectors/pogo_pin_adapter.stl"
+            "build/connectors/pogo/cad/pogo_pin_adapter.stl"
         ).rotate([90, 0, 180])
 
     @property

@@ -3,6 +3,7 @@ from globals.wall.parameters import WallParameters
 from dataclasses import dataclass
 from switches.socket.parameters import HotSwapParameters
 from structure.body.parameters import BodyParameters
+from connectors.pogo.parameters import PogoPinParameters
 
 
 @dataclass
@@ -105,23 +106,6 @@ class USBCParameters:
     aperture: float
     num_holes: int
     error_margin: float
-
-
-@dataclass
-class PogoPinParameters:
-    body_length: float
-    body_width: float
-    body_height: float
-    flange_thickness: float
-    mounting_hole_diameter: float
-    mounting_hole_distance: float
-    pin_pitch: float
-    pin_count: int
-    magnet_distance: float
-    pin_height: float
-    pin_tip_diameter: float
-    solder_tail_diameter: float
-    solder_tail_length: float
 
 
 @dataclass
