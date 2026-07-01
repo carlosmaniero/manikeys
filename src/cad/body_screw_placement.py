@@ -18,14 +18,17 @@ class BodyScrewPlacementCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         cubes = []
         for x, y in self.model.points:
-            cube = manifold3d.Manifold.cube(
+            cube = manifold3d.Manifold.cylinder(
+                self.model.cube_height,
+                self.model.cube_size / 2,
+                center=True,
+            ).translate(
                 [
-                    self.model.cube_size,
-                    self.model.cube_size,
-                    self.model.cube_height,
-                ],
-                center=False,
-            ).translate([x, y, self.model.z])
+                    x + self.model.cube_size / 2,
+                    y + self.model.cube_size / 2,
+                    self.model.z,
+                ]
+            )
             cubes.append(cube)
 
         body = load_stl_to_manifold("build/cad/body.stl")
