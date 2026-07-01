@@ -6,7 +6,7 @@ from structure.body.models import BodyInnerModel
 @singleton
 @inject
 @dataclass
-class SocketPlacement(BodyInnerModel):
+class MountModel(BodyInnerModel):
     @property
     def offset(self) -> float:
         # TODO: it also should have an error margin
@@ -16,7 +16,7 @@ class SocketPlacement(BodyInnerModel):
 @singleton
 @inject
 @dataclass
-class SocketPlacementInner(SocketPlacement):
+class MountCavityModel(MountModel):
     @property
     def offset(self) -> float:
         return super().offset - self.parameters.wall.thickness

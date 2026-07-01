@@ -5,7 +5,7 @@ import numpy as np
 from injector import inject, singleton
 from dataclasses import dataclass
 import pyvista as pv
-from models.socket_placement import SocketPlacement
+from switches.socket.mount.models import MountCavityModel
 from core.numpy_ext import map_meshgrid
 from core.pyvista_ext import create_full_surface, VistaObject
 from core.context import injector
@@ -16,8 +16,26 @@ SLICES = int(os.getenv("SLICES", 800))
 @singleton
 @inject
 @dataclass
-class SocketPlacementCAD(VistaObject):
-    model: SocketPlacement
+class MountCavityCAD(VistaObject):
+    model: MountCavityModel
+
+    def show(self):
+        inner = self.assemble()
+
+        from switches.socket.mount.cad.body import MountBodyCAD
+
+        placement_cad = injector.get(MountBodyCAD)
+        placement = placement_cad.assemble()
+
+        plotter = pv.Plotter()
+
+        plotter.add_mesh(placement, color="tan", opacity=0.25)
+        plotter.add_mesh(inner, color="cyan")
+
+        plotter.show_grid()  # type: ignore
+        plotter.add_axes()  # type: ignore
+
+        plotter.show()
 
     def assemble(self) -> pv.PolyData:
         xrange = np.linspace(
@@ -35,12 +53,11 @@ class SocketPlacementCAD(VistaObject):
         x, y = map_meshgrid(xrange, yfn)
 
         top_z = self.model.z(x, y)
-
         bottom_z = np.full_like(x, -self.model.parameters.body.height)
 
         return create_full_surface(x, y, top_z, bottom_z)
 
 
 if __name__ == "__main__":
-    socket_placement = injector.get(SocketPlacementCAD)
-    socket_placement.program(sys.argv)
+    cavity = injector.get(MountCavityCAD)
+    cavity.program(sys.argv)

@@ -6,7 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from models.parameters import Parameters
-from models.socket_placement import SocketPlacementInner
+from switches.socket.mount.models import MountCavityModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -14,8 +14,8 @@ from core.manifold_ext.object import ManifoldObject
 @singleton
 @inject
 @dataclass
-class SocketPlacementShell(ManifoldObject):
-    model: SocketPlacementInner
+class MountShellCAD(ManifoldObject):
+    model: MountCavityModel
     body: BodyModel
     parameters: Parameters
 
@@ -85,5 +85,5 @@ class SocketPlacementShell(ManifoldObject):
 
 
 if __name__ == "__main__":
-    socket_placement_shell = injector.get(SocketPlacementShell)
-    socket_placement_shell.program(sys.argv)
+    shell = injector.get(MountShellCAD)
+    shell.program(sys.argv)

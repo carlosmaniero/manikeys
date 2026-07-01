@@ -6,7 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_many_stl_to_manifold
 from models.parameters import Parameters
-from models.socket_placement import SocketPlacementInner
+from switches.socket.mount.models import MountCavityModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -14,7 +14,7 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class FullKeyboard(ManifoldObject):
-    model: SocketPlacementInner
+    model: MountCavityModel
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:

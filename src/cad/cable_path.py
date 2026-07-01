@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
-from models.socket_placement import SocketPlacementInner
+from switches.socket.mount.models import MountCavityModel
 from models.pogo_pin import PogoPinModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -16,7 +16,7 @@ from core.loader import load_stl_to_manifold
 @inject
 @dataclass
 class CablePath(ManifoldObject):
-    model: SocketPlacementInner
+    model: MountCavityModel
     pogo_model: PogoPinModel
     body_model: BodyModel
     parameters: Parameters

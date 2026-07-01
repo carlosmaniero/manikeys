@@ -3,7 +3,7 @@ from core.context import injector
 import sys
 import manifold3d
 from dataclasses import dataclass
-from models.socket_placement import SocketPlacementInner
+from switches.socket.mount.models import MountCavityModel
 from models.parameters import Parameters
 from injector import inject, singleton
 from core.loader import load_stl_to_manifold
@@ -13,8 +13,8 @@ from core.manifold_ext.object import ManifoldObject
 @singleton
 @inject
 @dataclass
-class SocketPlacementInnerSections(ManifoldObject):
-    model: SocketPlacementInner
+class MountCavitySectionsCAD(ManifoldObject):
+    model: MountCavityModel
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
@@ -56,11 +56,11 @@ class SocketPlacementInnerSections(ManifoldObject):
             ]
         )
 
-        body = load_stl_to_manifold("build/cad/socket_placement_inner.stl")
+        body = load_stl_to_manifold("build/switches/socket/mount/cad/cavity.stl")
 
         return body - (divider + side_section)
 
 
 if __name__ == "__main__":
-    socketPlacementInnerSections = injector.get(SocketPlacementInnerSections)
-    socketPlacementInnerSections.program(sys.argv)
+    cavity_sections = injector.get(MountCavitySectionsCAD)
+    cavity_sections.program(sys.argv)
