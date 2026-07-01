@@ -65,7 +65,7 @@ class Oled096Model:
         second_col_x = self.body[0] - self.parameters.screw_hole_offset
 
         z = (
-            self.parameters.screw_hole_depth / 2
+            self.global_parameters.screw.depth_short / 2
             - self.body[2] / 2
             + self.thickness
         )

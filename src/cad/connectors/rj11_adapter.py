@@ -137,7 +137,7 @@ class RJ11AdapterCAD(ManifoldObject):
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.body.m2_screw_diameter
+            self.parameters.screw.m2_diameter
             + self.parameters.wall.thickness * 2
         )
 
@@ -162,7 +162,7 @@ class RJ11AdapterCAD(ManifoldObject):
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:
-        radius = self.parameters.body.m2_screw_diameter / 2
+        radius = self.parameters.screw.m2_diameter / 2
         height = self.tab_length + 2.0
 
         hole = manifold3d.Manifold.cylinder(

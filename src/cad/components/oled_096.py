@@ -35,8 +35,8 @@ class Oled096CAD(ManifoldObject):
         holes = M()
         for hole in self.model.screw_holes:
             holes += M.cylinder(
-                self.model.parameters.screw_hole_depth,
-                self.model.parameters.screw_hole_radius,
+                self.model.global_parameters.screw.depth_short,
+                self.model.global_parameters.screw.m2_diameter / 2,
                 circular_segments=32,
                 center=True,
             ).translate(hole)

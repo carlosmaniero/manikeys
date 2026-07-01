@@ -37,6 +37,12 @@ def create_mock_parameters(
 ) -> Mock:
     mock_params = Mock()
     mock_params.oled096 = oled096 or Oled096ParametersStub(clearance=clearance)
+    mock_params.screw.depth_short = 2.0
+    mock_params.screw.m2_diameter = 1.9
+    mock_params.screw.depth_short = 2.0
+    mock_params.screw.m2_diameter = 1.9
+    mock_params.screw.depth_short = 2.0
+    mock_params.screw.m2_diameter = 1.9
     mock_params.wall.thickness = thickness
     return mock_params
 
@@ -62,8 +68,8 @@ def test_oled_096_screw_holes():
     model = Oled096Model(global_parameters=mock_params)
 
     assert model.screw_holes == [
-        [2.0, 0, 1.75],
-        [38.0, 0, 1.75],
+        [2.0, 0, 2.25],
+        [38.0, 0, 2.25],
     ]
 
 

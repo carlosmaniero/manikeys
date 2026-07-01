@@ -88,7 +88,7 @@ class MainBodyModel:
 
     @property
     def screw_hole_radius(self) -> float:
-        return self.parameters.body.m2_screw_diameter / 2
+        return self.parameters.screw.m2_diameter / 2
 
     @property
     def right_screw_x(self) -> float:

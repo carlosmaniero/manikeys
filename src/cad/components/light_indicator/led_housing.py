@@ -136,7 +136,7 @@ class LedHousingCad(ManifoldObject):
     @property
     def lowerings(self) -> manifold3d.Manifold:
         hole_height = 2.0
-        screw_head_radius = self.params.body.m2_screw_head_diameter / 2 + 0.1
+        screw_head_radius = self.params.screw.m2_head_diameter / 2 + 0.1
         z_top = -hole_height / 2
 
         screw_head_mask = manifold3d.Manifold.cylinder(

@@ -46,7 +46,7 @@ class RJ11MaskCAD(ManifoldObject):
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.body.m2_screw_diameter
+            self.parameters.screw.m2_diameter
             + self.parameters.wall.thickness * 2
         )
 

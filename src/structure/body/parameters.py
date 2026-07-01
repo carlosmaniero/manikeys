@@ -9,8 +9,4 @@ class BodyParameters:
     height: float = 15.0
     cabe_hole_radius: float = 13.0
     clearance: float = 2.0
-    m2_screw_diameter: float = 2.0
-    m2_screw_length: float = 8.0
-    m2_screw_head_diameter: float = 4.0
-    m2_screw_head_height: float = 2.0
     bottom_thickness: float = 10.0

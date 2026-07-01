@@ -13,8 +13,7 @@ class BodyScrewPlacementModel:
 
     @property
     def cube_size(self) -> float:
-        p = self.parameters.body
-        return p.m2_screw_diameter + p.thickness * 2
+        return self.parameters.screw.m2_diameter + self.parameters.wall.thickness * 2
 
     @property
     def cube_height(self) -> float:
@@ -70,11 +69,11 @@ class BodyScrewPlacementModel:
 
     @property
     def screw_head_diameter(self) -> float:
-        return self.parameters.body.m2_screw_head_diameter
+        return self.parameters.screw.m2_head_diameter
 
     @property
     def screw_head_height(self) -> float:
-        return self.parameters.body.m2_screw_head_height
+        return self.parameters.screw.m2_head_height
 
     @property
     def bottom_thickness(self) -> float:
@@ -90,11 +89,11 @@ class BodyScrewPlacementModel:
 
     @property
     def screw_diameter(self) -> float:
-        return self.parameters.body.m2_screw_diameter
+        return self.parameters.screw.m2_diameter
 
     @property
     def screw_height(self) -> float:
-        return self.parameters.body.m2_screw_length
+        return self.parameters.screw.m2_length
 
     @property
     def screw_z(self) -> float:

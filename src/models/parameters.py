@@ -1,3 +1,4 @@
+from globals.screw.parameters import ScrewParameters
 from globals.wall.parameters import WallParameters
 from dataclasses import dataclass
 from structure.body.parameters import BodyParameters
@@ -167,14 +168,6 @@ class Oled096Parameters:
         return 2
 
     @property
-    def screw_hole_radius(self) -> float:
-        return 0.9
-
-    @property
-    def screw_hole_depth(self) -> float:
-        return 2
-
-    @property
     def flat_cable_clearance(self) -> float:
         return 0.25
 
@@ -189,6 +182,7 @@ class Oled096Parameters:
 
 @dataclass
 class Parameters:
+    screw: ScrewParameters
     wall: WallParameters
     caps: CapsParameters
     body: BodyParameters

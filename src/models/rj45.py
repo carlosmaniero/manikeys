@@ -165,7 +165,7 @@ class RJ45Model:
 
     @property
     def screw_hole_radius(self) -> float:
-        return self.parameters.body.m2_screw_diameter / 2
+        return self.parameters.screw.m2_diameter / 2
 
     @property
     def screw_hole_height(self) -> float:

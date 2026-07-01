@@ -178,9 +178,7 @@ class ControllerHousingCad(ManifoldObject):
 
     @property
     def lowerings(self) -> manifold3d.Manifold:
-        screw_head_radius = (
-            self.parameters.body.m2_screw_head_diameter / 2 + 0.1
-        )
+        screw_head_radius = self.parameters.screw.m2_head_diameter / 2 + 0.1
         lowering_depth = self.indicator_model.lid_height - 2.0
         z_top = self.indicator_model.lid_height / 2
 

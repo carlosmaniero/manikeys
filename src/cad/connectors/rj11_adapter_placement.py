@@ -34,7 +34,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.body.m2_screw_diameter
+            self.parameters.screw.m2_diameter
             + self.parameters.wall.thickness * 2
         )
 
@@ -63,7 +63,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:
-        radius = self.parameters.body.m2_screw_diameter / 2
+        radius = self.parameters.screw.m2_diameter / 2
         # Hole must align with adapter hole at y_front - 3*t
         height = self.tab_length * 2  # Long enough to pass through everything
 

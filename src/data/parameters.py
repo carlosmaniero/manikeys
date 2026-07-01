@@ -1,3 +1,4 @@
+from globals.screw.parameters import ScrewParameters
 from globals.wall.parameters import WallParameters
 from injector import Module, provider, singleton
 from models.parameters import (
@@ -31,6 +32,7 @@ class ParametersModule(Module):
             ),
             body=BodyParameters(),
             wall=WallParameters(),
+            screw=ScrewParameters(),
             hand_support=HandSupportParameters(
                 offset_x=75,
                 offset_z=10,
