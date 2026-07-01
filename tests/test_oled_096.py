@@ -104,7 +104,9 @@ def test_oled_096_placement_position():
 
     oled_model = Oled096Model(global_parameters=mock_params)
     model = Oled096PlacementModel(
-        global_parameters=mock_params, oled=oled_model, switch_thumb=mock_switch_thumb
+        global_parameters=mock_params,
+        oled=oled_model,
+        switch_thumb=mock_switch_thumb,
     )
 
     assert model.placement_position == [129.0, 177.0, 347.0]

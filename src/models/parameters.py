@@ -1,6 +1,6 @@
 from globals.screw.parameters import ScrewParameters
 from globals.wall.parameters import WallParameters
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from switches.socket.parameters import HotSwapParameters
 from structure.body.parameters import BodyParameters
 
@@ -33,8 +33,6 @@ class HandSupportParameters:
     offset_z: float
     fillet: float
     depth: float
-
-
 
 
 @dataclass

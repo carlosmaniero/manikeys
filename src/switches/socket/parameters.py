@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class HotSwapParameters:
     border: float = 2.0

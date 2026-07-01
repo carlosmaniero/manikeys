@@ -15,12 +15,16 @@ class SwitchDecoratorThumbGridCAD(ManifoldObject):
     model: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
-        decorator = load_stl_to_manifold("build/switches/cad/switch_hole_decorator.stl")
+        decorator = load_stl_to_manifold(
+            "build/switches/cad/switch_hole_decorator.stl"
+        )
         positions = self.model.get_positions()
 
         decorators = [decorator.translate(pos) for pos in positions]
 
-        return manifold3d.Manifold.batch_boolean(decorators, manifold3d.OpType.Add)
+        return manifold3d.Manifold.batch_boolean(
+            decorators, manifold3d.OpType.Add
+        )
 
 
 if __name__ == "__main__":

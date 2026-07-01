@@ -88,7 +88,6 @@ async def get_viewer():
 @app.get("/list-files")
 async def list_files():
     src_path = Path(SRC_DIR)
-    cad_path = src_path / "cad"
 
     files = []
 

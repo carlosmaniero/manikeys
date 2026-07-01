@@ -87,10 +87,8 @@ class SocketAdapter2CAD(ManifoldObject):
         return obj.translate(
             [
                 0,
-                -self.parameters.hot_swap.cube_size / 2
-                + self.led.led_size / 2,
-                self.parameters.hot_swap.body_thickness
-                - self.led.pcb_height,
+                -self.parameters.hot_swap.cube_size / 2 + self.led.led_size / 2,
+                self.parameters.hot_swap.body_thickness - self.led.pcb_height,
             ]
         )
 

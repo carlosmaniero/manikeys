@@ -13,7 +13,10 @@ class BodyScrewPlacementModel:
 
     @property
     def cube_size(self) -> float:
-        return self.parameters.screw.m2_diameter + self.parameters.wall.thickness * 2
+        return (
+            self.parameters.screw.m2_diameter
+            + self.parameters.wall.thickness * 2
+        )
 
     @property
     def cube_height(self) -> float:

@@ -56,7 +56,10 @@ class BodyInnerSections(ManifoldObject):
             ]
         )
 
-        body = load_stl_to_manifold("build/structure/body/cad/body_cavity.stl") - side_mask
+        body = (
+            load_stl_to_manifold("build/structure/body/cad/body_cavity.stl")
+            - side_mask
+        )
 
         return body - divider
 

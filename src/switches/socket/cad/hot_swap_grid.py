@@ -18,16 +18,18 @@ class HotSwapGridCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
-        hot_swap = load_stl_to_manifold("build/switches/socket/cad/hot_swap.stl").rotate(
-            [180, 0, 180]
-        )
+        hot_swap = load_stl_to_manifold(
+            "build/switches/socket/cad/hot_swap.stl"
+        ).rotate([180, 0, 180])
 
         offset = [0, 0, -2]
         hot_swap = hot_swap.translate(offset)
 
         for column in self.layout.grid:
             for key in column:
-                grid.append(hot_swap.rotate(key.rotation).translate(key.position))
+                grid.append(
+                    hot_swap.rotate(key.rotation).translate(key.position)
+                )
 
         for position in self.cad_thump.get_positions():
             grid.append(hot_swap.translate(position))
