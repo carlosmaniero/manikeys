@@ -20,7 +20,7 @@ class FullKeyboard(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         paths = [
             "build/structure/body/shape.stl",
-            "build/cad/body_inner_sections.stl",
+            "build/structure/body/cad/body_cavity_sections.stl",
             "build/cad/body_screw_placement.stl",
             "build/switches/cad/switch_hole_decorator_grid.stl",
             "build/switches/cad/switch_hole_grid.stl",
@@ -43,7 +43,7 @@ class FullKeyboard(ManifoldObject):
 
         (
             body,
-            body_inner_sections,
+            body_cavity_sections,
             body_screw_placement,
             switch_grid,
             switch_hole_grid,
@@ -62,7 +62,7 @@ class FullKeyboard(ManifoldObject):
             oled_placement,
         ) = manifolds
 
-        body = body - body_inner_sections
+        body = body - body_cavity_sections
         body = body + switch_grid
         body = body - switch_hole_grid
         body = body + switch_thumb

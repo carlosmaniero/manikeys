@@ -16,7 +16,7 @@ SLICES = int(os.getenv("SLICES", 800))
 @singleton
 @inject
 @dataclass
-class BodyInnerCAD(VistaObject):
+class BodyCavityCAD(VistaObject):
     model: BodyInnerModel
 
     def show(self):
@@ -59,5 +59,5 @@ class BodyInnerCAD(VistaObject):
 
 
 if __name__ == "__main__":
-    body_inner = injector.get(BodyInnerCAD)
-    body_inner.program(sys.argv)
+    body_cavity = injector.get(BodyCavityCAD)
+    body_cavity.program(sys.argv)
