@@ -13,7 +13,7 @@ from core.manifold_ext.object import ManifoldObject
 @singleton
 @inject
 @dataclass
-class FullKeyboard(ManifoldObject):
+class FullKeyboardAssemblyCAD(ManifoldObject):
     model: MountCavityModel
     parameters: Parameters
 
@@ -89,5 +89,5 @@ class FullKeyboard(ManifoldObject):
 
 
 if __name__ == "__main__":
-    full_keyboard = injector.get(FullKeyboard)
+    full_keyboard = injector.get(FullKeyboardAssemblyCAD)
     full_keyboard.program(sys.argv)

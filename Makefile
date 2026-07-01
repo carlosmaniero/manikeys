@@ -3,11 +3,11 @@ SIMPLIFY ?= 1
 .PHONY: build test lint render clean sphere build_watch viewer
 
 build: build/main.stl build/main.3mf \
-	build/cad/full_keyboard_main.stl \
-	build/cad/full_keyboard_main_with_supports.stl \
-	build/cad/full_keyboard_hand.stl \
-	build/cad/full_keyboard_hand_with_supports.stl \
-	build/cad/full_keyboard_side.stl
+	build/assembly/cad/main.stl \
+	build/assembly/cad/supports/main.stl \
+	build/assembly/cad/hand.stl \
+	build/assembly/cad/supports/hand.stl \
+	build/assembly/cad/side.stl
 
 build_watch:
 	@target="$(filter-out $@,$(MAKECMDGOALS))"; \
@@ -36,9 +36,9 @@ build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
+build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/cad/body_bottom.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/cad/logo.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
+build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/cad/logo.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
 build/cad/magnet_snap.stl: src/cad/magnet_snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
@@ -70,11 +70,11 @@ build/cad/connectors/rj45_adapter_front_placement.stl: src/cad/connectors/rj45_a
 build/cad/connectors/pogo_pin_mask.stl: src/cad/connectors/pogo_pin_mask.py
 build/cad/connectors/pogo_pin_adapter.stl: src/cad/connectors/pogo_pin_adapter.py build/cad/connectors/pogo_pin_mask.stl
 
-build/cad/full_keyboard_main.stl: src/cad/full_keyboard_main.py build/full_keyboard.stl
-build/cad/full_keyboard_main_with_supports.stl: src/cad/full_keyboard_main_with_supports.py build/cad/full_keyboard_main.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
-build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
-build/cad/full_keyboard_hand_with_supports.stl: src/cad/full_keyboard_hand_with_supports.py build/cad/full_keyboard_hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
-build/cad/full_keyboard_side.stl: src/cad/full_keyboard_side.py build/full_keyboard.stl
+build/assembly/cad/main.stl: src/assembly/cad/main.py build/assembly/cad/full_keyboard.stl
+build/assembly/cad/supports/main.stl: src/assembly/cad/supports/main.py build/assembly/cad/main.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
+build/assembly/cad/hand.stl: src/assembly/cad/hand.py build/assembly/cad/full_keyboard.stl
+build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py build/assembly/cad/hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
+build/assembly/cad/side.stl: src/assembly/cad/side.py build/assembly/cad/full_keyboard.stl
 
 build/structure/%/shape.3mf: src/structure/%/cad/shape.py
 	mkdir -p $(dir $@)

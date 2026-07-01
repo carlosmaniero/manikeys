@@ -15,11 +15,11 @@ from core.openscad_ext.object import OSCObject
 class Keyboard(OSCObject):
     def assemble(self) -> Iterator[osc.PyOpenSCAD]:
         paths = [
-            "build/full_keyboard.stl",
+            "build/assembly/cad/full_keyboard.stl",
             "build/cad/body_bottom.stl",
             "build/switches/socket/mount/cad/shell.stl",
             "build/switches/socket/cad/hot_swap_grid.stl",
-            "build/switches/cad/switch_top_grid.stl",
+            "build/switches/cad/keycap_grid.stl",
             "build/cad/connectors/rj11.stl",
             "build/cad/connectors/rj11_adapter_trimmed.stl",
         ]
