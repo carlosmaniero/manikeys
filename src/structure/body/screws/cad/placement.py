@@ -5,15 +5,15 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.body_screw_placement import BodyScrewPlacementModel
+from structure.body.screws.models import ScrewPlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class BodyScrewPlacementCAD(ManifoldObject):
-    model: BodyScrewPlacementModel
+class ScrewPlacementCAD(ManifoldObject):
+    model: ScrewPlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
         cubes = []
@@ -40,5 +40,5 @@ class BodyScrewPlacementCAD(ManifoldObject):
 
 
 if __name__ == "__main__":
-    body_screw_placement = injector.get(BodyScrewPlacementCAD)
-    body_screw_placement.program(sys.argv)
+    placement = injector.get(ScrewPlacementCAD)
+    placement.program(sys.argv)

@@ -65,7 +65,7 @@ class FullKeyboardHandWithSupports(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         hand = load_stl_to_manifold("build/cad/full_keyboard_hand.stl")
         inner = load_stl_to_manifold("build/structure/body/cad/body_cavity.stl")
-        screw_holes = load_stl_to_manifold("build/cad/body_screw_hole.stl")
+        screw_holes = load_stl_to_manifold("build/structure/body/screws/cad/hole.stl")
         mask = self._create_mask()
 
         x_range = self.model.end_x() - self.model.hand_support_end_x

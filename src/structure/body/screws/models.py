@@ -7,7 +7,7 @@ from .parameters import Parameters
 @singleton
 @inject
 @dataclass
-class BodyScrewPlacementModel:
+class ScrewPlacementModel:
     body: BodyModel
     parameters: Parameters
 

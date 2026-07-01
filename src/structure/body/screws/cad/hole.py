@@ -4,15 +4,15 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.body_screw_placement import BodyScrewPlacementModel
+from structure.body.screws.models import ScrewPlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class BodyScrewHoleCAD(ManifoldObject):
-    model: BodyScrewPlacementModel
+class ScrewHoleCAD(ManifoldObject):
+    model: ScrewPlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
         holes = []
@@ -31,5 +31,5 @@ class BodyScrewHoleCAD(ManifoldObject):
 
 
 if __name__ == "__main__":
-    body_screw_hole = injector.get(BodyScrewHoleCAD)
-    body_screw_hole.program(sys.argv)
+    hole = injector.get(ScrewHoleCAD)
+    hole.program(sys.argv)

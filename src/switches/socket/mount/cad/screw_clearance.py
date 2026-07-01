@@ -4,15 +4,15 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.body_screw_placement import BodyScrewPlacementModel
+from structure.body.screws.models import ScrewPlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class BodyScrewMaskCAD(ManifoldObject):
-    model: BodyScrewPlacementModel
+class MountScrewClearanceCAD(ManifoldObject):
+    model: ScrewPlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
         cubes = []
@@ -31,5 +31,5 @@ class BodyScrewMaskCAD(ManifoldObject):
 
 
 if __name__ == "__main__":
-    body_screw_mask = injector.get(BodyScrewMaskCAD)
-    body_screw_mask.program(sys.argv)
+    clearance = injector.get(MountScrewClearanceCAD)
+    clearance.program(sys.argv)
