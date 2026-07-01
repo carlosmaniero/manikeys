@@ -6,7 +6,7 @@ from models.parameters import (
     SwitchesParameters,
     CapsOuterParameters,
     HandSupportParameters,
-    SocketAdapterParameters,
+    HotSwapParameters,
     RJ11Parameters,
     RJ45Parameters,
     USBCParameters,
@@ -21,7 +21,6 @@ class ParametersModule(Module):
     @singleton
     @provider
     def provide_parameters(self) -> Parameters:
-        cube_size = 13.6
         return Parameters(
             switches=SwitchesParameters(
                 size=14,
@@ -32,25 +31,13 @@ class ParametersModule(Module):
             ),
             body=BodyParameters(),
             wall=WallParameters(),
+            hot_swap=HotSwapParameters(),
             screw=ScrewParameters(),
             hand_support=HandSupportParameters(
                 offset_x=75,
                 offset_z=10,
                 fillet=40,
                 depth=110,
-            ),
-            socket_adapter=SocketAdapterParameters(
-                border=2,
-                offset_fix=0.1,
-                diode_r=1.4,
-                diode_wire_r=0.75,
-                diode_l=5,
-                diode_x=-2.54 - 2,
-                cube_size=cube_size,
-                body_thickness=10,
-                switch_socket_height=1,
-                switch_socket_width=cube_size + 4,
-                center_hole_radius=2.0,
             ),
             rj11=RJ11Parameters(
                 width=11.0,

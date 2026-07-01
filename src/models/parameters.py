@@ -1,6 +1,7 @@
 from globals.screw.parameters import ScrewParameters
 from globals.wall.parameters import WallParameters
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from switches.socket.parameters import HotSwapParameters
 from structure.body.parameters import BodyParameters
 
 
@@ -34,19 +35,6 @@ class HandSupportParameters:
     depth: float
 
 
-@dataclass
-class SocketAdapterParameters:
-    border: float
-    offset_fix: float
-    diode_r: float
-    diode_wire_r: float
-    diode_l: float
-    diode_x: float
-    cube_size: float
-    body_thickness: float
-    switch_socket_height: float
-    switch_socket_width: float
-    center_hole_radius: float
 
 
 @dataclass
@@ -187,7 +175,7 @@ class Parameters:
     switches: SwitchesParameters
     body: BodyParameters
     hand_support: HandSupportParameters
-    socket_adapter: SocketAdapterParameters
+    hot_swap: HotSwapParameters
     rj11: RJ11Parameters
     rj45: RJ45Parameters
     usbc: USBCParameters

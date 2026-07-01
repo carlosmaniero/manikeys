@@ -18,7 +18,7 @@ class Keyboard(OSCObject):
             "build/full_keyboard.stl",
             "build/cad/body_bottom.stl",
             "build/cad/socket_placement_shell.stl",
-            "build/cad/socket_adapter_grid.stl",
+            "build/switches/socket/cad/hot_swap_grid.stl",
             "build/switches/cad/switch_top_grid.stl",
             "build/cad/connectors/rj11.stl",
             "build/cad/connectors/rj11_adapter_trimmed.stl",
