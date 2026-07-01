@@ -92,16 +92,11 @@ async def list_files():
 
     files = []
 
-    # Files directly in src/
-    for p in src_path.glob("*.py"):
-        if p.is_file():
-            files.append(str(p.relative_to(src_path)))
-
-    # Files in src/cad/ recursively
-    if cad_path.exists():
-        for p in cad_path.rglob("*.py"):
-            if p.is_file() and "__pycache__" not in str(p):
-                files.append(str(p.relative_to(src_path)))
+    for p in src_path.rglob("*.py"):
+        if p.is_file() and "__pycache__" not in p.parts:
+            rel = p.relative_to(src_path)
+            if len(rel.parts) == 1 or "cad" in rel.parts:
+                files.append(str(rel))
 
     return sorted(list(set(files)))
 
@@ -123,7 +118,16 @@ async def build_stl(
     if rel_path.startswith(".."):
         raise HTTPException(status_code=400, detail="Invalid file path")
 
-    target_name = os.path.splitext(rel_path)[0] + ".stl"
+    import re
+
+    if rel_path.startswith("structure/") and rel_path.endswith("/cad/shape.py"):
+        target_name = re.sub(
+            r"^structure/(.*)/cad/shape\.py$",
+            r"structure/\1/shape.stl",
+            rel_path,
+        )
+    else:
+        target_name = os.path.splitext(rel_path)[0] + ".stl"
     build_rel_path = os.path.join("build", target_name)
 
     cmd = ["make", "-j", str(os.cpu_count() or 1)]
@@ -228,7 +232,16 @@ async def get_stl(file_path: str):
     if rel_path.startswith(".."):
         raise HTTPException(status_code=400, detail="Invalid file path")
 
-    target_name = os.path.splitext(rel_path)[0] + ".stl"
+    import re
+
+    if rel_path.startswith("structure/") and rel_path.endswith("/cad/shape.py"):
+        target_name = re.sub(
+            r"^structure/(.*)/cad/shape\.py$",
+            r"structure/\1/shape.stl",
+            rel_path,
+        )
+    else:
+        target_name = os.path.splitext(rel_path)[0] + ".stl"
     build_rel_path = os.path.join("build", target_name)
     build_abs_path = os.path.join(PROJECT_ROOT, build_rel_path)
 

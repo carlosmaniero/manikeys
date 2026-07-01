@@ -3,7 +3,6 @@ from models.parameters import (
     Parameters,
     CapsParameters,
     CapsOuterParameters,
-    GlobalParameters,
     HandSupportParameters,
     SocketAdapterParameters,
     RJ11Parameters,
@@ -30,7 +29,6 @@ class ParametersModule(Module):
                 outer=CapsOuterParameters(thickness=1.5),
             ),
             body=BodyParameters(),
-            globals=GlobalParameters(diff_offset=0.5),
             hand_support=HandSupportParameters(
                 offset_x=75,
                 offset_z=10,

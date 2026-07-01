@@ -25,11 +25,6 @@ class CapsParameters:
 
 
 @dataclass
-class GlobalParameters:
-    diff_offset: float
-
-
-@dataclass
 class HandSupportParameters:
     offset_x: float
     offset_z: float
@@ -195,7 +190,6 @@ class Oled096Parameters:
 class Parameters:
     caps: CapsParameters
     body: BodyParameters
-    globals: GlobalParameters
     hand_support: HandSupportParameters
     socket_adapter: SocketAdapterParameters
     rj11: RJ11Parameters
