@@ -14,7 +14,7 @@ class MainBodyModel:
 
     @property
     def body_thickness(self) -> float:
-        return self.parameters.body.thickness * 4
+        return self.parameters.wall.thickness * 4
 
     @property
     def transparent_panel_thickness(self) -> float:
@@ -26,7 +26,7 @@ class MainBodyModel:
 
     @property
     def margin_thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def lid_height(self) -> float:

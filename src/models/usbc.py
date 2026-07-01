@@ -13,7 +13,7 @@ class USBCModel:
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def width(self) -> float:
@@ -29,11 +29,11 @@ class USBCModel:
 
     @property
     def inner_offset(self) -> float:
-        return self.parameters.body.thickness / 2
+        return self.parameters.wall.thickness / 2
 
     @property
     def body_offset(self) -> list[float]:
-        thickness = self.parameters.body.thickness
+        thickness = self.parameters.wall.thickness
         full_length = self.pcb_width + thickness * 2
 
         max_x = (self.pcb_length + thickness * 2) / 2

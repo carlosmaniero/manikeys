@@ -28,7 +28,7 @@ class RJ11AdapterCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.body.thickness * 2
+        return self.model.rj11.width + self.parameters.wall.thickness * 2
 
     @property
     def socket(self) -> manifold3d.Manifold:
@@ -58,7 +58,7 @@ class RJ11AdapterCAD(ManifoldObject):
             [
                 self.width,
                 self.model.rj11.length
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 + self.model.rj11.error_margin * 2,
                 self.model.rj11.height,
             ],
@@ -66,7 +66,7 @@ class RJ11AdapterCAD(ManifoldObject):
         ).translate(
             [
                 0,
-                -self.parameters.body.thickness / 2
+                -self.parameters.wall.thickness / 2
                 + self.model.rj11.error_margin * 2,
                 0,
             ]
@@ -86,10 +86,10 @@ class RJ11AdapterCAD(ManifoldObject):
             ],
             center=True,
         ).translate(
-            [0, self.parameters.body.thickness, self.body_model.highest / 2]
+            [0, self.parameters.wall.thickness, self.body_model.highest / 2]
         )
 
-        return mask + mask.translate([0, -self.parameters.body.thickness, 0])
+        return mask + mask.translate([0, -self.parameters.wall.thickness, 0])
 
     @property
     def bottom_base(self) -> manifold3d.Manifold:
@@ -119,7 +119,7 @@ class RJ11AdapterCAD(ManifoldObject):
     def bottom_notch(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
-                self.model.rj11.width + self.parameters.body.thickness * 2,
+                self.model.rj11.width + self.parameters.wall.thickness * 2,
                 self.model.rj11.bottom_notch_length
                 - self.model.rj11.error_margin * 2,
                 self.model.rj11.bottom_notch_height,
@@ -138,12 +138,12 @@ class RJ11AdapterCAD(ManifoldObject):
     def tab_width(self) -> float:
         return (
             self.parameters.body.m2_screw_diameter
-            + self.parameters.body.thickness * 2
+            + self.parameters.wall.thickness * 2
         )
 
     @property
     def tab_length(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def tabs(self) -> manifold3d.Manifold:
@@ -154,7 +154,7 @@ class RJ11AdapterCAD(ManifoldObject):
 
         x_pos = self.width / 2 + self.tab_width / 2
         y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
-        y_pos = y_front - self.parameters.body.thickness * 3
+        y_pos = y_front - self.parameters.wall.thickness * 3
 
         return tab.translate([x_pos, y_pos, 0]) + tab.translate(
             [-x_pos, y_pos, 0]
@@ -175,7 +175,7 @@ class RJ11AdapterCAD(ManifoldObject):
 
         x_pos = self.width / 2 + self.tab_width / 2
         y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
-        y_pos = y_front - self.parameters.body.thickness * 3
+        y_pos = y_front - self.parameters.wall.thickness * 3
 
         return hole.translate([x_pos, y_pos, 0]) + hole.translate(
             [-x_pos, y_pos, 0]
@@ -187,7 +187,7 @@ class RJ11AdapterCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         max_x = self.width / 2 + self.tab_width
-        max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
+        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
         return (
             self.body
             + self.bottom_base
@@ -200,10 +200,10 @@ class RJ11AdapterCAD(ManifoldObject):
                 self.body_model.end_x() - self.parameters.body.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 - self.model.rj11.error_margin * 2,
                 self.body_model.bottom_z
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 + self.model.rj11.height / 2
                 + self.height,
             ]

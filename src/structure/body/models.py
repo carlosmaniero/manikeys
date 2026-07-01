@@ -25,7 +25,7 @@ class NumPyCapsBottomSphere:
         return (
             self.layout.positioning.left[0]
             - self.cap_offset
-            - self.parameters.body.thickness
+            - self.parameters.wall.thickness
         )
 
     def end_x(self) -> float:
@@ -35,14 +35,14 @@ class NumPyCapsBottomSphere:
         return (
             self.layout.positioning.top[1]
             - self.cap_offset
-            - self.parameters.body.thickness
+            - self.parameters.wall.thickness
         )
 
     def end_y(self) -> float:
         return (
             self.layout.positioning.bottom[1]
             + self.cap_offset
-            + self.parameters.body.thickness * 2
+            + self.parameters.wall.thickness * 2
         )
 
     @property
@@ -137,7 +137,7 @@ class BodyModel:
 
     @property
     def divider_y(self) -> float:
-        return self.sphere.start_y() - self.parameters.body.thickness
+        return self.sphere.start_y() - self.parameters.wall.thickness
 
     @property
     def highest(self) -> float:
@@ -267,4 +267,4 @@ class BodyModel:
 class BodyInnerModel(BodyModel):
     @property
     def offset(self) -> float:
-        return -self.parameters.body.thickness
+        return -self.parameters.wall.thickness

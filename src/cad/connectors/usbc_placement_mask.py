@@ -20,7 +20,7 @@ class USBCPlacementMaskCAD(ManifoldObject):
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def width(self) -> float:

@@ -21,7 +21,7 @@ class SocketPlacementShell(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (
-            self.parameters.body.thickness * 2
+            self.parameters.wall.thickness * 2
             + self.parameters.body.clearance * 2
         )
         divider_y = self.model.divider_y - divider_size / 2
@@ -54,7 +54,7 @@ class SocketPlacementShell(ManifoldObject):
             center=False,
         ).translate(
             [
-                self.body.hand_support_end_x + self.parameters.body.thickness,
+                self.body.hand_support_end_x + self.parameters.wall.thickness,
                 self.body.start_y(),
                 -self.parameters.body.height,
             ]

@@ -19,7 +19,7 @@ class Oled096Model:
 
     @property
     def thickness(self) -> float:
-        return self.global_parameters.body.thickness
+        return self.global_parameters.wall.thickness
 
     @property
     def pcb_pocket(self) -> list[float]:
@@ -127,7 +127,7 @@ class Oled096PlacementModel:
 
     @property
     def thickness(self) -> float:
-        return self.global_parameters.body.thickness
+        return self.global_parameters.wall.thickness
 
     @property
     def body_model(self) -> BodyModel:

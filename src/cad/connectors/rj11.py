@@ -154,18 +154,18 @@ class RJ11CAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.body.thickness * 2
+        return self.model.rj11.width + self.parameters.wall.thickness * 2
 
     @property
     def tab_width(self) -> float:
         return (
             self.parameters.body.m2_screw_diameter
-            + self.parameters.body.thickness * 2
+            + self.parameters.wall.thickness * 2
         )
 
     def assemble(self) -> manifold3d.Manifold:
         max_x = self.width / 2 + self.tab_width
-        max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
+        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
 
         return (
             (
@@ -181,10 +181,10 @@ class RJ11CAD(ManifoldObject):
                 self.body_model.end_x() - self.parameters.body.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 - self.model.rj11.error_margin * 2,
                 self.body_model.bottom_z
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 + self.model.rj11.height / 2
                 + self.height,
             ]

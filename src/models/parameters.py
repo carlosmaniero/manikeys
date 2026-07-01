@@ -1,3 +1,4 @@
+from globals.wall.parameters import WallParameters
 from dataclasses import dataclass
 from structure.body.parameters import BodyParameters
 
@@ -188,6 +189,7 @@ class Oled096Parameters:
 
 @dataclass
 class Parameters:
+    wall: WallParameters
     caps: CapsParameters
     body: BodyParameters
     hand_support: HandSupportParameters

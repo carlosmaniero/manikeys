@@ -81,7 +81,7 @@ class PogoPinModel:
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def adapter_width(self) -> float:

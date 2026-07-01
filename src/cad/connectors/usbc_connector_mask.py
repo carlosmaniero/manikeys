@@ -18,7 +18,7 @@ class USBCConnectorMaskCAD(ManifoldObject):
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     def assemble(self) -> manifold3d.Manifold:
         wall_thickness = self.thickness + self.model.error_margin

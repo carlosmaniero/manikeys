@@ -21,7 +21,7 @@ class SocketAdapter2CAD(ManifoldObject):
             [
                 self.parameters.socket_adapter.cube_size,
                 self.parameters.socket_adapter.cube_size
-                - self.parameters.body.thickness,
+                - self.parameters.wall.thickness,
                 self.parameters.socket_adapter.body_thickness,
             ],
             center=True,
@@ -29,7 +29,7 @@ class SocketAdapter2CAD(ManifoldObject):
         return cube.translate(
             [
                 0,
-                self.parameters.body.thickness / 2,
+                self.parameters.wall.thickness / 2,
                 self.parameters.socket_adapter.body_thickness / 2,
             ]
         )
@@ -250,7 +250,7 @@ class SocketAdapter2CAD(ManifoldObject):
                 self.diode_wire_hole_center_x,
                 -self.parameters.socket_adapter.cube_size / 2
                 + full_height / 2
-                + self.parameters.body.thickness,
+                + self.parameters.wall.thickness,
                 self.parameters.socket_adapter.body_thickness
                 - self.parameters.socket_adapter.diode_r
                 - self.led.pcb_height,

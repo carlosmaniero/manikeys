@@ -19,4 +19,4 @@ class SocketPlacement(BodyInnerModel):
 class SocketPlacementInner(SocketPlacement):
     @property
     def offset(self) -> float:
-        return super().offset - self.parameters.body.thickness
+        return super().offset - self.parameters.wall.thickness

@@ -29,18 +29,18 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.body.thickness * 2
+        return self.model.rj11.width + self.parameters.wall.thickness * 2
 
     @property
     def tab_width(self) -> float:
         return (
             self.parameters.body.m2_screw_diameter
-            + self.parameters.body.thickness * 2
+            + self.parameters.wall.thickness * 2
         )
 
     @property
     def tab_length(self) -> float:
-        return self.parameters.body.thickness * 3
+        return self.parameters.wall.thickness * 3
 
     @property
     def tabs(self) -> manifold3d.Manifold:
@@ -55,7 +55,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
         # Adapter tab is at y_front - 3*t (center), range [y_front - 3.5*t, y_front - 2.5*t]
         # Placement is 3*t long. If it touches y_front - 2.5*t and extends forward:
         # Range [y_front - 2.5*t, y_front + 0.5*t]. Center: y_front - 1.0*t
-        y_pos = y_front - self.parameters.body.thickness * 1.0
+        y_pos = y_front - self.parameters.wall.thickness * 1.0
 
         return tab.translate([x_pos, y_pos, 0]) + tab.translate(
             [-x_pos, y_pos, 0]
@@ -78,7 +78,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
         x_pos = self.width / 2 + self.tab_width / 2
         y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
         # Align with adapter screw hole
-        y_pos = y_front - self.parameters.body.thickness * 3
+        y_pos = y_front - self.parameters.wall.thickness * 3
 
         return hole.translate([x_pos, y_pos, 0]) + hole.translate(
             [-x_pos, y_pos, 0]
@@ -86,16 +86,16 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         max_x = self.width / 2 + self.tab_width
-        max_y = self.model.rj11.length / 2 + self.parameters.body.thickness
+        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
         placement = (self.tabs - self.screw_holes).translate(
             [
                 self.body_model.end_x() - self.parameters.body.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 - self.model.rj11.error_margin * 2,
                 self.body_model.bottom_z
-                + self.parameters.body.thickness
+                + self.parameters.wall.thickness
                 + self.model.rj11.height / 2
                 + self.height,
             ]

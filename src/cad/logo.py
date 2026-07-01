@@ -32,7 +32,7 @@ class LogoCAD(ManifoldObject):
         target_y = (
             self.body.end_y()
             - self.parameters.body.fillet
-            - self.parameters.body.thickness
+            - self.parameters.wall.thickness
             - logo_d
         )
         center_y = target_y + logo_d / 2

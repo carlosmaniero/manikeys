@@ -19,7 +19,7 @@ class BodyInnerSections(ManifoldObject):
     parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
-        divider_size = self.parameters.body.thickness * 2
+        divider_size = self.parameters.wall.thickness * 2
         divider_y = self.model.divider_y - divider_size / 2
 
         divider = manifold3d.Manifold.cube(
@@ -43,7 +43,7 @@ class BodyInnerSections(ManifoldObject):
             [
                 self.body.hand_support_end_x
                 - self.body.start_x()
-                + self.parameters.body.thickness,
+                + self.parameters.wall.thickness,
                 self.body.divider_y - self.body.start_y(),
                 height * 2,
             ],

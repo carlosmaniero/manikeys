@@ -16,7 +16,7 @@ class RJ45Model:
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def body(self) -> list[float]:

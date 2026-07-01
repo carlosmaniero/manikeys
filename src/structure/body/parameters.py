@@ -4,7 +4,6 @@ from dataclasses import dataclass
 @dataclass
 class BodyParameters:
     radius: float = 280.0
-    thickness: float = 3.0
     width: float = 180.0
     depth: float = 130.0
     height: float = 15.0

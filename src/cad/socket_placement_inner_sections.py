@@ -19,7 +19,7 @@ class SocketPlacementInnerSections(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (
-            self.parameters.body.thickness * 4
+            self.parameters.wall.thickness * 4
             + self.parameters.body.clearance * 2
         )
         divider_y = self.model.divider_y - divider_size / 2

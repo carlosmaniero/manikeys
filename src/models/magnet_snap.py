@@ -14,7 +14,7 @@ class MagnetSnapModel:
 
     @property
     def thickness(self) -> float:
-        return self.parameters.body.thickness
+        return self.parameters.wall.thickness
 
     @property
     def magnet_height(self) -> float:

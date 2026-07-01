@@ -1,3 +1,4 @@
+from globals.wall.parameters import WallParameters
 from injector import Module, provider, singleton
 from models.parameters import (
     Parameters,
@@ -29,6 +30,7 @@ class ParametersModule(Module):
                 outer=CapsOuterParameters(thickness=1.5),
             ),
             body=BodyParameters(),
+            wall=WallParameters(),
             hand_support=HandSupportParameters(
                 offset_x=75,
                 offset_z=10,

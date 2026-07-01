@@ -26,7 +26,7 @@ class CablePath(ManifoldObject):
         return manifold3d.Manifold.cube(
             size=[
                 self.radius * 2,
-                self.parameters.body.thickness * 2,
+                self.parameters.wall.thickness * 2,
                 self.body_model.height * 2,
             ],
             center=True,
@@ -66,7 +66,7 @@ class CablePath(ManifoldObject):
         return self.pogo_model.adapter_width / 2
 
     def assemble(self) -> manifold3d.Manifold:
-        thickness = self.parameters.body.thickness
+        thickness = self.parameters.wall.thickness
         height = self.parameters.body.height
 
         cylinder = manifold3d.Manifold.cylinder(

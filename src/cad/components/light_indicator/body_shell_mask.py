@@ -28,7 +28,7 @@ class BodyShellMask(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2 + self.parameters.body.thickness
+        r = self.indicator_model.body_depth / 2 + self.parameters.wall.thickness
 
         corner_cyl = manifold3d.Manifold.cylinder(
             height=self.height,

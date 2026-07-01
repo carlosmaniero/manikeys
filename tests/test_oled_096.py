@@ -37,7 +37,7 @@ def create_mock_parameters(
 ) -> Mock:
     mock_params = Mock()
     mock_params.oled096 = oled096 or Oled096ParametersStub(clearance=clearance)
-    mock_params.body.thickness = thickness
+    mock_params.wall.thickness = thickness
     return mock_params
 
 
@@ -79,7 +79,7 @@ def test_oled_096_placement_position():
     mock_params = create_mock_parameters()
     mock_params.caps.size = 14.0
     mock_params.caps.full_offset = 20.0
-    mock_params.body.thickness = 3.0
+    mock_params.wall.thickness = 3.0
 
     mock_body_model = Mock()
     mock_body_model.highest = 350.0

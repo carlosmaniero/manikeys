@@ -103,7 +103,7 @@ class PanelFrameCad(ManifoldObject):
             self.indicator_model.right_screw_x,
         ]:
             mask += screw_hole.translate(
-                [x, 0, -self.parameters.body.thickness]
+                [x, 0, -self.parameters.wall.thickness]
             )
         return mask
 

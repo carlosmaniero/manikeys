@@ -35,7 +35,7 @@ class LightIndicatorPlacement:
                     self.body_model.start_fixed_x + 12,
                     self.body_model.end_y()
                     - self.parameters.body.fillet
-                    - self.parameters.body.thickness,
+                    - self.parameters.wall.thickness,
                     self.body_model.highest - height / 2,
                 ]
             )

@@ -22,7 +22,7 @@ class BodyScrewPlacementModel:
 
     @property
     def mask_size(self) -> float:
-        return self.cube_size + self.parameters.body.thickness
+        return self.cube_size + self.parameters.wall.thickness
 
     @property
     def mask_height(self) -> float:

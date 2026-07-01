@@ -17,10 +17,10 @@ class CapThumbModel:
         pos1 = [
             self.body_model.end_x()
             - self.parameters.caps.full_offset
-            - self.parameters.body.thickness * 3,
+            - self.parameters.wall.thickness * 3,
             self.body_model.divider_y
             - self.parameters.caps.full_offset
-            - self.parameters.body.thickness,
+            - self.parameters.wall.thickness,
             self.body_model.sphere.highest,
         ]
 
