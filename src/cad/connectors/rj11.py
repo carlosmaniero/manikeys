@@ -178,7 +178,7 @@ class RJ11CAD(ManifoldObject):
             + self.sockets
         ).translate(
             [
-                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_x() - self.parameters.wall.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
                 + self.parameters.wall.thickness

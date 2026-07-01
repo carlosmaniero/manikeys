@@ -55,7 +55,7 @@ class RJ11MaskCAD(ManifoldObject):
         max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
         return self.main_block.translate(
             [
-                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_x() - self.parameters.wall.fillet - max_x,
                 self.body_model.end_y() - max_y,
                 self.body_model.bottom_z
                 + self.parameters.wall.thickness

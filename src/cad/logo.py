@@ -25,13 +25,13 @@ class LogoCAD(ManifoldObject):
         logo_d = 44.431
 
         x_start = self.body.divider_x_main
-        x_end = self.body.end_x() - self.parameters.body.fillet / 2
+        x_end = self.body.end_x() - self.parameters.wall.fillet / 2
         center_x = (x_start + x_end) / 2
 
         target_x = center_x - logo_w / 2
         target_y = (
             self.body.end_y()
-            - self.parameters.body.fillet
+            - self.parameters.wall.fillet
             - self.parameters.wall.thickness
             - logo_d
         )

@@ -20,7 +20,7 @@ class ControllerHousingCad(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        fillet = self.parameters.body.fillet
+        fillet = self.parameters.wall.fillet
         r = min(fillet, self.indicator_model.body_depth / 2 - 0.1)
 
         corner_cyl = manifold3d.Manifold.cylinder(

@@ -205,7 +205,7 @@ class RJ45PlacementModel:
     @property
     def translation_coords(self) -> list[float]:
         return [
-            self.body_model.end_x() - self.parameters.body.fillet - self.max_x,
+            self.body_model.end_x() - self.parameters.wall.fillet - self.max_x,
             self.body_model.end_y() - self.max_y,
             self.body_model.bottom_z + self.rj45_model.body[2] / 2,
         ]

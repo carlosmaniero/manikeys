@@ -40,7 +40,7 @@ class USBCModel:
         max_y = full_length / 2
 
         return [
-            self.body_model.start_x() + self.parameters.body.fillet + max_x,
+            self.body_model.start_x() + self.parameters.wall.fillet + max_x,
             self.body_model.end_y() - max_y + self.inner_offset,
             self.body_model.bottom_z + self.usbc.height + self.pcb_height / 2,
         ]

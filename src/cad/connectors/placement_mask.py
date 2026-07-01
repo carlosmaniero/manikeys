@@ -32,7 +32,7 @@ class PlacementMaskCAD(ManifoldObject):
             self.model.rj11.width
             + self.parameters.wall.thickness * 4
             + self.tab_width * 2
-            + self.parameters.body.fillet
+            + self.parameters.wall.fillet
         )
 
     @property

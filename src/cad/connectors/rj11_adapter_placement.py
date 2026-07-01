@@ -89,7 +89,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
         max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
         placement = (self.tabs - self.screw_holes).translate(
             [
-                self.body_model.end_x() - self.parameters.body.fillet - max_x,
+                self.body_model.end_x() - self.parameters.wall.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
                 + self.parameters.wall.thickness

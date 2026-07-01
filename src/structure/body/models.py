@@ -18,7 +18,7 @@ class NumPyCapsBottomSphere:
         return (
             self.parameters.caps.size / 2
             + self.parameters.caps.border
-            + self.parameters.body.fillet
+            + self.parameters.wall.fillet
         )
 
     def start_x(self) -> float:
@@ -193,7 +193,7 @@ class BodyModel:
                 Interpolator(
                     start=self.sphere.start_y() + self.offset,
                     end=self.sphere.start_y()
-                    + self.parameters.body.fillet
+                    + self.parameters.wall.fillet
                     + self.offset,
                     base=self.hand_support_z(coords),
                     ratio=lerp.y_factor,
@@ -206,18 +206,18 @@ class BodyModel:
                 ),
                 Interpolator(
                     start=self.end_y(),
-                    end=self.end_y() - self.parameters.body.fillet,
+                    end=self.end_y() - self.parameters.wall.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
                     start=self.start_x(),
-                    end=self.start_x() + self.parameters.body.fillet,
+                    end=self.start_x() + self.parameters.wall.fillet,
                     base=base,
                 ),
                 Interpolator(
                     start=self.end_x(),
-                    end=self.end_x() - self.parameters.body.fillet,
+                    end=self.end_x() - self.parameters.wall.fillet,
                     base=base,
                 ),
             ]

@@ -27,7 +27,7 @@ class USBCPlacementMaskCAD(ManifoldObject):
         return (
             self.model.pcb_length
             + self.thickness * 6
-            + self.parameters.body.fillet
+            + self.parameters.wall.fillet
         )
 
     @property
