@@ -4,7 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.body_screw_placement import BodyScrewPlacementModel
+from structure.body.screws.models import ScrewPlacementModel
 from models.parameters import Parameters
 from core.manifold_ext.object import ManifoldObject
 
@@ -13,7 +13,7 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class BodyBottomCAD(ManifoldObject):
-    model: BodyScrewPlacementModel
+    model: ScrewPlacementModel
     parameters: Parameters
 
     def screw_head_holes(self) -> manifold3d.Manifold:

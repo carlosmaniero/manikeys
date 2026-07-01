@@ -61,9 +61,9 @@ class MountShellCAD(ManifoldObject):
         )
 
         return (
-            load_stl_to_manifold("build/cad/socket_placement.stl")
+            load_stl_to_manifold("build/switches/socket/mount/cad/body.stl")
             - load_stl_to_manifold(
-                "build/cad/socket_placement_inner_sections.stl"
+                "build/switches/socket/mount/cad/cavity_sections.stl"
             )
             - side_divider
             - body_divider
@@ -71,7 +71,9 @@ class MountShellCAD(ManifoldObject):
             - load_stl_to_manifold(
                 "build/cad/connectors/usbc_placement_mask.stl"
             )
-            - load_stl_to_manifold("build/switches/socket/mount/cad/screw_clearance.stl")
+            - load_stl_to_manifold(
+                "build/switches/socket/mount/cad/screw_clearance.stl"
+            )
             - load_stl_to_manifold("build/switches/cad/switch_hole_grid.stl")
             - load_stl_to_manifold("build/switches/cad/switch_thumb_hole.stl")
             - load_stl_to_manifold("build/cad/cable_path.stl")
