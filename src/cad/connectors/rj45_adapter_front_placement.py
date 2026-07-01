@@ -2,10 +2,10 @@ import sys
 from manifold3d import Manifold as M
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from loader import load_stl_to_manifold
+from core.context import injector
+from core.loader import load_stl_to_manifold
 from models.rj45 import RJ45PlacementModel
-from manifold_ext.object import ManifoldObject
+from core.manifold_ext.object import ManifoldObject
 
 
 @singleton

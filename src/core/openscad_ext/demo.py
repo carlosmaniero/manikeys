@@ -1,4 +1,4 @@
-from openscad_ext.loft import loft, Profile
+from core.openscad_ext.loft import loft, Profile
 import math
 
 

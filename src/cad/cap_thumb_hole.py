@@ -2,10 +2,10 @@ import sys
 from dataclasses import dataclass
 import manifold3d
 from injector import inject, singleton
-from context import injector
-from loader import load_stl_to_manifold
+from core.context import injector
+from core.loader import load_stl_to_manifold
 from models.cap_thumb import CapThumbModel
-from manifold_ext.object import ManifoldObject
+from core.manifold_ext.object import ManifoldObject
 
 
 @singleton

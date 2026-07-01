@@ -3,12 +3,12 @@ import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from loader import load_stl_to_manifold
+from core.context import injector
+from core.loader import load_stl_to_manifold
 from models.parameters import Parameters
 from models.rj11 import RJ11Model
 from models.body import BodyModel
-from manifold_ext.object import ManifoldObject
+from core.manifold_ext.object import ManifoldObject
 
 
 @singleton

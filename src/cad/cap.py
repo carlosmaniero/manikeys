@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 import openscad as osc
 from injector import inject, singleton
 from models.parameters import Parameters
-from openscad_ext.object import OSCObject
-from context import injector
+from core.openscad_ext.object import OSCObject
+from core.context import injector
 
 
 @singleton

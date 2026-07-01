@@ -3,10 +3,10 @@ import sys
 import openscad as osc
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from loader import load_stl
+from core.context import injector
+from core.loader import load_stl
 from models.body import BodyModel
-from openscad_ext.object import OSCObject
+from core.openscad_ext.object import OSCObject
 
 
 @singleton

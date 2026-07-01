@@ -4,9 +4,9 @@ import openscad as osc
 from typing import Iterator
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from loader import load_many_stl
-from openscad_ext.object import OSCObject
+from core.context import injector
+from core.loader import load_many_stl
+from core.openscad_ext.object import OSCObject
 
 
 @singleton

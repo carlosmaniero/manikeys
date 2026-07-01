@@ -4,7 +4,7 @@ from typing import Sequence
 import manifold3d
 import pyvista as pv
 import numpy as np
-from cad.object import Object
+from core.object import Object
 import sys
 
 

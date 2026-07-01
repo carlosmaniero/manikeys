@@ -1,5 +1,5 @@
 import numpy as np
-from context import injector
+from core.context import injector
 from models.body import BodyModel
 
 

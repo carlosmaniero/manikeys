@@ -3,9 +3,9 @@ import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from loader import load_many_stl_to_manifold
-from manifold_ext.object import ManifoldObject
+from core.context import injector
+from core.loader import load_many_stl_to_manifold
+from core.manifold_ext.object import ManifoldObject
 
 
 @singleton

@@ -4,9 +4,9 @@ import manifold3d
 from injector import inject, singleton
 from models.layout import Layout
 from models.cap_thumb import CapThumbModel
-from manifold_ext.object import ManifoldObject
-from context import injector
-from loader import load_stl_to_manifold
+from core.manifold_ext.object import ManifoldObject
+from core.context import injector
+from core.loader import load_stl_to_manifold
 
 
 @singleton

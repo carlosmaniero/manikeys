@@ -3,9 +3,9 @@ import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
+from core.context import injector
 from models.components.light_indicator.main_body import MainBodyModel
-from manifold_ext.object import ManifoldObject
+from core.manifold_ext.object import ManifoldObject
 from models.parameters import Parameters
 
 

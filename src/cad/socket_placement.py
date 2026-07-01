@@ -6,9 +6,9 @@ from injector import inject, singleton
 from dataclasses import dataclass
 import pyvista as pv
 from models.socket_placement import SocketPlacement
-from numpy_ext import map_meshgrid
-from pyvista_ext import create_full_surface, VistaObject
-from context import injector
+from core.numpy_ext import map_meshgrid
+from core.pyvista_ext import create_full_surface, VistaObject
+from core.context import injector
 
 SLICES = int(os.getenv("SLICES", 800))
 

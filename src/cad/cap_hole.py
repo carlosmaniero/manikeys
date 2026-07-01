@@ -3,8 +3,8 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Parameters
-from manifold_ext.object import ManifoldObject
-from context import injector
+from core.manifold_ext.object import ManifoldObject
+from core.context import injector
 
 
 @singleton

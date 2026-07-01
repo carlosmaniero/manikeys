@@ -3,7 +3,7 @@ import numpy as np
 from injector import inject, singleton
 from .layout import Layout
 from .parameters import Parameters
-from interpolation import lerp, Interpolator, InterpolationChain
+from core.interpolation import lerp, Interpolator, InterpolationChain
 
 
 @singleton

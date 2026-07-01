@@ -2,7 +2,7 @@ from __future__ import annotations
 import pyvista as pv
 import numpy as np
 import numpy.typing as npt
-from cad.object import Object
+from core.object import Object
 
 
 class VistaObject(Object[pv.PolyData]):

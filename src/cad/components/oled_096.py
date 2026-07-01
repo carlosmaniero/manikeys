@@ -3,8 +3,8 @@ import sys
 from manifold3d import Manifold as M
 from dataclasses import dataclass
 from injector import inject, singleton
-from context import injector
-from manifold_ext.object import ManifoldObject
+from core.context import injector
+from core.manifold_ext.object import ManifoldObject
 from models.components.oled_096 import Oled096Model
 
 

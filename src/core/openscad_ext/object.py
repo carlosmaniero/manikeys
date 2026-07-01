@@ -3,7 +3,7 @@ import os
 import subprocess
 from typing import Sequence, Iterator
 import openscad as osc  # noqa: F401
-from cad.object import Object
+from core.object import Object
 
 
 class OSCObject(Object["osc.PyOpenSCAD"]):

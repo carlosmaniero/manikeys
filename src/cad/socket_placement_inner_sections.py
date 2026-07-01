@@ -1,13 +1,13 @@
 from __future__ import annotations
-from context import injector
+from core.context import injector
 import sys
 import manifold3d
 from dataclasses import dataclass
 from models.socket_placement import SocketPlacementInner
 from models.parameters import Parameters
 from injector import inject, singleton
-from loader import load_stl_to_manifold
-from manifold_ext.object import ManifoldObject
+from core.loader import load_stl_to_manifold
+from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
