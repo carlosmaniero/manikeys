@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl
-from models.body import BodyModel
+from structure.body.models import BodyModel
 from core.openscad_ext.object import OSCObject
 
 

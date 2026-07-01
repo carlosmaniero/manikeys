@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Oled096Parameters, Parameters
 from models.cap_thumb import CapThumbModel
-from models.body import BodyModel
+from structure.body.models import BodyModel
 import math
 
 

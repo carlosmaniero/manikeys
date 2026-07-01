@@ -1,6 +1,6 @@
 import numpy as np
 from core.context import injector
-from models.body import BodyModel
+from structure.body.models import BodyModel
 
 
 def test_body_model_properties():

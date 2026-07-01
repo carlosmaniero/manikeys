@@ -38,15 +38,15 @@ build/sphere.3mf: src/openscad_ext/demo.py
 
 build/main.stl build/main.3mf: src/main.py build/full_keyboard.stl build/cad/body_bottom.stl build/cad/socket_placement_shell.stl build/cad/socket_adapter_grid.stl build/cad/cap_top_grid.stl build/cad/connectors/rj11.stl build/cad/connectors/rj11_adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/cad/body.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
+build/full_keyboard.stl build/full_keyboard.3mf: src/full_keyboard.py build/structure/body/shape.stl build/cad/body_inner_sections.stl build/cad/body_screw_placement.stl build/cad/body_screw_hole.stl build/cad/logo.stl build/cad/cap_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/connectors/rj11_mask.stl build/cad/connectors/rj11_adapter_placement.stl build/cad/connectors/usbc_mask.stl build/cad/connectors/usbc_adapter_trimmed.stl build/cad/magnet_snap.stl build/cad/components/light_indicator/body_mask.stl build/cad/components/light_indicator/panel_frame.stl build/cad/components/oled_096_placement_body_mask.stl build/cad/components/oled_096_placement.stl build/cad/connectors/rj45_adapter_body_mask.stl build/cad/connectors/rj45_adapter_front_placement.stl
 build/cad/magnet_snap.stl: src/cad/magnet_snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/cad/cable_path.stl: src/cad/cable_path.py build/cad/connectors/pogo_pin_adapter.stl
 build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
-build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/cad/body.stl
+build/cad/body_screw_placement.stl: src/cad/body_screw_placement.py build/structure/body/shape.stl
 build/cad/body_screw_mask.stl: src/cad/body_screw_mask.py
 build/cad/body_screw_hole.stl: src/cad/body_screw_hole.py
-build/cad/body_bottom.stl: src/cad/body_bottom.py build/cad/body.stl
+build/cad/body_bottom.stl: src/cad/body_bottom.py build/structure/body/shape.stl
 build/cad/socket_placement_shell.stl: src/cad/socket_placement_shell.py build/cad/socket_placement.stl build/cad/socket_placement_inner_sections.stl build/cad/connectors/placement_mask.stl build/cad/connectors/usbc_placement_mask.stl build/cad/body_screw_mask.stl build/cad/cap_hole_grid.stl build/cad/cap_hole_grid.stl build/cad/cap_thumb_hole.stl build/cad/cable_path.stl build/cad/components/light_indicator/body_shell_mask.stl build/cad/components/oled_096_placement_shell_mask.stl
 build/cad/body_inner_sections.stl: src/cad/body_inner_sections.py build/cad/body_inner.stl
 build/cad/socket_placement_inner_sections.stl: src/cad/socket_placement_inner_sections.py build/cad/socket_placement_inner.stl
@@ -59,14 +59,14 @@ build/cad/components/oled_096_placement.stl: src/cad/components/oled_096_placeme
 build/cad/components/oled_096_placement_body_mask.stl: src/cad/components/oled_096_placement_body_mask.py
 build/cad/components/oled_096_placement_shell_mask.stl: src/cad/components/oled_096_placement_shell_mask.py
 
-build/cad/connectors/rj11_adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/cad/connectors/rj11_adapter.stl build/cad/body.stl
-build/cad/connectors/rj11_adapter_placement.stl: src/cad/connectors/rj11_adapter_placement.py build/cad/body.stl
+build/cad/connectors/rj11_adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/cad/connectors/rj11_adapter.stl build/structure/body/shape.stl
+build/cad/connectors/rj11_adapter_placement.stl: src/cad/connectors/rj11_adapter_placement.py build/structure/body/shape.stl
 build/cad/connectors/usbc_adapter.stl: src/cad/connectors/usbc_adapter.py build/cad/connectors/usbc_connector_mask.stl
-build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/cad/connectors/usbc_adapter.stl build/cad/body.stl
+build/cad/connectors/usbc_adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/cad/connectors/usbc_adapter.stl build/structure/body/shape.stl
 build/cad/connectors/usbc_mask.stl: src/cad/connectors/usbc_mask.py build/cad/connectors/usbc_connector_mask.stl
 build/cad/connectors/usbc_placement_mask.stl: src/cad/connectors/usbc_placement_mask.py
 
-build/cad/connectors/rj45_adapter_front_placement.stl: src/cad/connectors/rj45_adapter_front_placement.py build/cad/connectors/rj45_adapter_front.stl build/cad/body.stl
+build/cad/connectors/rj45_adapter_front_placement.stl: src/cad/connectors/rj45_adapter_front_placement.py build/cad/connectors/rj45_adapter_front.stl build/structure/body/shape.stl
 build/cad/connectors/pogo_pin_mask.stl: src/cad/connectors/pogo_pin_mask.py
 build/cad/connectors/pogo_pin_adapter.stl: src/cad/connectors/pogo_pin_adapter.py build/cad/connectors/pogo_pin_mask.stl
 
@@ -75,6 +75,15 @@ build/cad/full_keyboard_main_with_supports.stl: src/cad/full_keyboard_main_with_
 build/cad/full_keyboard_hand.stl: src/cad/full_keyboard_hand.py build/full_keyboard.stl
 build/cad/full_keyboard_hand_with_supports.stl: src/cad/full_keyboard_hand_with_supports.py build/cad/full_keyboard_hand.stl build/cad/body_inner.stl build/cad/body_screw_hole.stl
 build/cad/full_keyboard_side.stl: src/cad/full_keyboard_side.py build/full_keyboard.stl
+
+build/structure/%/shape.3mf: src/structure/%/cad/shape.py
+	mkdir -p $(dir $@)
+	+PYTHONPATH=src uv run python $< -o $@
+
+build/structure/%/shape.stl: src/structure/%/cad/shape.py
+	mkdir -p $(dir $@)
+	+PYTHONPATH=src uv run python $< -o $@
+	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
@@ -101,16 +110,34 @@ build_with_pythonscad:
 
 _pythonscad_stl:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) --export-format binstl
+	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
+	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
+		part=$${FILE#build/structure/}; \
+		part=$${part%/shape.*}; \
+		src_file="src/structure/$$part/cad/shape.py"; \
+	fi; \
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE) --export-format binstl
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $(FILE) -o $(FILE); fi
 
 _pythonscad_3mf:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE) -O export-3mf/material-type=color
+	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
+	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
+		part=$${FILE#build/structure/}; \
+		part=$${part%/shape.*}; \
+		src_file="src/structure/$$part/cad/shape.py"; \
+	fi; \
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE) -O export-3mf/material-type=color
 
 _pythonscad_other:
 	mkdir -p $(dir $(FILE))
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $(patsubst build/%,src/%,$(basename $(FILE)).py) -o $(FILE)
+	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
+	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
+		part=$${FILE#build/structure/}; \
+		part=$${part%/shape.*}; \
+		src_file="src/structure/$$part/cad/shape.py"; \
+	fi; \
+	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE)
 
 
 

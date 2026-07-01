@@ -7,7 +7,7 @@ from core.context import injector
 from core.loader import load_stl_to_manifold
 from models.parameters import Parameters
 from models.usbc import USBCModel
-from models.body import BodyModel
+from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
 

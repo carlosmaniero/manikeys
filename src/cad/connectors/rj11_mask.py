@@ -6,7 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
 from models.rj11 import RJ11Model
-from models.body import BodyModel
+from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
 

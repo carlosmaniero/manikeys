@@ -31,7 +31,7 @@ class BodyScrewPlacementCAD(ManifoldObject):
             )
             cubes.append(cube)
 
-        body = load_stl_to_manifold("build/cad/body.stl")
+        body = load_stl_to_manifold("build/structure/body/shape.stl")
 
         return (
             manifold3d.Manifold.batch_boolean(cubes, manifold3d.OpType.Add)

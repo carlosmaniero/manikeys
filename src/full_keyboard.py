@@ -19,7 +19,7 @@ class FullKeyboard(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         paths = [
-            "build/cad/body.stl",
+            "build/structure/body/shape.stl",
             "build/cad/body_inner_sections.stl",
             "build/cad/body_screw_placement.stl",
             "build/cad/cap_grid.stl",

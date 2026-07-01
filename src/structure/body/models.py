@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import numpy as np
 from injector import inject, singleton
-from .layout import Layout
-from .parameters import Parameters
+from models.layout import Layout
+from models.parameters import Parameters
 from core.interpolation import lerp, Interpolator, InterpolationChain
 
 

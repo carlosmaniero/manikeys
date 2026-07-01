@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from injector import inject, singleton
-from .body import BodyModel
+from structure.body.models import BodyModel
 from .parameters import Parameters
 
 

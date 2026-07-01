@@ -3,7 +3,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from models.components.light_indicator.main_body import MainBodyModel
-from models.body import BodyModel
+from structure.body.models import BodyModel
 from models.parameters import Parameters
 
 

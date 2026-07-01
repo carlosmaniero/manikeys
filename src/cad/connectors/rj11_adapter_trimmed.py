@@ -15,7 +15,7 @@ class RJ11AdapterTrimmedCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         paths = [
             "build/cad/connectors/rj11_adapter.stl",
-            "build/cad/body.stl",
+            "build/structure/body/shape.stl",
         ]
         adapter, body = load_many_stl_to_manifold(paths)
         return adapter ^ body

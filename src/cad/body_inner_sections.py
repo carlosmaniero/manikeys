@@ -3,7 +3,7 @@ from core.context import injector
 import sys
 import manifold3d
 from dataclasses import dataclass
-from models.body import BodyInnerModel, BodyModel
+from structure.body.models import BodyInnerModel, BodyModel
 from models.parameters import Parameters
 from injector import inject, singleton
 from core.loader import load_stl_to_manifold

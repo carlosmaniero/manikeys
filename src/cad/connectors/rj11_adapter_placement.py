@@ -7,7 +7,7 @@ from core.context import injector
 from core.loader import load_stl_to_manifold
 from models.parameters import Parameters
 from models.rj11 import RJ11Model
-from models.body import BodyModel
+from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -101,7 +101,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
             ]
         )
 
-        body = load_stl_to_manifold("build/cad/body.stl")
+        body = load_stl_to_manifold("build/structure/body/shape.stl")
         return placement ^ body
 
 

@@ -19,7 +19,7 @@ class USBCAdapterTrimmedCAD(ManifoldObject):
         print("Loading STL files...")
         paths = [
             "build/cad/connectors/usbc_adapter.stl",
-            "build/cad/body.stl",
+            "build/structure/body/shape.stl",
         ]
         adapter, body = load_many_stl_to_manifold(paths)
         return adapter ^ body

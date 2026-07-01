@@ -2,7 +2,6 @@ from injector import Module, provider, singleton
 from models.parameters import (
     Parameters,
     CapsParameters,
-    BodyParameters,
     CapsOuterParameters,
     GlobalParameters,
     HandSupportParameters,
@@ -14,6 +13,7 @@ from models.parameters import (
     MagnetParameters,
     Oled096Parameters,
 )
+from structure.body.parameters import BodyParameters
 
 
 class ParametersModule(Module):
@@ -29,21 +29,7 @@ class ParametersModule(Module):
                 gap=5,
                 outer=CapsOuterParameters(thickness=1.5),
             ),
-            body=BodyParameters(
-                radius=280,
-                thickness=3,
-                width=180,
-                depth=130,
-                height=15,
-                fillet=10,
-                cabe_hole_radius=13,
-                clearance=2,
-                m2_screw_diameter=2.0,
-                m2_screw_length=8.0,
-                m2_screw_head_diameter=4.0,
-                m2_screw_head_height=2.0,
-                bottom_thickness=10.0,
-            ),
+            body=BodyParameters(),
             globals=GlobalParameters(diff_offset=0.5),
             hand_support=HandSupportParameters(
                 offset_x=75,

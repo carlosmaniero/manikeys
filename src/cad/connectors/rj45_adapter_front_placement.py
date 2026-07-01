@@ -18,7 +18,7 @@ class RJ45AdapterFrontPlacementCAD(ManifoldObject):
         front = load_stl_to_manifold(
             "build/cad/connectors/rj45_adapter_front.stl"
         )
-        body = load_stl_to_manifold("build/cad/body.stl")
+        body = load_stl_to_manifold("build/structure/body/shape.stl")
 
         placement = front.translate(self.model.translation_coords)
 

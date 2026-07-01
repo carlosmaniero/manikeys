@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from structure.body.parameters import BodyParameters
 
 
 @dataclass
@@ -21,23 +22,6 @@ class CapsParameters:
     @property
     def next_offset(self) -> float:
         return self.size + self.gap
-
-
-@dataclass
-class BodyParameters:
-    radius: float
-    thickness: float
-    width: float
-    depth: float
-    height: float
-    fillet: float
-    cabe_hole_radius: float
-    clearance: float
-    m2_screw_diameter: float
-    m2_screw_length: float
-    m2_screw_head_diameter: float
-    m2_screw_head_height: float
-    bottom_thickness: float
 
 
 @dataclass
