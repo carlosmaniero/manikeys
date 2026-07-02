@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.rj45 import RJ45PlacementModel
+from connectors.rj45.model import RJ45PlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -16,7 +16,7 @@ class RJ45AdapterFrontPlacementCAD(ManifoldObject):
 
     def assemble(self) -> M:
         front = load_stl_to_manifold(
-            "build/cad/connectors/rj45_adapter_front.stl"
+            "build/connectors/rj45/cad/adapter_front.stl"
         )
         body = load_stl_to_manifold("build/structure/body/shape.stl")
 

@@ -3,7 +3,7 @@ from manifold3d import Manifold as M
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.rj45 import RJ45PlacementModel
+from connectors.rj45.model import RJ45PlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 

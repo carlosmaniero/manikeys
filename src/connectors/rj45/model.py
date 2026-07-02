@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from injector import inject, singleton
-from .parameters import Parameters, RJ45Parameters
+from models.parameters import Parameters
+from connectors.rj45.parameters import RJ45Parameters
 from structure.body.models import BodyModel
 
 

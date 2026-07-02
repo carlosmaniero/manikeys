@@ -6,6 +6,7 @@ from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
 from connectors.magnet.parameters import MagnetParameters
 from components.oled_096.parameters import Oled096Parameters
+from connectors.rj45.parameters import RJ45Parameters
 
 
 @dataclass
@@ -53,49 +54,6 @@ class RJ11Parameters:
     error_margin: float
     adapter_head_height: float
     adapter_socket_diameter: float
-
-
-@dataclass
-class RJ45Parameters:
-    @property
-    def width(self) -> float:
-        return 16.0
-
-    @property
-    def height(self) -> float:
-        return 13.5
-
-    @property
-    def length(self) -> float:
-        return 21.0
-
-    @property
-    def error_margin(self) -> float:
-        return 0.25
-
-    @property
-    def socket_hole_radius(self) -> float:
-        return 1.25
-
-    @property
-    def socket_hole_spacing(self) -> float:
-        return 9
-
-    @property
-    def socket_hole_y_offset(self) -> float:
-        return 8
-
-    @property
-    def pins_pocket_length(self) -> float:
-        return 7.0
-
-    @property
-    def socket_hole_top_height(self) -> float:
-        return 0.5
-
-    @property
-    def socket_hole_bottom_radius_offset(self) -> float:
-        return 1.0
 
 
 @dataclass
