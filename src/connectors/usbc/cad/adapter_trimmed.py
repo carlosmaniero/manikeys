@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_many_stl_to_manifold
-from models.usbc import USBCModel
+from connectors.usbc.model import USBCModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -18,7 +18,7 @@ class USBCAdapterTrimmedCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         print("Loading STL files...")
         paths = [
-            "build/cad/connectors/usbc_adapter.stl",
+            "build/connectors/usbc/cad/adapter.stl",
             "build/structure/body/shape.stl",
         ]
         adapter, body = load_many_stl_to_manifold(paths)

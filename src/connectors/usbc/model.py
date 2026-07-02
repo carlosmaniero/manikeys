@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from injector import inject, singleton
-from .parameters import Parameters, USBCParameters
+from models.parameters import Parameters
+from connectors.usbc.parameters import USBCParameters
 from structure.body.models import BodyModel
 
 

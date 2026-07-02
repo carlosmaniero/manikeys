@@ -8,13 +8,13 @@ from models.parameters import (
     HandSupportParameters,
     HotSwapParameters,
     RJ11Parameters,
-    RJ45Parameters,
-    USBCParameters,
-    Oled096Parameters,
 )
 from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
 from connectors.magnet.parameters import MagnetParameters
+from connectors.rj45.parameters import RJ45Parameters
+from connectors.usbc.parameters import USBCParameters
+from components.oled_096.parameters import Oled096Parameters
 
 
 class ParametersModule(Module):

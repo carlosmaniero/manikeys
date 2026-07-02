@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
-from models.usbc import USBCModel
+from connectors.usbc.model import USBCModel
 from core.manifold_ext.object import ManifoldObject
 
 

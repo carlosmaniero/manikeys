@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.usbc import USBCModel
+from connectors.usbc.model import USBCModel
 from models.parameters import Parameters
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -50,7 +50,7 @@ class USBCMaskCAD(ManifoldObject):
     @property
     def body(self) -> manifold3d.Manifold:
         return load_stl_to_manifold(
-            "build/cad/connectors/usbc_connector_mask.stl"
+            "build/connectors/usbc/cad/masks/connector.stl"
         )
 
     def assemble(self) -> manifold3d.Manifold:

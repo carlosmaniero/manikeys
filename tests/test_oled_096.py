@@ -1,5 +1,5 @@
 from unittest.mock import Mock
-from models.components.oled_096 import Oled096Model, Oled096PlacementModel
+from components.oled_096.model import Oled096Model, Oled096PlacementModel
 from models.parameters import Oled096Parameters
 
 

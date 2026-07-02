@@ -7,6 +7,7 @@ from connectors.pogo.parameters import PogoPinParameters
 from connectors.magnet.parameters import MagnetParameters
 from components.oled_096.parameters import Oled096Parameters
 from connectors.rj45.parameters import RJ45Parameters
+from connectors.usbc.parameters import USBCParameters
 
 
 @dataclass
@@ -54,18 +55,6 @@ class RJ11Parameters:
     error_margin: float
     adapter_head_height: float
     adapter_socket_diameter: float
-
-
-@dataclass
-class USBCParameters:
-    width: float
-    height: float
-    length: float
-    pcb_thickness: float
-    hole_spacing: float
-    aperture: float
-    num_holes: int
-    error_margin: float
 
 
 @dataclass
