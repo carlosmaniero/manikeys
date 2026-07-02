@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.manifold_ext.object import ManifoldObject
-from models.components.oled_096 import Oled096Model
+from components.oled_096.model import Oled096Model
 
 
 @singleton

@@ -35,8 +35,8 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             "build/connectors/magnet/cad/snap.stl",
             "build/components/light_indicator/cad/masks/body.stl",
             "build/components/light_indicator/cad/panel_frame.stl",
-            "build/cad/components/oled_096_placement_body_mask.stl",
-            "build/cad/components/oled_096_placement.stl",
+            "build/components/oled_096/cad/masks/body.stl",
+            "build/components/oled_096/cad/placement.stl",
         ]
 
         manifolds = load_many_stl_to_manifold(paths)

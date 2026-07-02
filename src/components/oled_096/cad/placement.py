@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.components.oled_096 import Oled096PlacementModel
+from components.oled_096.model import Oled096PlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -16,7 +16,7 @@ class Oled096PlacementCAD(ManifoldObject):
     model: Oled096PlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
-        oled = load_stl_to_manifold("build/cad/components/oled_096.stl")
+        oled = load_stl_to_manifold("build/components/oled_096/cad/oled.stl")
         return oled.rotate([0, 0, 180]).translate(self.model.placement_position)
 
 

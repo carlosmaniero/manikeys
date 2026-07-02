@@ -81,7 +81,7 @@ class MountShellCAD(ManifoldObject):
                 "build/components/light_indicator/cad/masks/body_shell.stl"
             )
             - load_stl_to_manifold(
-                "build/cad/components/oled_096_placement_shell_mask.stl"
+                "build/components/oled_096/cad/masks/shell.stl"
             )
         )
 

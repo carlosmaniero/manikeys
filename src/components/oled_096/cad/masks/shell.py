@@ -4,23 +4,23 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.components.oled_096 import Oled096PlacementModel
+from components.oled_096.model import Oled096PlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
 @singleton
 @inject
 @dataclass
-class Oled096PlacementBodyMaskCAD(ManifoldObject):
+class Oled096PlacementShellMaskCAD(ManifoldObject):
     model: Oled096PlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
-            self.model.mask_size,
+            self.model.shell_mask_size,
             center=True,
-        ).translate(self.model.mask_coords)
+        ).translate(self.model.shell_mask_coords)
 
 
 if __name__ == "__main__":
-    mask = injector.get(Oled096PlacementBodyMaskCAD)
+    mask = injector.get(Oled096PlacementShellMaskCAD)
     mask.program(sys.argv)

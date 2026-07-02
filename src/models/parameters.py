@@ -5,6 +5,7 @@ from switches.socket.parameters import HotSwapParameters
 from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
 from connectors.magnet.parameters import MagnetParameters
+from components.oled_096.parameters import Oled096Parameters
 
 
 @dataclass
@@ -107,41 +108,6 @@ class USBCParameters:
     aperture: float
     num_holes: int
     error_margin: float
-
-
-@dataclass
-class Oled096Parameters:
-    @property
-    def display_height(self) -> float:
-        return 1.5
-
-    @property
-    def pcb(self) -> list[float]:
-        return [24.7, 27, 1.5]
-
-    @property
-    def panel(self) -> list[float]:
-        return [24.74, 16.9, self.display_height]
-
-    @property
-    def clearance(self) -> float:
-        return 0.5
-
-    @property
-    def screw_hole_offset(self) -> float:
-        return 2
-
-    @property
-    def flat_cable_clearance(self) -> float:
-        return 0.25
-
-    @property
-    def flat_cable_width(self) -> float:
-        return 9.0
-
-    @property
-    def cable_clearance(self) -> list[float]:
-        return [10.0, 2.0]
 
 
 @dataclass
