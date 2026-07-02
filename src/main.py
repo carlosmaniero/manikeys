@@ -20,8 +20,8 @@ class Keyboard(OSCObject):
             "build/switches/socket/mount/cad/shell.stl",
             "build/switches/socket/cad/hot_swap_grid.stl",
             "build/switches/cad/keycap_grid.stl",
-            "build/cad/connectors/rj11.stl",
-            "build/cad/connectors/rj11_adapter_trimmed.stl",
+            "build/connectors/rj11/cad/rj11.stl",
+            "build/connectors/rj11/cad/adapter_trimmed.stl",
         ]
         (
             body_part,

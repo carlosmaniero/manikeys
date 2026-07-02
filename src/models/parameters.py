@@ -8,6 +8,7 @@ from connectors.magnet.parameters import MagnetParameters
 from components.oled_096.parameters import Oled096Parameters
 from connectors.rj45.parameters import RJ45Parameters
 from connectors.usbc.parameters import USBCParameters
+from connectors.rj11.parameters import RJ11Parameters
 
 
 @dataclass
@@ -38,23 +39,6 @@ class HandSupportParameters:
     offset_z: float
     fillet: float
     depth: float
-
-
-@dataclass
-class RJ11Parameters:
-    width: float
-    height: float
-    length: float
-    bottom_notch_length: float
-    bottom_notch_height: float
-    bottom_notch_start_y: float
-    inner_paddings: list[float]
-    inner_length: float
-    socket_height: float
-    socket_diameter: float
-    error_margin: float
-    adapter_head_height: float
-    adapter_socket_diameter: float
 
 
 @dataclass

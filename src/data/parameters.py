@@ -7,7 +7,6 @@ from models.parameters import (
     CapsOuterParameters,
     HandSupportParameters,
     HotSwapParameters,
-    RJ11Parameters,
 )
 from structure.body.parameters import BodyParameters
 from connectors.pogo.parameters import PogoPinParameters
@@ -15,6 +14,7 @@ from connectors.magnet.parameters import MagnetParameters
 from connectors.rj45.parameters import RJ45Parameters
 from connectors.usbc.parameters import USBCParameters
 from components.oled_096.parameters import Oled096Parameters
+from connectors.rj11.parameters import RJ11Parameters
 
 
 class ParametersModule(Module):

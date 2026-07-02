@@ -67,7 +67,9 @@ class MountShellCAD(ManifoldObject):
             )
             - side_divider
             - body_divider
-            - load_stl_to_manifold("build/cad/connectors/placement_mask.stl")
+            - load_stl_to_manifold(
+                "build/connectors/rj11/cad/masks/placement.stl"
+            )
             - load_stl_to_manifold(
                 "build/connectors/usbc/cad/masks/placement.stl"
             )

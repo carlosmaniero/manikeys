@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
-from models.rj11 import RJ11Model
+from connectors.rj11.model import RJ11Model
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 

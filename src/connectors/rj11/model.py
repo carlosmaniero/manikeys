@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from injector import inject, singleton
-from .parameters import Parameters, RJ11Parameters
+from models.parameters import Parameters
+from connectors.rj11.parameters import RJ11Parameters
 
 
 @singleton
