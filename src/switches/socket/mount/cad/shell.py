@@ -1,11 +1,12 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from structure.body.parameters import BodyParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.parameters import Parameters
 from switches.socket.mount.models import MountCavityModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -17,12 +18,13 @@ from core.manifold_ext.object import ManifoldObject
 class MountShellCAD(ManifoldObject):
     model: MountCavityModel
     body: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (
-            self.parameters.wall.thickness * 2
-            + self.parameters.body.clearance * 2
+            self.wall_parameters.thickness * 2
+            + self.body_parameters.clearance * 2
         )
         divider_y = self.model.divider_y - divider_size / 2
 
@@ -30,20 +32,20 @@ class MountShellCAD(ManifoldObject):
             [
                 self.model.width * 3,
                 divider_size,
-                self.model.sphere.highest + self.parameters.body.height,
+                self.model.sphere.highest + self.body_parameters.height,
             ],
             center=False,
         ).translate(
             [
                 self.model.start_x() - self.model.width,
                 divider_y,
-                -self.parameters.body.height,
+                -self.body_parameters.height,
             ]
         )
 
-        height = self.model.sphere.highest + self.parameters.body.height
+        height = self.model.sphere.highest + self.body_parameters.height
 
-        side_divider_size = self.parameters.body.clearance
+        side_divider_size = self.body_parameters.clearance
 
         side_divider = manifold3d.Manifold.cube(
             [
@@ -54,9 +56,9 @@ class MountShellCAD(ManifoldObject):
             center=False,
         ).translate(
             [
-                self.body.hand_support_end_x + self.parameters.wall.thickness,
+                self.body.hand_support_end_x + self.wall_parameters.thickness,
                 self.body.start_y(),
-                -self.parameters.body.height,
+                -self.body_parameters.height,
             ]
         )
 

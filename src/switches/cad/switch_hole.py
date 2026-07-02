@@ -1,8 +1,8 @@
+from models.parameters import SwitchesParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 
@@ -11,14 +11,14 @@ from core.context import injector
 @inject
 @dataclass
 class SwitchHoleCAD(ManifoldObject):
-    parameters: Parameters
+    switches_parameters: SwitchesParameters
 
     def assemble(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
-                self.parameters.switches.size,
-                self.parameters.switches.size,
-                self.parameters.switches.thickness * 4,
+                self.switches_parameters.size,
+                self.switches_parameters.size,
+                self.switches_parameters.thickness * 4,
             ],
             center=True,
         )

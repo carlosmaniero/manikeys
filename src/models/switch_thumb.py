@@ -1,9 +1,10 @@
+from globals.wall.parameters import WallParameters
+from models.parameters import SwitchesParameters
 from dataclasses import dataclass
 
 from injector import inject, singleton
 
 from structure.body.models import BodyModel
-from .parameters import Parameters
 
 
 @singleton
@@ -11,28 +12,29 @@ from .parameters import Parameters
 @dataclass
 class SwitchThumbModel:
     body_model: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    switches_parameters: SwitchesParameters
 
     def get_positions(self) -> list[list[float]]:
         pos1 = [
             self.body_model.end_x()
-            - self.parameters.switches.full_offset
-            - self.parameters.wall.thickness * 3,
+            - self.switches_parameters.full_offset
+            - self.wall_parameters.thickness * 3,
             self.body_model.divider_y
-            - self.parameters.switches.full_offset
-            - self.parameters.wall.thickness,
+            - self.switches_parameters.full_offset
+            - self.wall_parameters.thickness,
             self.body_model.sphere.highest,
         ]
 
         pos2 = [
             pos1[0],
-            pos1[1] - self.parameters.switches.next_offset,
+            pos1[1] - self.switches_parameters.next_offset,
             pos1[2],
         ]
 
         pos3 = [
             pos1[0],
-            pos2[1] - self.parameters.switches.next_offset,
+            pos2[1] - self.switches_parameters.next_offset,
             pos1[2],
         ]
 

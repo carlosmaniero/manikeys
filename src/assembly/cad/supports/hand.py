@@ -1,4 +1,5 @@
 from __future__ import annotations
+from structure.body.parameters import BodyParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
@@ -6,7 +7,6 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from structure.body.models import BodyModel
-from models.parameters import Parameters
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -15,7 +15,7 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class HandWithSupportsAssemblyCAD(ManifoldObject):
     model: BodyModel
-    parameters: Parameters
+    body_parameters: BodyParameters
 
     def _create_support_y(self, x_pos: float) -> manifold3d.Manifold:
         length = self.model.divider_y - self.model.start_y()
@@ -45,7 +45,7 @@ class HandWithSupportsAssemblyCAD(ManifoldObject):
 
     def _create_mask(self) -> manifold3d.Manifold:
         divider_y = self.model.divider_y
-        height = self.model.sphere.highest + self.parameters.body.height
+        height = self.model.sphere.highest + self.body_parameters.height
 
         return manifold3d.Manifold.cube(
             [
@@ -58,7 +58,7 @@ class HandWithSupportsAssemblyCAD(ManifoldObject):
             [
                 self.model.hand_support_end_x,
                 self.model.start_y(),
-                -self.parameters.body.height,
+                -self.body_parameters.height,
             ]
         )
 

@@ -6,7 +6,6 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from connectors.usbc.model import USBCModel
-from models.parameters import Parameters
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -15,7 +14,6 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class USBCMaskCAD(ManifoldObject):
-    parameters: Parameters
     model: USBCModel
     body_model: BodyModel
 

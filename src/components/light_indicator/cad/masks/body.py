@@ -7,14 +7,12 @@ from core.context import injector
 from components.light_indicator.model import LightIndicatorModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
-from models.parameters import Parameters
 
 
 @singleton
 @inject
 @dataclass
 class BodyMask(ManifoldObject):
-    parameters: Parameters
     indicator_model: LightIndicatorModel
     body_model: BodyModel
 

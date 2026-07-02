@@ -1,18 +1,17 @@
+from connectors.rj11.parameters import RJ11Parameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
-from connectors.rj11.parameters import RJ11Parameters
 
 
 @singleton
 @inject
 @dataclass
 class RJ11Model:
-    parameters: Parameters
+    rj11_parameters: RJ11Parameters
 
     @property
     def rj11(self) -> RJ11Parameters:
-        return self.parameters.rj11
+        return self.rj11_parameters
 
     @property
     def notch_start_y(self) -> float:

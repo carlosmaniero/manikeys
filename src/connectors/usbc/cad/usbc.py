@@ -4,7 +4,6 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.usbc.model import USBCModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -14,7 +13,6 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class USBCCAD(ManifoldObject):
-    parameters: Parameters
     model: USBCModel
     body_model: BodyModel
 

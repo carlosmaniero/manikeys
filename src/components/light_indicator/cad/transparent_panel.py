@@ -6,14 +6,12 @@ from injector import inject, singleton
 from core.context import injector
 from components.light_indicator.model import LightIndicatorModel
 from core.manifold_ext.object import ManifoldObject
-from models.parameters import Parameters
 
 
 @singleton
 @inject
 @dataclass
 class TransparentPanelCad(ManifoldObject):
-    params: Parameters
     indicator_model: LightIndicatorModel
 
     @property

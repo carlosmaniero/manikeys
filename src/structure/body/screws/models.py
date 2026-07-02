@@ -1,7 +1,9 @@
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
+from structure.body.parameters import BodyParameters
 from dataclasses import dataclass
 from injector import inject, singleton
 from structure.body.models import BodyModel
-from models.parameters import Parameters
 
 
 @singleton
@@ -9,13 +11,15 @@ from models.parameters import Parameters
 @dataclass
 class ScrewPlacementModel:
     body: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
+    body_parameters: BodyParameters
 
     @property
     def cube_size(self) -> float:
         return (
-            self.parameters.screw.m2_diameter
-            + self.parameters.wall.thickness * 2
+            self.screw_parameters.m2_diameter
+            + self.wall_parameters.thickness * 2
         )
 
     @property
@@ -24,7 +28,7 @@ class ScrewPlacementModel:
 
     @property
     def mask_size(self) -> float:
-        return self.cube_size + self.parameters.wall.thickness
+        return self.cube_size + self.wall_parameters.thickness
 
     @property
     def mask_height(self) -> float:
@@ -32,7 +36,7 @@ class ScrewPlacementModel:
 
     @property
     def z(self) -> float:
-        return -self.parameters.body.height
+        return -self.body_parameters.height
 
     @property
     def mask_z(self) -> float:
@@ -72,15 +76,15 @@ class ScrewPlacementModel:
 
     @property
     def screw_head_diameter(self) -> float:
-        return self.parameters.screw.m2_head_diameter
+        return self.screw_parameters.m2_head_diameter
 
     @property
     def screw_head_height(self) -> float:
-        return self.parameters.screw.m2_head_height
+        return self.screw_parameters.m2_head_height
 
     @property
     def bottom_thickness(self) -> float:
-        return self.parameters.body.bottom_thickness
+        return self.body_parameters.bottom_thickness
 
     @property
     def bottom_z(self) -> float:
@@ -92,11 +96,11 @@ class ScrewPlacementModel:
 
     @property
     def screw_diameter(self) -> float:
-        return self.parameters.screw.m2_diameter
+        return self.screw_parameters.m2_diameter
 
     @property
     def screw_height(self) -> float:
-        return self.parameters.screw.m2_length
+        return self.screw_parameters.m2_length
 
     @property
     def screw_z(self) -> float:

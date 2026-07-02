@@ -1,11 +1,11 @@
 from __future__ import annotations
+from structure.body.parameters import BodyParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from structure.body.screws.models import ScrewPlacementModel
-from models.parameters import Parameters
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -14,7 +14,7 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class BodyBottomCAD(ManifoldObject):
     model: ScrewPlacementModel
-    parameters: Parameters
+    body_parameters: BodyParameters
 
     def screw_head_holes(self) -> manifold3d.Manifold:
         holes = []
@@ -56,7 +56,7 @@ class BodyBottomCAD(ManifoldObject):
             [
                 self.model.body.start_x(),
                 self.model.body.start_y(),
-                -(self.parameters.body.height + self.model.bottom_thickness),
+                -(self.body_parameters.height + self.model.bottom_thickness),
             ]
         )
 

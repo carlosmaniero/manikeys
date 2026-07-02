@@ -1,7 +1,7 @@
+from models.parameters import SwitchesParameters
 from dataclasses import dataclass
 from typing import List, Protocol
 from models.projection import SphereProjection
-from models.parameters import Parameters
 from dataclasses import field
 
 
@@ -122,47 +122,47 @@ class Layout:
         return cls(columns=columns, grid=grid, bounds=bounds)
 
     def get_main_cluster_corners(
-        self, parameters: Parameters
+        self, switches_parameters: SwitchesParameters
     ) -> List[List[float]]:
         top_left = [
             self.bounds.left[0]
-            - parameters.switches.size
-            - parameters.switches.gap,
+            - switches_parameters.size
+            - switches_parameters.gap,
             self.bounds.top[1]
-            - parameters.switches.size
-            - parameters.switches.gap,
+            - switches_parameters.size
+            - switches_parameters.gap,
         ]
         top_right = [
             self.bounds.right[0]
-            + parameters.switches.size
-            + parameters.switches.gap,
+            + switches_parameters.size
+            + switches_parameters.gap,
             self.bounds.top[1]
-            - parameters.switches.size
-            - parameters.switches.gap,
+            - switches_parameters.size
+            - switches_parameters.gap,
         ]
         bottom_left = [
             self.bounds.left[0]
-            - parameters.switches.size
-            - parameters.switches.gap,
+            - switches_parameters.size
+            - switches_parameters.gap,
             self.bounds.bottom[1]
-            + parameters.switches.size
-            + parameters.switches.gap,
+            + switches_parameters.size
+            + switches_parameters.gap,
         ]
         bottom_right = [
             self.bounds.right[0]
-            + parameters.switches.size
-            + parameters.switches.gap,
+            + switches_parameters.size
+            + switches_parameters.gap,
             self.bounds.bottom[1]
-            + parameters.switches.size
-            + parameters.switches.gap,
+            + switches_parameters.size
+            + switches_parameters.gap,
         ]
 
         top_first_key = list(self.grid[0][0].position)
         top_first_key[0] = top_left[0]
-        top_first_key[1] -= parameters.switches.size + parameters.switches.gap
+        top_first_key[1] -= switches_parameters.size + switches_parameters.gap
 
         top_third_key = list(self.grid[3][0].position)
-        top_third_key[0] -= parameters.switches.size + parameters.switches.gap
+        top_third_key[0] -= switches_parameters.size + switches_parameters.gap
         top_third_key[1] = top_left[1]
 
         return [

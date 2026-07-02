@@ -1,7 +1,7 @@
+from globals.wall.parameters import WallParameters
+from connectors.usbc.parameters import USBCParameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
-from connectors.usbc.parameters import USBCParameters
 from structure.body.models import BodyModel
 
 
@@ -9,12 +9,13 @@ from structure.body.models import BodyModel
 @inject
 @dataclass
 class USBCModel:
-    parameters: Parameters
+    wall_parameters: WallParameters
+    usbc_parameters: USBCParameters
     body_model: BodyModel
 
     @property
     def thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def width(self) -> float:
@@ -30,25 +31,25 @@ class USBCModel:
 
     @property
     def inner_offset(self) -> float:
-        return self.parameters.wall.thickness / 2
+        return self.wall_parameters.thickness / 2
 
     @property
     def body_offset(self) -> list[float]:
-        thickness = self.parameters.wall.thickness
+        thickness = self.wall_parameters.thickness
         full_length = self.pcb_width + thickness * 2
 
         max_x = (self.pcb_length + thickness * 2) / 2
         max_y = full_length / 2
 
         return [
-            self.body_model.start_x() + self.parameters.wall.fillet + max_x,
+            self.body_model.start_x() + self.wall_parameters.fillet + max_x,
             self.body_model.end_y() - max_y + self.inner_offset,
             self.body_model.bottom_z + self.usbc.height + self.pcb_height / 2,
         ]
 
     @property
     def usbc(self) -> USBCParameters:
-        return self.parameters.usbc
+        return self.usbc_parameters
 
     @property
     def pcb_width(self) -> float:

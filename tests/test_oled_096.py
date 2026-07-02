@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 from components.oled_096.model import Oled096Model, Oled096PlacementModel
-from models.parameters import Oled096Parameters
+from components.oled_096.parameters import Oled096Parameters
 
 
 class Oled096ParametersStub(Oled096Parameters):
@@ -49,7 +49,12 @@ def create_mock_parameters(
 
 def test_oled_096_body():
     mock_params = create_mock_parameters()
-    model = Oled096Model(global_parameters=mock_params)
+    model = Oled096Model(
+        oled096_parameters=mock_params.oled096,
+        screw_parameters=mock_params.screw,
+        switches_parameters=mock_params.switches,
+        wall_parameters=mock_params.wall,
+    )
 
     assert model.pcb_pocket == [20.5, 30.5, 6.5]
     assert model.body == [40.5, 50.5, 8.0]
@@ -65,7 +70,12 @@ def test_oled_096_body():
 
 def test_oled_096_screw_holes():
     mock_params = create_mock_parameters(clearance=0)
-    model = Oled096Model(global_parameters=mock_params)
+    model = Oled096Model(
+        oled096_parameters=mock_params.oled096,
+        screw_parameters=mock_params.screw,
+        switches_parameters=mock_params.switches,
+        wall_parameters=mock_params.wall,
+    )
 
     assert model.screw_holes == [
         [2.0, 0, 2.25],
@@ -75,7 +85,12 @@ def test_oled_096_screw_holes():
 
 def test_oled_096_cable_clearance():
     mock_params = create_mock_parameters(clearance=0)
-    model = Oled096Model(global_parameters=mock_params)
+    model = Oled096Model(
+        oled096_parameters=mock_params.oled096,
+        screw_parameters=mock_params.screw,
+        switches_parameters=mock_params.switches,
+        wall_parameters=mock_params.wall,
+    )
 
     assert model.cable_clearance == [10.0, 2.0, 6.0]
     assert model.cable_clearance_coords == [0.0, 16.0, -0.75]
@@ -102,9 +117,17 @@ def test_oled_096_placement_position():
         [100.0, 160.0, 300.0],
     ]
 
-    oled_model = Oled096Model(global_parameters=mock_params)
+    oled_model = Oled096Model(
+        oled096_parameters=mock_params.oled096,
+        screw_parameters=mock_params.screw,
+        switches_parameters=mock_params.switches,
+        wall_parameters=mock_params.wall,
+    )
     model = Oled096PlacementModel(
-        global_parameters=mock_params,
+        oled096_parameters=mock_params.oled096,
+        screw_parameters=mock_params.screw,
+        switches_parameters=mock_params.switches,
+        wall_parameters=mock_params.wall,
         oled=oled_model,
         switch_thumb=mock_switch_thumb,
     )

@@ -4,7 +4,6 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.pogo.models import PogoPinModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -13,7 +12,6 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class PogoPinMaskCAD(ManifoldObject):
-    parameters: Parameters
     model: PogoPinModel
 
     def rounded_box(

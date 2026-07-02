@@ -1,10 +1,11 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.rj11.model import RJ11Model
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -14,7 +15,8 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class PlacementMaskCAD(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
     model: RJ11Model
     body_model: BodyModel
 
@@ -30,23 +32,23 @@ class PlacementMaskCAD(ManifoldObject):
     def width(self) -> float:
         return (
             self.model.rj11.width
-            + self.parameters.wall.thickness * 4
+            + self.wall_parameters.thickness * 4
             + self.tab_width * 2
-            + self.parameters.wall.fillet
+            + self.wall_parameters.fillet
         )
 
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.screw.m2_diameter
-            + self.parameters.wall.thickness * 2
+            self.screw_parameters.m2_diameter
+            + self.wall_parameters.thickness * 2
         )
 
     @property
     def total_height(self) -> float:
         return (
             self.model.rj11.height
-            + self.parameters.wall.thickness
+            + self.wall_parameters.thickness
             + self.height
         )
 
@@ -55,14 +57,14 @@ class PlacementMaskCAD(ManifoldObject):
         return manifold3d.Manifold.cube(
             [
                 self.width,
-                self.model.rj11.length + self.parameters.wall.thickness,
+                self.model.rj11.length + self.wall_parameters.thickness,
                 self.total_height + self.body_model.highest,
             ],
             center=True,
         ).translate([0, 0, self.body_model.highest / 2])
 
     def assemble(self) -> manifold3d.Manifold:
-        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
+        max_y = self.model.rj11.length / 2 + self.wall_parameters.thickness
 
         return self.main_block.translate(
             [

@@ -1,10 +1,10 @@
 from __future__ import annotations
+from connectors.magnet.parameters import MagnetParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.magnet.models import MagnetSnapModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -14,12 +14,12 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class MagnetSnapCAD(ManifoldObject):
     model: MagnetSnapModel
-    parameters: Parameters
+    magnet_parameters: MagnetParameters
 
     def assemble(self) -> manifold3d.Manifold:
         radius = (
-            self.parameters.magnet.diameter
-            + self.parameters.magnet.error_margin
+            self.magnet_parameters.diameter
+            + self.magnet_parameters.error_margin
         ) / 2
         height = self.model.full_magnet_height
 

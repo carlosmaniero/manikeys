@@ -1,5 +1,5 @@
+from models.parameters import SwitchesParameters
 from injector import Module, provider, singleton
-from models.parameters import Parameters
 from models.projection import SphereProjection
 from switches.model import Layout, LayoutColumn
 
@@ -8,7 +8,9 @@ class LayoutModule(Module):
     @singleton
     @provider
     def provide_layout(
-        self, parameters: Parameters, projection: SphereProjection
+        self,
+        switches_parameters: SwitchesParameters,
+        projection: SphereProjection,
     ) -> Layout:
         return Layout.from_spherical_projection(
             columns=[
@@ -21,5 +23,5 @@ class LayoutModule(Module):
                 LayoutColumn(keys=5, offsetY=0),
             ],
             projection=projection,
-            switch=parameters.switches,
+            switch=switches_parameters,
         )

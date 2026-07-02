@@ -1,4 +1,5 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
@@ -6,7 +7,6 @@ from injector import inject, singleton
 from core.context import injector
 from components.light_indicator.model import LightIndicatorModel
 from core.manifold_ext.object import ManifoldObject
-from models.parameters import Parameters
 from structure.body.models import BodyModel
 
 
@@ -14,7 +14,7 @@ from structure.body.models import BodyModel
 @inject
 @dataclass
 class PanelFrameCad(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
     indicator_model: LightIndicatorModel
     body_model: BodyModel
 
@@ -101,7 +101,7 @@ class PanelFrameCad(ManifoldObject):
             self.indicator_model.right_screw_x,
         ]:
             mask += screw_hole.translate(
-                [x, 0, -self.parameters.wall.thickness]
+                [x, 0, -self.wall_parameters.thickness]
             )
         return mask
 

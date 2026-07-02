@@ -10,7 +10,7 @@ class MountModel(BodyInnerModel):
     @property
     def offset(self) -> float:
         # TODO: it also should have an error margin
-        return super().offset - self.parameters.body.clearance
+        return super().offset - self.body_parameters.clearance
 
 
 @singleton
@@ -19,4 +19,4 @@ class MountModel(BodyInnerModel):
 class MountCavityModel(MountModel):
     @property
     def offset(self) -> float:
-        return super().offset - self.parameters.wall.thickness
+        return super().offset - self.wall_parameters.thickness

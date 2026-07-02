@@ -1,11 +1,12 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
-from models.parameters import Parameters
 from connectors.rj11.model import RJ11Model
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -15,7 +16,8 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class RJ11AdapterPlacementCAD(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
     model: RJ11Model
     body_model: BodyModel
 
@@ -29,18 +31,18 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.wall.thickness * 2
+        return self.model.rj11.width + self.wall_parameters.thickness * 2
 
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.screw.m2_diameter
-            + self.parameters.wall.thickness * 2
+            self.screw_parameters.m2_diameter
+            + self.wall_parameters.thickness * 2
         )
 
     @property
     def tab_length(self) -> float:
-        return self.parameters.wall.thickness * 3
+        return self.wall_parameters.thickness * 3
 
     @property
     def tabs(self) -> manifold3d.Manifold:
@@ -55,7 +57,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
         # Adapter tab is at y_front - 3*t (center), range [y_front - 3.5*t, y_front - 2.5*t]
         # Placement is 3*t long. If it touches y_front - 2.5*t and extends forward:
         # Range [y_front - 2.5*t, y_front + 0.5*t]. Center: y_front - 1.0*t
-        y_pos = y_front - self.parameters.wall.thickness * 1.0
+        y_pos = y_front - self.wall_parameters.thickness * 1.0
 
         return tab.translate([x_pos, y_pos, 0]) + tab.translate(
             [-x_pos, y_pos, 0]
@@ -63,7 +65,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:
-        radius = self.parameters.screw.m2_diameter / 2
+        radius = self.screw_parameters.m2_diameter / 2
         # Hole must align with adapter hole at y_front - 3*t
         height = self.tab_length * 2  # Long enough to pass through everything
 
@@ -78,7 +80,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
         x_pos = self.width / 2 + self.tab_width / 2
         y_front = self.model.rj11.length / 2 + self.model.rj11.error_margin * 3
         # Align with adapter screw hole
-        y_pos = y_front - self.parameters.wall.thickness * 3
+        y_pos = y_front - self.wall_parameters.thickness * 3
 
         return hole.translate([x_pos, y_pos, 0]) + hole.translate(
             [-x_pos, y_pos, 0]
@@ -86,16 +88,16 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         max_x = self.width / 2 + self.tab_width
-        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
+        max_y = self.model.rj11.length / 2 + self.wall_parameters.thickness
         placement = (self.tabs - self.screw_holes).translate(
             [
-                self.body_model.end_x() - self.parameters.wall.fillet - max_x,
+                self.body_model.end_x() - self.wall_parameters.fillet - max_x,
                 self.body_model.end_y()
                 - max_y
-                + self.parameters.wall.thickness
+                + self.wall_parameters.thickness
                 - self.model.rj11.error_margin * 2,
                 self.body_model.bottom_z
-                + self.parameters.wall.thickness
+                + self.wall_parameters.thickness
                 + self.model.rj11.height / 2
                 + self.height,
             ]

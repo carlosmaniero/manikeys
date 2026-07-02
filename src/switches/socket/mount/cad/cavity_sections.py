@@ -1,10 +1,11 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from structure.body.parameters import BodyParameters
 from core.context import injector
 import sys
 import manifold3d
 from dataclasses import dataclass
 from switches.socket.mount.models import MountCavityModel
-from models.parameters import Parameters
 from injector import inject, singleton
 from core.loader import load_stl_to_manifold
 from core.manifold_ext.object import ManifoldObject
@@ -15,16 +16,17 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class MountCavitySectionsCAD(ManifoldObject):
     model: MountCavityModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (
-            self.parameters.wall.thickness * 4
-            + self.parameters.body.clearance * 2
+            self.wall_parameters.thickness * 4
+            + self.body_parameters.clearance * 2
         )
         divider_y = self.model.divider_y - divider_size / 2
 
-        height = self.model.sphere.highest + self.parameters.body.height
+        height = self.model.sphere.highest + self.body_parameters.height
 
         divider = manifold3d.Manifold.cube(
             [
@@ -37,7 +39,7 @@ class MountCavitySectionsCAD(ManifoldObject):
             [
                 self.model.start_x(),
                 divider_y,
-                -self.parameters.body.height,
+                -self.body_parameters.height,
             ]
         )
 
@@ -52,7 +54,7 @@ class MountCavitySectionsCAD(ManifoldObject):
             [
                 self.model.start_x(),
                 self.model.start_y(),
-                -self.parameters.body.height,
+                -self.body_parameters.height,
             ]
         )
 

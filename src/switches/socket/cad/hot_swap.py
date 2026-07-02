@@ -1,10 +1,11 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from switches.socket.parameters import HotSwapParameters
 import sys
 from manifold3d import Manifold
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from components.light_indicator.parameters import LedParameters
 from core.manifold_ext.object import ManifoldObject
 
@@ -13,24 +14,25 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class SocketAdapter2CAD(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
+    hot_swap_parameters: HotSwapParameters
     led: LedParameters
 
     def body(self) -> Manifold:
         cube = Manifold.cube(
             [
-                self.parameters.hot_swap.cube_size,
-                self.parameters.hot_swap.cube_size
-                - self.parameters.wall.thickness,
-                self.parameters.hot_swap.body_thickness,
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.cube_size
+                - self.wall_parameters.thickness,
+                self.hot_swap_parameters.body_thickness,
             ],
             center=True,
         )
         return cube.translate(
             [
                 0,
-                self.parameters.wall.thickness / 2,
-                self.parameters.hot_swap.body_thickness / 2,
+                self.wall_parameters.thickness / 2,
+                self.hot_swap_parameters.body_thickness / 2,
             ]
         )
 
@@ -53,8 +55,8 @@ class SocketAdapter2CAD(ManifoldObject):
         return self.centralize_led_object(
             Manifold.cube(
                 [
-                    self.parameters.hot_swap.cube_size,
-                    self.parameters.hot_swap.cube_size,
+                    self.hot_swap_parameters.cube_size,
+                    self.hot_swap_parameters.cube_size,
                     self.led.pcb_height,
                 ],
                 center=True,
@@ -72,14 +74,14 @@ class SocketAdapter2CAD(ManifoldObject):
             [
                 self.led.led_size,
                 self.led.led_size,
-                self.parameters.hot_swap.body_thickness,
+                self.hot_swap_parameters.body_thickness,
             ],
             center=True,
         ).translate(
             [
                 0,
                 0,
-                -(self.parameters.hot_swap.body_thickness) / 2,
+                -(self.hot_swap_parameters.body_thickness) / 2,
             ]
         )
 
@@ -87,8 +89,8 @@ class SocketAdapter2CAD(ManifoldObject):
         return obj.translate(
             [
                 0,
-                -self.parameters.hot_swap.cube_size / 2 + self.led.led_size / 2,
-                self.parameters.hot_swap.body_thickness - self.led.pcb_height,
+                -self.hot_swap_parameters.cube_size / 2 + self.led.led_size / 2,
+                self.hot_swap_parameters.body_thickness - self.led.pcb_height,
             ]
         )
 
@@ -100,31 +102,31 @@ class SocketAdapter2CAD(ManifoldObject):
     def switch_socket(self) -> Manifold:
         body_holder = Manifold.cube(
             [
-                self.parameters.hot_swap.cube_size,
-                self.parameters.hot_swap.cube_size,
-                self.parameters.hot_swap.switch_socket_height,
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.switch_socket_height,
             ],
             center=True,
         ).translate(
             [
                 0,
                 0,
-                self.parameters.hot_swap.switch_socket_height,
+                self.hot_swap_parameters.switch_socket_height,
             ]
         )
         cube = (
             Manifold.cube(
                 [
-                    self.parameters.hot_swap.switch_socket_width,
-                    self.parameters.hot_swap.cube_size,
-                    self.parameters.hot_swap.switch_socket_height,
+                    self.hot_swap_parameters.switch_socket_width,
+                    self.hot_swap_parameters.cube_size,
+                    self.hot_swap_parameters.switch_socket_height,
                 ],
                 center=True,
             )
             + body_holder
         )
         return cube.translate(
-            [0, 0, self.parameters.hot_swap.switch_socket_height / 2]
+            [0, 0, self.hot_swap_parameters.switch_socket_height / 2]
         )
 
     def countersink(
@@ -142,9 +144,9 @@ class SocketAdapter2CAD(ManifoldObject):
 
     def center_hole(self) -> Manifold:
         return self.countersink(
-            self.parameters.hot_swap.center_hole_radius + 1,
-            self.parameters.hot_swap.center_hole_radius,
-            self.parameters.hot_swap.body_thickness,
+            self.hot_swap_parameters.center_hole_radius + 1,
+            self.hot_swap_parameters.center_hole_radius,
+            self.hot_swap_parameters.body_thickness,
         )
 
     @property
@@ -162,7 +164,7 @@ class SocketAdapter2CAD(ManifoldObject):
     @property
     def soldering_placement(self) -> Manifold:
         return Manifold.sphere(3, circular_segments=64).translate(
-            [0, 0, self.parameters.hot_swap.body_thickness + 2]
+            [0, 0, self.hot_swap_parameters.body_thickness + 2]
         )
 
     def create_pin_hole(self, point: list[float]) -> Manifold:
@@ -173,7 +175,7 @@ class SocketAdapter2CAD(ManifoldObject):
             self.countersink(
                 diameter / 2 + error + 0.5,
                 diameter / 2 + error,
-                self.parameters.hot_swap.body_thickness,
+                self.hot_swap_parameters.body_thickness,
             )
             + self.soldering_placement
         ).translate([point[0], point[1], 0])
@@ -184,7 +186,7 @@ class SocketAdapter2CAD(ManifoldObject):
             + self.create_pin_hole(self.right_pin_hole)
             + self.create_wire_hole(
                 [
-                    self.parameters.hot_swap.diode_x,
+                    self.hot_swap_parameters.diode_x,
                     self.left_pin_hole[1],
                 ]
             )
@@ -198,7 +200,7 @@ class SocketAdapter2CAD(ManifoldObject):
 
     def create_wire_hole(self, point: list[float]) -> Manifold:
         cylinder = Manifold.cylinder(
-            self.parameters.hot_swap.body_thickness,
+            self.hot_swap_parameters.body_thickness,
             self.pin_hole_diameter / 2,
             circular_segments=64,
         )
@@ -206,7 +208,7 @@ class SocketAdapter2CAD(ManifoldObject):
         end_position = cylinder.translate([point[0], point[1], 0])
 
         start_position = cylinder.translate(
-            [point[0], self.parameters.hot_swap.cube_size, 0]
+            [point[0], self.hot_swap_parameters.cube_size, 0]
         )
 
         return Manifold.hull(end_position + start_position)
@@ -214,29 +216,29 @@ class SocketAdapter2CAD(ManifoldObject):
     @property
     def diode_wire_hole_center_x(self) -> float:
         return (
-            -self.parameters.hot_swap.cube_size
+            -self.hot_swap_parameters.cube_size
             + self.led.led_size
-            - self.parameters.hot_swap.diode_r / 2
+            - self.hot_swap_parameters.diode_r / 2
         ) / 2
 
     def diode(self) -> Manifold:
         border = (
-            self.parameters.hot_swap.border
-            + self.parameters.hot_swap.offset_fix
+            self.hot_swap_parameters.border
+            + self.hot_swap_parameters.offset_fix
         )
 
-        full_height = self.parameters.hot_swap.diode_l + border
+        full_height = self.hot_swap_parameters.diode_l + border
 
         d1 = Manifold.cylinder(
             height=full_height,
-            radius_low=self.parameters.hot_swap.diode_r,
+            radius_low=self.hot_swap_parameters.diode_r,
             center=True,
             circular_segments=64,
         )
 
         d2 = Manifold.cylinder(
             height=100,
-            radius_low=self.parameters.hot_swap.diode_wire_r,
+            radius_low=self.hot_swap_parameters.diode_wire_r,
             center=True,
             circular_segments=64,
         )
@@ -246,11 +248,11 @@ class SocketAdapter2CAD(ManifoldObject):
         return d.rotate([90, 0, 0]).translate(
             [
                 self.diode_wire_hole_center_x,
-                -self.parameters.hot_swap.cube_size / 2
+                -self.hot_swap_parameters.cube_size / 2
                 + full_height / 2
-                + self.parameters.wall.thickness,
-                self.parameters.hot_swap.body_thickness
-                - self.parameters.hot_swap.diode_r
+                + self.wall_parameters.thickness,
+                self.hot_swap_parameters.body_thickness
+                - self.hot_swap_parameters.diode_r
                 - self.led.pcb_height,
             ]
         )

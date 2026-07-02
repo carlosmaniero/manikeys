@@ -1,6 +1,7 @@
+from globals.wall.parameters import WallParameters
+from connectors.magnet.parameters import MagnetParameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
 from structure.body.models import BodyModel
 import numpy as np
 
@@ -10,24 +11,25 @@ import numpy as np
 @dataclass
 class MagnetSnapModel:
     model: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    magnet_parameters: MagnetParameters
 
     @property
     def thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def magnet_height(self) -> float:
-        return self.parameters.magnet.height
+        return self.magnet_parameters.height
 
     @property
     def magnet_diameter(self) -> float:
-        return self.parameters.magnet.diameter
+        return self.magnet_parameters.diameter
 
     @property
     def full_magnet_height(self) -> float:
         return (
-            self.parameters.magnet.height + self.parameters.magnet.error_margin
+            self.magnet_parameters.height + self.magnet_parameters.error_margin
         )
 
     def _get_z_positions(self, x: float, y: float) -> tuple[float, float]:

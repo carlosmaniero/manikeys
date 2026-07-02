@@ -1,8 +1,11 @@
+from globals.wall.parameters import WallParameters
+from structure.body.parameters import BodyParameters
+from models.parameters import SwitchesParameters
+from models.parameters import HandSupportParameters
 from dataclasses import dataclass
 import numpy as np
 from injector import inject, singleton
 from switches.model import Layout
-from models.parameters import Parameters
 from core.interpolation import lerp, Interpolator, InterpolationChain
 
 
@@ -11,21 +14,24 @@ from core.interpolation import lerp, Interpolator, InterpolationChain
 @dataclass
 class NumPyCapsBottomSphere:
     layout: Layout
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
+    switches_parameters: SwitchesParameters
+    hand_support_parameters: HandSupportParameters
 
     @property
     def switch_offset(self) -> float:
         return (
-            self.parameters.switches.size / 2
-            + self.parameters.switches.border
-            + self.parameters.wall.fillet
+            self.switches_parameters.size / 2
+            + self.switches_parameters.border
+            + self.wall_parameters.fillet
         )
 
     def start_x(self) -> float:
         return (
             self.layout.bounds.left[0]
             - self.switch_offset
-            - self.parameters.wall.thickness
+            - self.wall_parameters.thickness
         )
 
     def end_x(self) -> float:
@@ -35,14 +41,14 @@ class NumPyCapsBottomSphere:
         return (
             self.layout.bounds.top[1]
             - self.switch_offset
-            - self.parameters.wall.thickness
+            - self.wall_parameters.thickness
         )
 
     def end_y(self) -> float:
         return (
             self.layout.bounds.bottom[1]
             + self.switch_offset
-            + self.parameters.wall.thickness * 2
+            + self.wall_parameters.thickness * 2
         )
 
     @property
@@ -50,7 +56,7 @@ class NumPyCapsBottomSphere:
         # TODO: calculate the actual highest point based the switch position and
         # rotation.
         return (
-            self.layout.bounds.highest[2] + self.parameters.switches.border * 5
+            self.layout.bounds.highest[2] + self.switches_parameters.border * 5
         )
 
     @property
@@ -66,13 +72,13 @@ class NumPyCapsBottomSphere:
         return self.layout.bounds.lowest[0]
 
     def divider_x_main(self, offset: float) -> float:
-        return self.highest_x + self.parameters.switches.size / 2 - offset
+        return self.highest_x + self.switches_parameters.size / 2 - offset
 
     def start_fixed_x(self, offset: float) -> float:
-        return self.divider_x_main(offset) + self.parameters.switches.gap
+        return self.divider_x_main(offset) + self.switches_parameters.gap
 
     def z(self, x: np.ndarray, y: np.ndarray, offset: float) -> np.ndarray:
-        radius = self.parameters.body.radius - offset
+        radius = self.body_parameters.radius - offset
         distance = np.sqrt(x**2 + y**2)
         start_fixed = self.divider_x_main(offset)
 
@@ -93,10 +99,13 @@ class NumPyCapsBottomSphere:
 @inject
 @dataclass
 class BodyLowBottom:
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
+    switches_parameters: SwitchesParameters
+    hand_support_parameters: HandSupportParameters
 
     def z(self, x: np.ndarray, _y: np.ndarray) -> np.ndarray:
-        return np.full_like(x, -self.parameters.body.height)
+        return np.full_like(x, -self.body_parameters.height)
 
 
 @singleton
@@ -105,11 +114,14 @@ class BodyLowBottom:
 class BodyModel:
     sphere: NumPyCapsBottomSphere
     low_bottom: BodyLowBottom
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
+    switches_parameters: SwitchesParameters
+    hand_support_parameters: HandSupportParameters
 
     @property
     def effective_depth(self) -> float:
-        return self.parameters.hand_support.depth
+        return self.hand_support_parameters.depth
 
     @property
     def offset(self) -> float:
@@ -131,13 +143,13 @@ class BodyModel:
     def hand_support_end_x(self) -> float:
         return (
             self.end_x()
-            - self.parameters.hand_support.offset_x
+            - self.hand_support_parameters.offset_x
             - self.offset * 2
         )
 
     @property
     def divider_y(self) -> float:
-        return self.sphere.start_y() - self.parameters.wall.thickness
+        return self.sphere.start_y() - self.wall_parameters.thickness
 
     @property
     def highest(self) -> float:
@@ -155,7 +167,7 @@ class BodyModel:
             [
                 self.sphere.lowest
                 + self.offset
-                + self.parameters.hand_support.offset_z,
+                + self.hand_support_parameters.offset_z,
                 self.sphere.highest + self.offset,
             ],
         )
@@ -165,7 +177,7 @@ class BodyModel:
             [
                 self.sphere.lowest
                 + self.offset
-                + self.parameters.hand_support.offset_z,
+                + self.hand_support_parameters.offset_z,
                 self.sphere.highest + self.offset,
             ],
         )
@@ -193,31 +205,31 @@ class BodyModel:
                 Interpolator(
                     start=self.sphere.start_y() + self.offset,
                     end=self.sphere.start_y()
-                    + self.parameters.wall.fillet
+                    + self.wall_parameters.fillet
                     + self.offset,
                     base=self.hand_support_z(coords),
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
                     start=self.start_y(),
-                    end=self.start_y() + self.parameters.hand_support.fillet,
+                    end=self.start_y() + self.hand_support_parameters.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
                     start=self.end_y(),
-                    end=self.end_y() - self.parameters.wall.fillet,
+                    end=self.end_y() - self.wall_parameters.fillet,
                     base=base,
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
                     start=self.start_x(),
-                    end=self.start_x() + self.parameters.wall.fillet,
+                    end=self.start_x() + self.wall_parameters.fillet,
                     base=base,
                 ),
                 Interpolator(
                     start=self.end_x(),
-                    end=self.end_x() - self.parameters.wall.fillet,
+                    end=self.end_x() - self.wall_parameters.fillet,
                     base=base,
                 ),
             ]
@@ -250,11 +262,11 @@ class BodyModel:
 
     @property
     def effective_width(self) -> float:
-        return self.parameters.body.width
+        return self.body_parameters.width
 
     @property
     def bottom_z(self) -> float:
-        return -self.parameters.body.height
+        return -self.body_parameters.height
 
     @property
     def height(self) -> float:
@@ -267,4 +279,4 @@ class BodyModel:
 class BodyInnerModel(BodyModel):
     @property
     def offset(self) -> float:
-        return -self.parameters.wall.thickness
+        return -self.wall_parameters.thickness

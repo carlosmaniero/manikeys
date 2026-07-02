@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.loader import load_many_stl_to_manifold
-from models.parameters import Parameters
 from switches.socket.mount.models import MountCavityModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -15,7 +14,6 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class FullKeyboardAssemblyCAD(ManifoldObject):
     model: MountCavityModel
-    parameters: Parameters
 
     def assemble(self) -> manifold3d.Manifold:
         paths = [

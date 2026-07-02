@@ -11,7 +11,7 @@ def test_body_model_properties():
     assert body_model.start_y() < body_model.end_y()
     assert body_model.width == body_model.end_x() - body_model.start_x()
     assert body_model.depth == body_model.end_y() - body_model.start_y()
-    assert body_model.bottom_z == -body_model.parameters.body.height
+    assert body_model.bottom_z == -body_model.body_parameters.height
 
 
 def test_body_model_z():

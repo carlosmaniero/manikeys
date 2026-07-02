@@ -1,7 +1,8 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
 from components.light_indicator.parameters import LedParameters
 from structure.body.models import BodyModel
 
@@ -10,13 +11,14 @@ from structure.body.models import BodyModel
 @inject
 @dataclass
 class LightIndicatorModel:
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
     led: LedParameters
     body_model: BodyModel
 
     @property
     def body_thickness(self) -> float:
-        return self.parameters.wall.thickness * 4
+        return self.wall_parameters.thickness * 4
 
     @property
     def transparent_panel_thickness(self) -> float:
@@ -28,7 +30,7 @@ class LightIndicatorModel:
 
     @property
     def margin_thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def lid_height(self) -> float:
@@ -90,7 +92,7 @@ class LightIndicatorModel:
 
     @property
     def screw_hole_radius(self) -> float:
-        return self.parameters.screw.m2_diameter / 2
+        return self.screw_parameters.m2_diameter / 2
 
     @property
     def right_screw_x(self) -> float:
@@ -127,7 +129,7 @@ class LightIndicatorModel:
             self.body_model.start_fixed_x + 12,
             t1_x
             + self.body_model.end_y()
-            - self.parameters.wall.fillet
-            - self.parameters.wall.thickness,
+            - self.wall_parameters.fillet
+            - self.wall_parameters.thickness,
             self.body_model.highest - height / 2,
         ]

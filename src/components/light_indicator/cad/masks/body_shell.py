@@ -1,4 +1,5 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
@@ -7,14 +8,13 @@ from core.context import injector
 from components.light_indicator.model import LightIndicatorModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
-from models.parameters import Parameters
 
 
 @singleton
 @inject
 @dataclass
 class BodyShellMask(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
     indicator_model: LightIndicatorModel
     body_model: BodyModel
 
@@ -24,7 +24,7 @@ class BodyShellMask(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2 + self.parameters.wall.thickness
+        r = self.indicator_model.body_depth / 2 + self.wall_parameters.thickness
 
         corner_cyl = manifold3d.Manifold.cylinder(
             height=self.height,

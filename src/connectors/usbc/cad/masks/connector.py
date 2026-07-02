@@ -1,10 +1,10 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.usbc.model import USBCModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -13,12 +13,12 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class USBCConnectorMaskCAD(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
     model: USBCModel
 
     @property
     def thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     def assemble(self) -> manifold3d.Manifold:
         wall_thickness = self.thickness + self.model.error_margin

@@ -1,10 +1,11 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from connectors.rj11.model import RJ11Model
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -14,7 +15,8 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class RJ11MaskCAD(ManifoldObject):
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
     model: RJ11Model
     body_model: BodyModel
 
@@ -28,14 +30,14 @@ class RJ11MaskCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return self.model.rj11.width + self.parameters.wall.thickness * 2
+        return self.model.rj11.width + self.wall_parameters.thickness * 2
 
     @property
     def main_block(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             [
                 self.width + self.model.rj11.error_margin * 2,
-                self.model.rj11.length + self.parameters.wall.thickness * 2,
+                self.model.rj11.length + self.wall_parameters.thickness * 2,
                 self.model.rj11.height
                 + self.height
                 + self.model.rj11.error_margin * 2,
@@ -46,19 +48,19 @@ class RJ11MaskCAD(ManifoldObject):
     @property
     def tab_width(self) -> float:
         return (
-            self.parameters.screw.m2_diameter
-            + self.parameters.wall.thickness * 2
+            self.screw_parameters.m2_diameter
+            + self.wall_parameters.thickness * 2
         )
 
     def assemble(self) -> manifold3d.Manifold:
         max_x = self.width / 2 + self.tab_width
-        max_y = self.model.rj11.length / 2 + self.parameters.wall.thickness
+        max_y = self.model.rj11.length / 2 + self.wall_parameters.thickness
         return self.main_block.translate(
             [
-                self.body_model.end_x() - self.parameters.wall.fillet - max_x,
+                self.body_model.end_x() - self.wall_parameters.fillet - max_x,
                 self.body_model.end_y() - max_y,
                 self.body_model.bottom_z
-                + self.parameters.wall.thickness
+                + self.wall_parameters.thickness
                 + self.model.rj11.height / 2
                 + self.height,
             ]

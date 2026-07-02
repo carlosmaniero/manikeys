@@ -1,4 +1,5 @@
 from __future__ import annotations
+from globals.screw.parameters import ScrewParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
@@ -7,7 +8,6 @@ from core.context import injector
 from components.light_indicator.parameters import LedParameters
 from components.light_indicator.model import LightIndicatorModel
 from core.manifold_ext.object import ManifoldObject
-from models.parameters import Parameters
 
 
 @singleton
@@ -15,7 +15,7 @@ from models.parameters import Parameters
 @dataclass
 class LedHousingCad(ManifoldObject):
     model: LedParameters
-    params: Parameters
+    screw_parameters: ScrewParameters
     indicator_model: LightIndicatorModel
 
     def create_led_mask(self) -> manifold3d.Manifold:
@@ -136,7 +136,7 @@ class LedHousingCad(ManifoldObject):
     @property
     def lowerings(self) -> manifold3d.Manifold:
         hole_height = 2.0
-        screw_head_radius = self.params.screw.m2_head_diameter / 2 + 0.1
+        screw_head_radius = self.screw_parameters.m2_head_diameter / 2 + 0.1
         z_top = -hole_height / 2
 
         screw_head_mask = manifold3d.Manifold.cylinder(

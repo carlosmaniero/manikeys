@@ -1,7 +1,8 @@
+from globals.wall.parameters import WallParameters
+from globals.screw.parameters import ScrewParameters
+from connectors.rj45.parameters import RJ45Parameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
-from connectors.rj45.parameters import RJ45Parameters
 from structure.body.models import BodyModel
 
 
@@ -9,15 +10,17 @@ from structure.body.models import BodyModel
 @inject
 @dataclass
 class RJ45Model:
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
+    rj45_parameters: RJ45Parameters
 
     @property
     def rj45(self) -> RJ45Parameters:
-        return self.parameters.rj45
+        return self.rj45_parameters
 
     @property
     def thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def body(self) -> list[float]:
@@ -166,7 +169,7 @@ class RJ45Model:
 
     @property
     def screw_hole_radius(self) -> float:
-        return self.parameters.screw.m2_diameter / 2
+        return self.screw_parameters.m2_diameter / 2
 
     @property
     def screw_hole_height(self) -> float:
@@ -191,7 +194,9 @@ class RJ45Model:
 @inject
 @dataclass
 class RJ45PlacementModel:
-    parameters: Parameters
+    wall_parameters: WallParameters
+    screw_parameters: ScrewParameters
+    rj45_parameters: RJ45Parameters
     rj45_model: RJ45Model
     body_model: BodyModel
 
@@ -206,7 +211,7 @@ class RJ45PlacementModel:
     @property
     def translation_coords(self) -> list[float]:
         return [
-            self.body_model.end_x() - self.parameters.wall.fillet - self.max_x,
+            self.body_model.end_x() - self.wall_parameters.fillet - self.max_x,
             self.body_model.end_y() - self.max_y,
             self.body_model.bottom_z + self.rj45_model.body[2] / 2,
         ]

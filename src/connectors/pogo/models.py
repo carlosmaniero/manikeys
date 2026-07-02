@@ -1,7 +1,7 @@
+from connectors.pogo.parameters import PogoPinParameters
+from globals.wall.parameters import WallParameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Parameters
-from connectors.pogo.parameters import PogoPinParameters
 from structure.body.models import BodyModel
 
 
@@ -9,12 +9,13 @@ from structure.body.models import BodyModel
 @inject
 @dataclass
 class PogoPinModel:
-    parameters: Parameters
+    pogo_pin_parameters: PogoPinParameters
+    wall_parameters: WallParameters
     body_model: BodyModel
 
     @property
     def pogo_pin(self) -> PogoPinParameters:
-        return self.parameters.pogo_pin
+        return self.pogo_pin_parameters
 
     @property
     def body_length(self) -> float:
@@ -82,7 +83,7 @@ class PogoPinModel:
 
     @property
     def thickness(self) -> float:
-        return self.parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def adapter_width(self) -> float:

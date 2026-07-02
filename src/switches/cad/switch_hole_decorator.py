@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass, field
 import openscad as osc
 from injector import inject, singleton
-from models.parameters import Parameters
+from models.parameters import SwitchesParameters
 from core.openscad_ext.object import OSCObject
 from core.context import injector
 
@@ -11,36 +11,36 @@ from core.context import injector
 @inject
 @dataclass
 class SwitchHoleDecoratorCAD(OSCObject):
-    parameters: Parameters
+    switches_parameters: SwitchesParameters
     fn: int = field(default=20, init=False)
 
     def assemble(self):
-        p = self.parameters
+        p = self.switches_parameters
 
         squared_bottom = osc.cube(
             [
-                p.switches.size + p.switches.border * 2,
-                p.switches.size + p.switches.border * 2,
-                p.switches.thickness / 2,
+                p.size + p.border * 2,
+                p.size + p.border * 2,
+                p.thickness / 2,
             ],
             center=True,
         )
 
-        squared_bottom += [0, 0, -p.switches.thickness / 4]
+        squared_bottom += [0, 0, -p.thickness / 4]
 
         obj = osc.cube(
             [
-                p.switches.size + p.switches.border * 2,
-                p.switches.size + p.switches.border * 2,
-                p.switches.thickness,
+                p.size + p.border * 2,
+                p.size + p.border * 2,
+                p.thickness,
             ],
             center=True,
         )
-        obj = obj.fillet(p.switches.border / 4, fn=self.fn)
+        obj = obj.fillet(p.border / 4, fn=self.fn)
 
         obj |= squared_bottom
 
-        obj -= [0, 0, p.switches.thickness / 2 - p.switches.outer.thickness]
+        obj -= [0, 0, p.thickness / 2 - p.outer.thickness]
 
         return self.colorize(obj)
 

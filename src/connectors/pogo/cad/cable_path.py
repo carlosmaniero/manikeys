@@ -1,10 +1,11 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
+from structure.body.parameters import BodyParameters
 import sys
 import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.parameters import Parameters
 from switches.socket.mount.models import MountCavityModel
 from connectors.pogo.models import PogoPinModel
 from structure.body.models import BodyModel
@@ -19,14 +20,15 @@ class CablePath(ManifoldObject):
     model: MountCavityModel
     pogo_model: PogoPinModel
     body_model: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
 
     @property
     def pogo_location_mask(self) -> manifold3d.Manifold:
         return manifold3d.Manifold.cube(
             size=[
                 self.radius * 2,
-                self.parameters.wall.thickness * 2,
+                self.wall_parameters.thickness * 2,
                 self.body_model.height * 2,
             ],
             center=True,
@@ -66,8 +68,8 @@ class CablePath(ManifoldObject):
         return self.pogo_model.adapter_width / 2
 
     def assemble(self) -> manifold3d.Manifold:
-        thickness = self.parameters.wall.thickness
-        height = self.parameters.body.height
+        thickness = self.wall_parameters.thickness
+        height = self.body_parameters.height
 
         cylinder = manifold3d.Manifold.cylinder(
             radius_low=self.radius,

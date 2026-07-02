@@ -1,4 +1,5 @@
 from __future__ import annotations
+from globals.wall.parameters import WallParameters
 import sys
 import numpy as np
 import manifold3d
@@ -7,7 +8,6 @@ from injector import inject, singleton
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from structure.body.models import BodyModel
-from models.parameters import Parameters
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -16,7 +16,7 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class LogoCAD(ManifoldObject):
     body: BodyModel
-    parameters: Parameters
+    wall_parameters: WallParameters
 
     def assemble(self) -> manifold3d.Manifold:
         logo = load_stl_to_manifold("dist/mani-logo.stl")
@@ -25,14 +25,14 @@ class LogoCAD(ManifoldObject):
         logo_d = 44.431
 
         x_start = self.body.divider_x_main
-        x_end = self.body.end_x() - self.parameters.wall.fillet / 2
+        x_end = self.body.end_x() - self.wall_parameters.fillet / 2
         center_x = (x_start + x_end) / 2
 
         target_x = center_x - logo_w / 2
         target_y = (
             self.body.end_y()
-            - self.parameters.wall.fillet
-            - self.parameters.wall.thickness
+            - self.wall_parameters.fillet
+            - self.wall_parameters.thickness
             - logo_d
         )
         center_y = target_y + logo_d / 2

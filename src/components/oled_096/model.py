@@ -1,7 +1,10 @@
 from __future__ import annotations
+from components.oled_096.parameters import Oled096Parameters
+from globals.screw.parameters import ScrewParameters
+from models.parameters import SwitchesParameters
+from globals.wall.parameters import WallParameters
 from dataclasses import dataclass
 from injector import inject, singleton
-from models.parameters import Oled096Parameters, Parameters
 from models.switch_thumb import SwitchThumbModel
 from structure.body.models import BodyModel
 import math
@@ -11,15 +14,18 @@ import math
 @inject
 @dataclass
 class Oled096Model:
-    global_parameters: Parameters
+    oled096_parameters: Oled096Parameters
+    screw_parameters: ScrewParameters
+    switches_parameters: SwitchesParameters
+    wall_parameters: WallParameters
 
     @property
     def parameters(self) -> Oled096Parameters:
-        return self.global_parameters.oled096
+        return self.oled096_parameters
 
     @property
     def thickness(self) -> float:
-        return self.global_parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def pcb_pocket(self) -> list[float]:
@@ -65,7 +71,7 @@ class Oled096Model:
         second_col_x = self.body[0] - self.parameters.screw_hole_offset
 
         z = (
-            self.global_parameters.screw.depth_short / 2
+            self.screw_parameters.depth_short / 2
             - self.body[2] / 2
             + self.thickness
         )
@@ -121,13 +127,16 @@ class Oled096Model:
 @inject
 @dataclass
 class Oled096PlacementModel:
-    global_parameters: Parameters
+    oled096_parameters: Oled096Parameters
+    screw_parameters: ScrewParameters
+    switches_parameters: SwitchesParameters
+    wall_parameters: WallParameters
     oled: Oled096Model
     switch_thumb: SwitchThumbModel
 
     @property
     def thickness(self) -> float:
-        return self.global_parameters.wall.thickness
+        return self.wall_parameters.thickness
 
     @property
     def body_model(self) -> BodyModel:
@@ -137,12 +146,12 @@ class Oled096PlacementModel:
     def placement_position(self) -> list[float]:
         x = (
             self.body_model.hand_support_end_x
-            + self.global_parameters.switches.full_offset
+            + self.switches_parameters.full_offset
             + self.thickness * 3
         )
         y = (
             self.body_model.divider_y
-            - self.global_parameters.switches.full_offset
+            - self.switches_parameters.full_offset
             - self.thickness
         )
         z = self.body_model.sphere.highest - self.oled.body[2] / 2
