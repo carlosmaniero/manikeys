@@ -7,9 +7,7 @@ from core.context import injector
 from models.components.light_indicator.main_body import MainBodyModel
 from core.manifold_ext.object import ManifoldObject
 from models.parameters import Parameters
-from cad.components.light_indicator.transformations.placement import (
-    LightIndicatorPlacement,
-)
+from structure.body.models import BodyModel
 
 
 @singleton
@@ -18,7 +16,7 @@ from cad.components.light_indicator.transformations.placement import (
 class PanelFrameCad(ManifoldObject):
     parameters: Parameters
     indicator_model: MainBodyModel
-    placement: LightIndicatorPlacement
+    body_model: BodyModel
 
     @property
     def height(self) -> float:
@@ -108,8 +106,10 @@ class PanelFrameCad(ManifoldObject):
         return mask
 
     def assemble(self) -> manifold3d.Manifold:
-        return self.placement.position_on_the_body(
-            self.body_hull - self.screw_holes - self.panel_hole
+        return (
+            (self.body_hull - self.screw_holes - self.panel_hole)
+            .rotate(self.indicator_model.placement_rotation)
+            .translate(self.indicator_model.placement_translation)
         )
 
 

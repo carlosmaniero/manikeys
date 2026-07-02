@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Parameters
 from models.components.light_indicator.led import Led
+from structure.body.models import BodyModel
 
 
 @singleton
@@ -11,6 +12,7 @@ from models.components.light_indicator.led import Led
 class MainBodyModel:
     parameters: Parameters
     led: Led
+    body_model: BodyModel
 
     @property
     def body_thickness(self) -> float:
@@ -109,3 +111,23 @@ class MainBodyModel:
         return (
             self.right_screw_x + self.screw_hole_radius + self.margin_thickness
         )
+
+    @property
+    def placement_rotation(self) -> list[float]:
+        return [0, 0, 90]
+
+    @property
+    def placement_translation(self) -> list[float]:
+        r = self.body_depth / 2
+        height = self.margin_thickness * 2
+
+        t1_x = (self.left_edge) / 2 - r * 2
+
+        return [
+            self.body_model.start_fixed_x + 12,
+            t1_x
+            + self.body_model.end_y()
+            - self.parameters.wall.fillet
+            - self.parameters.wall.thickness,
+            self.body_model.highest - height / 2,
+        ]

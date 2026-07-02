@@ -8,9 +8,6 @@ from models.components.light_indicator.main_body import MainBodyModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 from models.parameters import Parameters
-from cad.components.light_indicator.transformations.placement import (
-    LightIndicatorPlacement,
-)
 
 
 @singleton
@@ -20,7 +17,6 @@ class BodyShellMask(ManifoldObject):
     parameters: Parameters
     indicator_model: MainBodyModel
     body_model: BodyModel
-    placement: LightIndicatorPlacement
 
     @property
     def height(self) -> float:
@@ -72,7 +68,9 @@ class BodyShellMask(ManifoldObject):
         return manifold3d.Manifold.hull(corners)
 
     def assemble(self) -> manifold3d.Manifold:
-        return self.placement.position_on_the_body(self.body_hull)
+        return self.body_hull.rotate(
+            self.indicator_model.placement_rotation
+        ).translate(self.indicator_model.placement_translation)
 
 
 if __name__ == "__main__":
