@@ -33,8 +33,8 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             "build/cad/connectors/usbc_mask.stl",
             "build/cad/connectors/usbc_adapter_trimmed.stl",
             "build/connectors/magnet/cad/snap.stl",
-            "build/cad/components/light_indicator/body_mask.stl",
-            "build/cad/components/light_indicator/panel_frame.stl",
+            "build/components/light_indicator/cad/masks/body.stl",
+            "build/components/light_indicator/cad/panel_frame.stl",
             "build/cad/components/oled_096_placement_body_mask.stl",
             "build/cad/components/oled_096_placement.stl",
         ]

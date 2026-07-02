@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from models.parameters import Parameters
-from models.components.light_indicator.led import Led
+from components.light_indicator.parameters import LedParameters
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -14,7 +14,7 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class SocketAdapter2CAD(ManifoldObject):
     parameters: Parameters
-    led: Led
+    led: LedParameters
 
     def body(self) -> Manifold:
         cube = Manifold.cube(

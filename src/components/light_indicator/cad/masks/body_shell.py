@@ -4,7 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.components.light_indicator.main_body import MainBodyModel
+from components.light_indicator.model import LightIndicatorModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 from models.parameters import Parameters
@@ -13,23 +13,23 @@ from models.parameters import Parameters
 @singleton
 @inject
 @dataclass
-class BodyMask(ManifoldObject):
+class BodyShellMask(ManifoldObject):
     parameters: Parameters
-    indicator_model: MainBodyModel
+    indicator_model: LightIndicatorModel
     body_model: BodyModel
 
     @property
     def height(self) -> float:
-        return self.indicator_model.margin_thickness * 2
+        return 100
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2
+        r = self.indicator_model.body_depth / 2 + self.parameters.wall.thickness
 
         corner_cyl = manifold3d.Manifold.cylinder(
             height=self.height,
-            radius_low=r - 0.1,
-            radius_high=r - 0.1,
+            radius_low=r,
+            radius_high=r,
             center=True,
             circular_segments=32,
         )
@@ -74,5 +74,5 @@ class BodyMask(ManifoldObject):
 
 
 if __name__ == "__main__":
-    body_mask = injector.get(BodyMask)
-    body_mask.program(sys.argv)
+    body_shell_mask = injector.get(BodyShellMask)
+    body_shell_mask.program(sys.argv)

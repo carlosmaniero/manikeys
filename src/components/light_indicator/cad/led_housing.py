@@ -4,8 +4,8 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from models.components.light_indicator.led import Led
-from models.components.light_indicator.main_body import MainBodyModel
+from components.light_indicator.parameters import LedParameters
+from components.light_indicator.model import LightIndicatorModel
 from core.manifold_ext.object import ManifoldObject
 from models.parameters import Parameters
 
@@ -14,9 +14,9 @@ from models.parameters import Parameters
 @inject
 @dataclass
 class LedHousingCad(ManifoldObject):
-    model: Led
+    model: LedParameters
     params: Parameters
-    indicator_model: MainBodyModel
+    indicator_model: LightIndicatorModel
 
     def create_led_mask(self) -> manifold3d.Manifold:
         pcb_mask_radius = self.indicator_model.led_pcb_radius

@@ -78,7 +78,7 @@ class MountShellCAD(ManifoldObject):
             - load_stl_to_manifold("build/switches/cad/switch_thumb_hole.stl")
             - load_stl_to_manifold("build/connectors/pogo/cad/cable_path.stl")
             - load_stl_to_manifold(
-                "build/cad/components/light_indicator/body_shell_mask.stl"
+                "build/components/light_indicator/cad/masks/body_shell.stl"
             )
             - load_stl_to_manifold(
                 "build/cad/components/oled_096_placement_shell_mask.stl"

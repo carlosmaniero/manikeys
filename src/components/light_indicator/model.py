@@ -2,16 +2,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from injector import inject, singleton
 from models.parameters import Parameters
-from models.components.light_indicator.led import Led
+from components.light_indicator.parameters import LedParameters
 from structure.body.models import BodyModel
 
 
 @singleton
 @inject
 @dataclass
-class MainBodyModel:
+class LightIndicatorModel:
     parameters: Parameters
-    led: Led
+    led: LedParameters
     body_model: BodyModel
 
     @property
