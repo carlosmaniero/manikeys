@@ -59,6 +59,8 @@ Wrappers around geometry kernels that transform models into 3D
 files.
 - **`Object[T]`**: An abstract base class providing a common
   interface for `assemble()`, `save()`, and `show()`.
+- **`ManifoldObject` (Manifold3D)**: Used for precise, fast boolean operations
+  and geometry generation. It produces `manifold3d.Manifold` objects.
 - **`VistaObject` (PyVista)**: Used for the keyboard body. It
   generates a dense mesh of points using NumPy meshgrids, which is
   ideal for smooth, organic surfaces.
@@ -93,6 +95,10 @@ The build process is orchestrated by a `Makefile` to handle the multi-tool pipel
   (`src/models/projection.py`) from the layout, the keyboard can be
   easily adjusted for different hand sizes or ergonomic preferences
   by changing a few parameters.
+- **Component MVC Pattern**: Each individual component (like an OLED screen or RJ45 connector) strictly separates data, logic, and geometry:
+  1. **Parameters** (`parameters.py`): A dataclass defining raw physical dimensions.
+  2. **Model** (`model.py`): Injects parameters and calculates spatial coordinates, bounding boxes, and offsets.
+  3. **CAD** (`cad/*.py`): Injects the model and blindly executes the boolean CSG operations based on the model's coordinates using `ManifoldObject`.
 - **Off-screen Assembly**: The final assembly (`main.py`) loads STLs
   generated in previous steps. This speeds up the build process by
   allowing parallel generation of components and avoids
@@ -100,8 +106,9 @@ The build process is orchestrated by a `Makefile` to handle the multi-tool pipel
 
 ## Technology Stack
 
+- **Manifold3D**: A fast, robust geometry kernel used directly and via PythonSCAD for exact boolean operations and mesh generation.
 - **PythonSCAD**: The primary engine for OpenSCAD-based 3D
-  generation.
+  generation, utilizing the Manifold backend.
 - **PyVista / NumPy**: For point-cloud and mesh generation of
   organic surfaces.
 - **MeshLib (mrmeshpy)**: For mesh simplification and optimization.

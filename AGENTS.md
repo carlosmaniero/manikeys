@@ -42,7 +42,9 @@ There are two primary methods for generating CAD models in this project:
     surface = create_full_surface(x, y, top_z, bottom_z)
     ```
 
-2.  **CSG with `openscad`**: Other models are built using Constructive Solid Geometry (CSG) principles via the `openscad` Python library. These scripts define shapes and combine them with boolean operations (union, difference, intersection). `src/full_keyboard.py` is a good example, as it assembles the final keyboard.
+2.  **CSG with Manifold3D and OpenSCAD**: Most components and assemblies are built using Constructive Solid Geometry (CSG) via `manifold3d` directly or the `openscad` Python library with the Manifold backend. These scripts define geometric shapes and combine them with boolean operations (union, difference, intersection). `src/cad/body_bottom.py` and `src/components/oled_096/cad/oled.py` are good examples.
+
+    When using boolean operations in `manifold3d.Manifold`, prefer `+` for union and `-` for difference.
 
     When using boolean operations, **prefer the `|` operator for union** instead of the `+` operator.
 
@@ -52,14 +54,16 @@ All generated STL files are post-processed with `simplify.py` to reduce complexi
 
 ## Creating a New CAD File
 
-To create a new CAD file (e.g., an STL):
+To create a new CAD component:
 
-1.  **Create a Python Script**: Create a new Python file under the `src/` directory (e.g., `src/cad/my_new_part.py`).
+1.  **Follow the Component Pattern**: Always separate data, logic, and geometry. Create a new folder (e.g., `src/components/my_part/`) and inside it create:
+    - `parameters.py`: A `@dataclass` holding physical dimensions (e.g., `MyPartParameters`).
+    - `model.py`: A `@dataclass` that injects the parameters and calculates bounding boxes, coordinates, and spacing (e.g., `MyPartModel`).
+    - `cad/my_part.py`: The actual CAD generation file.
 
-2.  **Implement the Model Class**: Inside the new file, define a class that generates your 3D object.
-    - For `pyvista`-based models, the `assemble` method should return a `pyvista.PolyData` object.
-    - For `openscad`-based models, the `assemble` method should return an `openscad.PyOpenSCAD` object.
-    - Ensure your class is injectable (using `@inject` and `@singleton`) and inherits from `VistaObject` or `OSCObject` which provide a `program` method to handle command-line execution.
+2.  **Implement the CAD Class**: Inside `cad/my_part.py`, define a class that generates your 3D object.
+    - For `manifold3d`-based models (recommended for CSG), the `assemble` method should return a `manifold3d.Manifold` object.
+    - Ensure your CAD class is injectable (using `@inject` and `@singleton`) and inherits from `ManifoldObject` (or `VistaObject` for PyVista points, `OSCObject` for raw OpenSCAD), which provides a `program` method to handle command-line execution.
 
 3.  **Add Main Execution Block**: Add the following boilerplate to the end of your file to make it executable. Make sure to import `sys`, `injector`, and your new class.
 
