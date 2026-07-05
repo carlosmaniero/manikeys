@@ -6,6 +6,7 @@ class ScrewParameters:
     # m1
     m1_diameter: float = 0.95
     m1_5_diameter: float = 1.45
+    m1_6_diameter: float = 1.6
 
     # m2
     m2_diameter: float = 1.9
