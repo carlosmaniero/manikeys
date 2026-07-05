@@ -16,7 +16,7 @@ class Keyboard(OSCObject):
     def assemble(self) -> Iterator[osc.PyOpenSCAD]:
         paths = [
             "build/assembly/cad/full_keyboard.stl",
-            "build/cad/body_bottom.stl",
+            "build/assembly/base_plate/cad/base_plate.stl",
             "build/switches/socket/mount/cad/shell.stl",
             "build/switches/socket/cad/hot_swap_grid.stl",
             "build/switches/cad/keycap_grid.stl",

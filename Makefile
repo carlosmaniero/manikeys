@@ -36,7 +36,7 @@ build/sphere.3mf: src/openscad_ext/demo.py
 	mkdir -p $(dir $@)
 	+PYTHONPATH=src uv run python $< -o $@
 
-build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/cad/body_bottom.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/connectors/rj11/cad/rj11.stl build/connectors/rj11/cad/adapter_trimmed.stl
+build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/assembly/base_plate/cad/base_plate.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/connectors/rj11/cad/rj11.stl build/connectors/rj11/cad/adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
 build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/cad/logo.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/connectors/rj11/cad/masks/rj11.stl build/connectors/rj11/cad/placement.stl build/connectors/usbc/cad/masks/usbc.stl build/connectors/usbc/cad/adapter_trimmed.stl build/connectors/magnet/cad/snap.stl build/components/light_indicator/cad/masks/body.stl build/components/light_indicator/cad/panel_frame.stl build/components/oled_096/cad/masks/body.stl build/components/oled_096/cad/placement.stl build/connectors/rj45/cad/masks/body.stl build/connectors/rj45/cad/placement.stl
 build/connectors/magnet/cad/snap.stl: src/connectors/magnet/cad/snap.py
@@ -46,7 +46,7 @@ build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
 build/structure/body/screws/cad/placement.stl: src/structure/body/screws/cad/placement.py build/structure/body/shape.stl
 build/switches/socket/mount/cad/screw_clearance.stl: src/switches/socket/mount/cad/screw_clearance.py
 build/structure/body/screws/cad/hole.stl: src/structure/body/screws/cad/hole.py
-build/cad/body_bottom.stl: src/cad/body_bottom.py build/structure/body/shape.stl
+build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_plate.py build/components/arduino_nano_case/cad/case.stl build/components/arduino_pro_micro_case/cad/housing.stl
 build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj11/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl
 build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl
 build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py build/switches/socket/mount/cad/cavity.stl

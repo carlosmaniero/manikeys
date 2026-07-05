@@ -42,7 +42,7 @@ There are two primary methods for generating CAD models in this project:
     surface = create_full_surface(x, y, top_z, bottom_z)
     ```
 
-2.  **CSG with Manifold3D and OpenSCAD**: Most components and assemblies are built using Constructive Solid Geometry (CSG) via `manifold3d` directly or the `openscad` Python library with the Manifold backend. These scripts define geometric shapes and combine them with boolean operations (union, difference, intersection). `src/cad/body_bottom.py` and `src/components/oled_096/cad/oled.py` are good examples.
+2.  **CSG with Manifold3D and OpenSCAD**: Most components and assemblies are built using Constructive Solid Geometry (CSG) via `manifold3d` directly or the `openscad` Python library with the Manifold backend. These scripts define geometric shapes and combine them with boolean operations (union, difference, intersection). `src/assembly/base_plate/cad/base_plate.py` and `src/components/oled_096/cad/oled.py` are good examples.
 
     When using boolean operations in `manifold3d.Manifold`, prefer `+` for union and `-` for difference.
 

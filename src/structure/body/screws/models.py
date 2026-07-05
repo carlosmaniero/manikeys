@@ -32,7 +32,7 @@ class ScrewPlacementModel:
 
     @property
     def mask_height(self) -> float:
-        return 1000
+        return abs(self.bottom_z)
 
     @property
     def z(self) -> float:
@@ -40,7 +40,7 @@ class ScrewPlacementModel:
 
     @property
     def mask_z(self) -> float:
-        return -500
+        return self.bottom_z
 
     @property
     def main_points(self) -> list[tuple[float, float]]:
