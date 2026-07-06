@@ -4,6 +4,7 @@ SIMPLIFY ?= 1
 
 build: build/main.stl build/main.3mf \
 	build/assembly/cad/main.stl \
+	build/assembly/base_plate/cad/main.stl \
 	build/assembly/cad/supports/main.stl \
 	build/assembly/cad/hand.stl \
 	build/assembly/cad/supports/hand.stl \
@@ -71,6 +72,7 @@ build/connectors/pogo/cad/pogo_pin_mask.stl: src/connectors/pogo/cad/pogo_pin_ma
 build/connectors/pogo/cad/pogo_pin_adapter.stl: src/connectors/pogo/cad/pogo_pin_adapter.py build/connectors/pogo/cad/pogo_pin_mask.stl
 
 build/assembly/cad/main.stl: src/assembly/cad/main.py build/assembly/cad/full_keyboard.stl
+build/assembly/base_plate/cad/main.stl: src/assembly/base_plate/cad/main.py build/assembly/base_plate/cad/base_plate.stl
 build/assembly/cad/supports/main.stl: src/assembly/cad/supports/main.py build/assembly/cad/main.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
 build/assembly/cad/hand.stl: src/assembly/cad/hand.py build/assembly/cad/full_keyboard.stl
 build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py build/assembly/cad/hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
