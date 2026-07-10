@@ -44,7 +44,8 @@ class ArduinoProMicroCaseLidCAD(ManifoldObject):
 
         cyl = M.cylinder(height, radius, center=True, circular_segments=32)
         pill = (
-            cyl.translate([0, y_offset, 0]) + cyl.translate([0, -y_offset, 0])
+            # Extend far into positive Y to cut through the back wall
+            cyl.translate([0, 50, 0]) + cyl.translate([0, -y_offset, 0])
         ).hull()
 
         for coords in self.model.pins_clearance_coords:
