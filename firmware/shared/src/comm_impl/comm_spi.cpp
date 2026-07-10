@@ -7,10 +7,11 @@ void comm_set_slave() {
   SPCR |= (1 << SPE);
 }
 
-void comm_respond_heartbeat() {
-  SPDR = HEARTBEAT_BYTE;
-}
 
 bool comm_data_consumed() {
   return (SPSR & (1 << SPIF));
+}
+
+void comm_send_data(uint8_t data) {
+  SPDR = data;
 }
