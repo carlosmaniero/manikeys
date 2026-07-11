@@ -5,7 +5,7 @@ BUILD_DIR = build
 TEST_SRCS = $(wildcard test_*.cpp)
 TEST_EXECS = $(patsubst %.cpp,$(BUILD_DIR)/%,$(TEST_SRCS))
 MOCK_SRCS = $(filter-out $(TEST_SRCS), $(wildcard *.cpp))
-SHARED_SRCS = ../shared/src/key_matrix.cpp
+SHARED_SRCS = ../shared/src/key_matrix.cpp ../shared/src/msg.cpp ../shared/src/queue.cpp ../shared/src/msg_ctrl.cpp
 
 all: $(BUILD_DIR) $(TEST_EXECS) run_all
 
