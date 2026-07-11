@@ -109,11 +109,11 @@ void msgs_tick2() {
   if (_msgs_is_message_completed(message)) {
     _msg_reset_current_message(message);
 
+    msgs_ctx._cursor = _msgs_ctx_next_index(msgs_ctx._cursor);
+
     if (msgs_ctx._cursor == msgs_ctx._latest) {
       msgs_ctx._latest = _msgs_ctx_next_index(msgs_ctx._latest);
     }
-
-    msgs_ctx._cursor = _msgs_ctx_next_index(msgs_ctx._cursor);
   }
 }
 

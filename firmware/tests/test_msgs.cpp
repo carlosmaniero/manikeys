@@ -109,8 +109,51 @@ TEST_START(test_msg_build_response)
 
     assert(msgs_ctx.response_ready == true);
 
-    // check if cursor were reset after message completion
     assert(msgs_ctx.response._cursor == 0);
+TEST_END
+
+TEST_START(test_msg_buffer_overflow)
+    comm_mock_reset();
+    msgs_init();
+
+    for (uint8_t i = 0; i < MSG_MAX_MSGS + 1; i++) {
+        msgs_msg_t msg = {};
+        msg.kind = MSG_KIND_KEYS;
+        msg.size = 1;
+        msg.buffer[0] = 41 + i;
+        msgs_produce(msg);
+    }
+
+    msgs_tick2();
+    assert(mock_sent_data[0] == MSG_KIND_KEYS);
+
+    msgs_tick2();
+    assert(mock_sent_data[1] == 1);
+
+    msgs_tick2();
+    // Once the buffer was overflowed, the next message the first message
+    // before the overflow to happen, which is 42 (41 + 1)
+    assert(mock_sent_data[2] == 42);
+TEST_END
+
+TEST_START(test_msg_produce_after_empty)
+    comm_mock_reset();
+    msgs_init();
+
+    msgs_tick2();
+    msgs_tick2();
+
+    msgs_msg_t msg = {};
+    msg.kind = MSG_KIND_KEYS;
+    msg.size = 1;
+    msg.buffer[0] = 99;
+    msgs_produce(msg);
+
+    msgs_tick2();
+    assert(mock_sent_data[2] == MSG_HEARTBEAT_BYTE);
+
+    msgs_tick2();
+    assert(mock_sent_data[3] == MSG_KIND_KEYS);
 TEST_END
 
 int main() {
@@ -122,6 +165,8 @@ int main() {
     test_msg_tick2();
     test_msg_produce_keys();
     test_msg_build_response();
+    test_msg_buffer_overflow();
+    test_msg_produce_after_empty();
 
     std::cout << "All msgs tests passed successfully!" << std::endl;
     return 0;
