@@ -26,7 +26,7 @@ void debug_print_key_state(uint8_t is_pressed, uint8_t r, uint8_t c) {
 }
 
 ISR(SPI_STC_vect) {
-  msgs_tick2();
+  msgs_tick();
 }
 
 void setupPins() {
