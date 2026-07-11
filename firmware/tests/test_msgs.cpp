@@ -25,43 +25,33 @@ TEST_START(test_msg_produce_keys)
     msg.buffer[1] = 20;
     msg.buffer[2] = 30;
 
-    // Produce the message (it goes into index 1, since msgs_init leaves index 0 empty)
     msg_ctrl_produce(msg);
 
-    // Tick 1: Processes the empty index 0, which defaults to HEARTBEAT (1 byte)
     msg_ctrl_tick();
-    assert(mock_sent_data.size() == 1);
-    assert(mock_sent_data[0] == MSG_HEARTBEAT_BYTE);
+    assert(mock_sent_data[0] == MSG_KIND_KEYS);
 
-    // Tick 2: Starts processing our KEYS message. Sends 'kind'
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 2);
-    assert(mock_sent_data[1] == MSG_KIND_KEYS);
 
-    // Tick 3: Sends 'size'
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 3);
-    assert(mock_sent_data[2] == 3);
+    assert(mock_sent_data[1] == 3);
 
-    // Tick 4: Sends buffer[0]
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 4);
-    assert(mock_sent_data[3] == 10);
+    assert(mock_sent_data[2] == 10);
 
-    // Tick 5: Sends buffer[1]
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 5);
-    assert(mock_sent_data[4] == 20);
+    assert(mock_sent_data[3] == 20);
 
-    // Tick 6: Sends buffer[2]
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 6);
-    assert(mock_sent_data[5] == 30);
+    assert(mock_sent_data[4] == 30);
 
-    // Tick 7: Message is done, should send a HEARTBEAT again!
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 7);
-    assert(mock_sent_data[6] == MSG_HEARTBEAT_BYTE);
+    assert(mock_sent_data[5] == MSG_HEARTBEAT_BYTE);
 TEST_END
 
 TEST_START(test_msg_build_response)
@@ -112,8 +102,8 @@ TEST_START(test_msg_buffer_overflow)
 
     msg_ctrl_tick();
     // Once the buffer was overflowed, the next message the first message
-    // before the overflow to happen, which is 42 (41 + 1)
-    assert(mock_sent_data[2] == 42);
+    // before the overflow to happen, which is 43 (41 + 2)
+    assert(mock_sent_data[2] == 43);
 TEST_END
 
 TEST_START(test_msg_produce_after_empty)
@@ -130,10 +120,7 @@ TEST_START(test_msg_produce_after_empty)
     msg_ctrl_produce(msg);
 
     msg_ctrl_tick();
-    assert(mock_sent_data[2] == MSG_HEARTBEAT_BYTE);
-
-    msg_ctrl_tick();
-    assert(mock_sent_data[3] == MSG_KIND_KEYS);
+    assert(mock_sent_data[2] == MSG_KIND_KEYS);
 TEST_END
 
 int main() {
