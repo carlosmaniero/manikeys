@@ -76,5 +76,10 @@ void loop() {
 
     digitalWrite(colPins[c], HIGH);
   }
+
+  if (changed) {
+    msg_send_keys(matrix, NUM_COLS);
+  }
+
   delay(20);
 }
