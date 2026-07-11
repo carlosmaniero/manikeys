@@ -22,11 +22,11 @@ typedef struct __attribute__((packed)) {
   uint8_t size;
   uint8_t buffer[MSG_MAX_MSG_SIZE];
   uint8_t _cursor;
+  bool done;
 } msgs_msg_t;
 
 typedef struct {
   msgs_msg_t response;
-  bool response_ready;
   uint8_t _cursor;
   uint8_t _latest;
   msgs_msg_t _buffer[MSG_MAX_MSGS];
@@ -79,7 +79,7 @@ void _msg_build_response() {
   uint8_t received = comm_received_data();
 
   if (message->_cursor == 0) {
-    msgs_ctx.response_ready = false;
+    message->done = false;
   }
 
   uint8_t *raw = (uint8_t*) message;
@@ -87,7 +87,7 @@ void _msg_build_response() {
   raw[message->_cursor++] = received;
 
   if (_msgs_is_message_completed(message)) {
-    msgs_ctx.response_ready = true;
+    message->done = true;
 
     message->_cursor = 0; // prepare to the next message
   }
