@@ -5,15 +5,16 @@
 #include <comm.h>
 #include <assert.h>
 
-#define MSG_HEARTBEAT_BYTE 0xA5
-#define MSG_NULL_BYTE 0x00
+#define MSG_HEARTBEAT_BYTE 0b01011010
+#define MSG_NULL_BYTE 0b00000000
 #define MSG_MAX_MSG_SIZE 8
 #define MSG_MAX_MSGS 64
+#define MSG_KIND_HAS_PAYLOAD 1 << 7
 
 enum {
   MSG_KIND_HEARTBEAT = MSG_HEARTBEAT_BYTE,
   MSG_KIND_NULL = MSG_NULL_BYTE,
-  MSG_KIND_KEYS = 1
+  MSG_KIND_KEYS = 0b10011001
 };
 
 typedef struct __attribute__((packed)) {
@@ -28,8 +29,8 @@ uint8_t msg_buffer_len = 0;
 uint8_t msg_buffer_index = 0;
 
 typedef struct {
-  bool ready;
-  msgs_msg_t message;
+  msgs_msg_t response;
+  bool response_ready;
   uint8_t _cursor;
   uint8_t _latest;
   msgs_msg_t _buffer[MSG_MAX_MSGS];
@@ -37,12 +38,26 @@ typedef struct {
 
 msgs_ctx_t msgs_ctx;
 
+void _msg_reset_current_message(msgs_msg_t *message) {
+  msgs_msg_t heartbeat_msg = {};
+  heartbeat_msg.kind = MSG_KIND_HEARTBEAT;
+
+  *message = heartbeat_msg;
+}
+
+bool _msgs_is_message_completed(msgs_msg_t *message) {
+  uint8_t payload_offset = offsetof(msgs_msg_t, buffer);
+  bool has_payload = message->kind & MSG_KIND_HAS_PAYLOAD;
+
+  return !has_payload || message->_cursor == message->size + payload_offset;
+}
+
 void msgs_init() {
   msgs_ctx = {};
   msgs_ctx._latest = 1;
 
   for (uint8_t i = 0; i < MSG_MAX_MSGS; i++) {
-    msgs_ctx._buffer[i].kind = MSG_KIND_HEARTBEAT;
+    _msg_reset_current_message(&msgs_ctx._buffer[i]);
   }
 }
 
@@ -62,24 +77,41 @@ void msgs_produce(msgs_msg_t msg) {
   msgs_ctx._latest = _msgs_ctx_next_index(msgs_ctx._latest);
 }
 
-void _msg_reset_current_message() {
-  msgs_msg_t heartbeat_msg = {};
-  heartbeat_msg.kind = MSG_KIND_HEARTBEAT;
+void _msg_build_response() {
+  msgs_msg_t *message = &msgs_ctx.response;
 
-  msgs_ctx._buffer[msgs_ctx._cursor] = heartbeat_msg;
+  uint8_t received = comm_received_data();
+
+  if (message->_cursor == 0) {
+    msgs_ctx.response_ready = false;
+  }
+
+  uint8_t *raw = (uint8_t*) message;
+
+  raw[message->_cursor++] = received;
+
+  if (_msgs_is_message_completed(message)) {
+    msgs_ctx.response_ready = true;
+
+    message->_cursor = 0; // prepare to the next message
+  }
 }
 
 void msgs_tick2() {
+  if (!comm_data_consumed()) {
+    return;
+  }
+
+  _msg_build_response();
+
   msgs_msg_t *message = &msgs_ctx._buffer[msgs_ctx._cursor];
 
-  uint8_t *data = (uint8_t*) message;
+  uint8_t *raw = (uint8_t*) message;
 
-  uint8_t payload_offset = offsetof(msgs_msg_t, buffer);
+  comm_send_data(*(raw + message->_cursor++));
 
-  comm_send_data(*(data + message->_cursor++));
-
-  if (message->size == 0 || message->_cursor == message->size + payload_offset) {
-    _msg_reset_current_message();
+  if (_msgs_is_message_completed(message)) {
+    _msg_reset_current_message(message);
 
     if (msgs_ctx._cursor == msgs_ctx._latest) {
       msgs_ctx._latest++;

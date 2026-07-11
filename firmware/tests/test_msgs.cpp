@@ -54,7 +54,7 @@ TEST_START(test_msg_produce_keys)
     assert(mock_sent_data[0] == MSG_HEARTBEAT_BYTE);
 
     // Tick 2: Starts processing our KEYS message. Sends 'kind'
-    msgs_tick2(); 
+    msgs_tick2();
     assert(mock_sent_data.size() == 2);
     assert(mock_sent_data[1] == MSG_KIND_KEYS);
 
@@ -84,15 +84,45 @@ TEST_START(test_msg_produce_keys)
     assert(mock_sent_data[6] == MSG_HEARTBEAT_BYTE);
 TEST_END
 
+TEST_START(test_msg_build_response)
+    comm_mock_reset();
+    msgs_init();
+
+    mock_received_data_return = MSG_KIND_KEYS;
+    msgs_tick2();
+    assert(msgs_ctx.response_ready == false);
+    assert(msgs_ctx.response.kind == MSG_KIND_KEYS);
+
+    mock_received_data_return = 2;
+    msgs_tick2();
+    assert(msgs_ctx.response.size == 2);
+    assert(msgs_ctx.response_ready == false);
+
+    mock_received_data_return = 42;
+    msgs_tick2();
+    assert(msgs_ctx.response.buffer[0] == 42);
+    assert(msgs_ctx.response_ready == false);
+
+    mock_received_data_return = 99;
+    msgs_tick2();
+    assert(msgs_ctx.response.buffer[1] == 99);
+
+    assert(msgs_ctx.response_ready == true);
+
+    // check if cursor were reset after message completion
+    assert(msgs_ctx.response._cursor == 0);
+TEST_END
+
 int main() {
     std::cout << "Running msgs tests..." << std::endl;
-    
+
     test_msg_send_heartbeat();
     test_msg_tick_not_consumed();
     test_msg_tick_heartbeat();
     test_msg_tick2();
     test_msg_produce_keys();
-    
+    test_msg_build_response();
+
     std::cout << "All msgs tests passed successfully!" << std::endl;
     return 0;
 }

@@ -17,6 +17,10 @@ void comm_send_data(uint8_t data) {
   SPDR = data;
 }
 
+uint8_t comm_received_data() {
+  return SPDR;
+}
+
 void comm_spi_set_master() {
   SPI.begin();
 }
