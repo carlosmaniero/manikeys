@@ -7,7 +7,7 @@
 #include <queue.h>
 
 typedef struct {
-  msg_t response;
+  queue_t rx;
   queue_t tx;
 } msg_ctrl_t;
 
@@ -17,5 +17,6 @@ void msg_ctrl_init();
 void msg_ctrl_produce(msg_t msg);
 void msg_ctrl_build_response();
 void msg_ctrl_tick();
+msg_t* msg_ctrl_consume_response();
 
 #endif // MSG_CTRL_H

@@ -60,26 +60,44 @@ TEST_START(test_msg_build_response)
 
     mock_received_data_return = MSG_KIND_KEYS;
     msg_ctrl_tick();
-    assert(msg_ctrl.response.done == false);
-    assert(msg_ctrl.response.kind == MSG_KIND_KEYS);
+    assert(queue_get_last(&msg_ctrl.rx)->done == false);
+    assert(queue_get_last(&msg_ctrl.rx)->kind == MSG_KIND_KEYS);
 
     mock_received_data_return = 2;
     msg_ctrl_tick();
-    assert(msg_ctrl.response.size == 2);
-    assert(msg_ctrl.response.done == false);
+    assert(queue_get_last(&msg_ctrl.rx)->size == 2);
+    assert(queue_get_last(&msg_ctrl.rx)->done == false);
 
     mock_received_data_return = 42;
     msg_ctrl_tick();
-    assert(msg_ctrl.response.buffer[0] == 42);
-    assert(msg_ctrl.response.done == false);
+    assert(queue_get_last(&msg_ctrl.rx)->buffer[0] == 42);
+    assert(queue_get_last(&msg_ctrl.rx)->done == false);
 
     mock_received_data_return = 99;
     msg_ctrl_tick();
-    assert(msg_ctrl.response.buffer[1] == 99);
 
-    assert(msg_ctrl.response.done == true);
+    msg_t *completed = msg_ctrl_consume_response();
+    assert(completed != NULL);
+    assert(completed->buffer[1] == 99);
+    assert(completed->done == true);
+    assert(completed->_cursor == 0);
+TEST_END
 
-    assert(msg_ctrl.response._cursor == 0);
+TEST_START(test_msg_queue_multiple_responses)
+    comm_mock_reset();
+    msg_ctrl_init();
+
+    mock_received_data_return = MSG_KIND_HEARTBEAT;
+    msg_ctrl_tick();
+    msg_t *msg1 = msg_ctrl_consume_response();
+    assert(msg1 != NULL);
+    assert(msg1->kind == MSG_KIND_HEARTBEAT);
+
+    mock_received_data_return = MSG_KIND_HEARTBEAT;
+    msg_ctrl_tick();
+    msg_t *msg2 = msg_ctrl_consume_response();
+    assert(msg2 != NULL);
+    assert(msg2->kind == MSG_KIND_HEARTBEAT);
 TEST_END
 
 TEST_START(test_msg_buffer_overflow)
@@ -129,6 +147,7 @@ int main() {
     test_msg_tick();
     test_msg_produce_keys();
     test_msg_build_response();
+    test_msg_queue_multiple_responses();
     test_msg_buffer_overflow();
     test_msg_produce_after_empty();
 

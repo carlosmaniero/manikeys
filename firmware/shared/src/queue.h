@@ -12,6 +12,8 @@ typedef struct {
 uint8_t queue_next_index(uint8_t cur);
 void queue_append(queue_t *q, msg_t msg);
 msg_t* queue_get(queue_t *q);
+msg_t* queue_get_last(queue_t *q);
+void queue_commit_last(queue_t *q);
 void queue_consume(queue_t *q);
 
 #endif // QUEUE_H
