@@ -41,6 +41,9 @@ void setupPins() {
 }
 
 void setup() {
+  msgs_init();
+  comm_set_slave();
+
   Serial.begin(9600);
 
   while(!Serial) {
@@ -49,9 +52,6 @@ void setup() {
 
   setupPins();
   key_matrix_init(matrix, NUM_COLS);
-
-  comm_set_slave();
-  msgs_init();
 }
 
 void loop() {

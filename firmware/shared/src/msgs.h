@@ -62,7 +62,7 @@ void msgs_init() {
 }
 
 inline uint8_t _msgs_ctx_next_index(uint8_t cur) {
-  return (cur + 1) % (MSG_MAX_MSGS + 1);
+  return (cur + 1) % MSG_MAX_MSGS;
 }
 
 void msgs_produce(msgs_msg_t msg) {
@@ -110,10 +110,10 @@ void msgs_tick2() {
     _msg_reset_current_message(message);
 
     if (msgs_ctx._cursor == msgs_ctx._latest) {
-      msgs_ctx._latest++;
+      msgs_ctx._latest = _msgs_ctx_next_index(msgs_ctx._latest);
     }
 
-    msgs_ctx._cursor++;
+    msgs_ctx._cursor = _msgs_ctx_next_index(msgs_ctx._cursor);
   }
 }
 
