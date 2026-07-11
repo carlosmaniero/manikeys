@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <comm_spi.h>
-#include <msgs.h>
+#include <msg_ctrl.h>
 
 const uint8_t SLAVE_PIN = 9;
 

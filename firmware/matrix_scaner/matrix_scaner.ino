@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <comm.h>
-#include <msgs.h>
+#include <msg_ctrl.h>
 #include <key_matrix.h>
 #include <stdint.h>
 #include <SPI.h>
@@ -26,7 +26,7 @@ void debug_print_key_state(uint8_t is_pressed, uint8_t r, uint8_t c) {
 }
 
 ISR(SPI_STC_vect) {
-  msgs_tick();
+  msg_ctrl_tick();
 }
 
 void setupPins() {
@@ -41,7 +41,7 @@ void setupPins() {
 }
 
 void setup() {
-  msgs_init();
+  msg_ctrl_init();
   comm_set_slave();
 
   Serial.begin(9600);
@@ -81,13 +81,13 @@ void loop() {
   }
 
   if (changed) {
-    msgs_msg_t new_msg = {};
+    msg_t new_msg = {};
     new_msg.kind = MSG_KIND_KEYS;
     new_msg.size = NUM_COLS;
     for(uint8_t i = 0; i < NUM_COLS; i++) {
         new_msg.buffer[i] = matrix[i];
     }
-    msgs_produce(new_msg);
+    msg_ctrl_produce(new_msg);
   }
 
   delay(20);
