@@ -26,10 +26,14 @@ typedef struct __attribute__((packed)) {
 } msgs_msg_t;
 
 typedef struct {
-  msgs_msg_t response;
   uint8_t _cursor;
   uint8_t _latest;
   msgs_msg_t _buffer[MSG_MAX_MSGS];
+} msgs_queue_t;
+
+typedef struct {
+  msgs_msg_t response;
+  msgs_queue_t tx;
 } msgs_ctx_t;
 
 msgs_ctx_t msgs_ctx;
@@ -50,27 +54,44 @@ bool _msgs_is_message_completed(msgs_msg_t *message) {
 
 void msgs_init() {
   msgs_ctx = {};
-  msgs_ctx._latest = 1;
+  msgs_ctx.tx._latest = 1;
 
   for (uint8_t i = 0; i < MSG_MAX_MSGS; i++) {
-    _msg_reset_current_message(&msgs_ctx._buffer[i]);
+    _msg_reset_current_message(&msgs_ctx.tx._buffer[i]);
   }
 }
 
-inline uint8_t _msgs_ctx_next_index(uint8_t cur) {
+inline uint8_t _msgs_queue_next_index(uint8_t cur) {
   return (cur + 1) % MSG_MAX_MSGS;
 }
 
-void msgs_produce(msgs_msg_t msg) {
-  bool overflow = msgs_ctx._cursor == msgs_ctx._latest;
+void msgs_queue_append(msgs_queue_t *q, msgs_msg_t msg) {
+  bool overflow = q->_cursor == q->_latest;
 
   if (overflow) {
-    msgs_ctx._cursor = _msgs_ctx_next_index(msgs_ctx._cursor);
+    q->_cursor = _msgs_queue_next_index(q->_cursor);
   }
 
-  msgs_ctx._buffer[msgs_ctx._latest] = msg;
+  q->_buffer[q->_latest] = msg;
+  q->_latest = _msgs_queue_next_index(q->_latest);
+}
 
-  msgs_ctx._latest = _msgs_ctx_next_index(msgs_ctx._latest);
+msgs_msg_t* msgs_queue_get(msgs_queue_t *q) {
+  return &q->_buffer[q->_cursor];
+}
+
+void msgs_queue_consume(msgs_queue_t *q) {
+  _msg_reset_current_message(&q->_buffer[q->_cursor]);
+
+  q->_cursor = _msgs_queue_next_index(q->_cursor);
+
+  if (q->_cursor == q->_latest) {
+    q->_latest = _msgs_queue_next_index(q->_latest);
+  }
+}
+
+void msgs_produce(msgs_msg_t msg) {
+  msgs_queue_append(&msgs_ctx.tx, msg);
 }
 
 void _msg_build_response() {
@@ -96,20 +117,14 @@ void _msg_build_response() {
 void msgs_tick() {
   _msg_build_response();
 
-  msgs_msg_t *message = &msgs_ctx._buffer[msgs_ctx._cursor];
+  msgs_msg_t *message = msgs_queue_get(&msgs_ctx.tx);
 
   uint8_t *raw = (uint8_t*) message;
 
   comm_send_data(*(raw + message->_cursor++));
 
   if (_msgs_is_message_completed(message)) {
-    _msg_reset_current_message(message);
-
-    msgs_ctx._cursor = _msgs_ctx_next_index(msgs_ctx._cursor);
-
-    if (msgs_ctx._cursor == msgs_ctx._latest) {
-      msgs_ctx._latest = _msgs_ctx_next_index(msgs_ctx._latest);
-    }
+    msgs_queue_consume(&msgs_ctx.tx);
   }
 }
 #endif // MSGS_H
