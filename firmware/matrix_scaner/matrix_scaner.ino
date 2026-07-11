@@ -3,6 +3,7 @@
 #include <msgs.h>
 #include <key_matrix.h>
 #include <stdint.h>
+#include <SPI.h>
 
 const uint8_t NUM_ROWS = 5;
 const uint8_t NUM_COLS = 7;
@@ -22,6 +23,10 @@ void debug_print_key_state(uint8_t is_pressed, uint8_t r, uint8_t c) {
   Serial.print(", ");
   Serial.print(c);
   Serial.println("]");
+}
+
+ISR(SPI_STC_vect) {
+  msgs_tick2();
 }
 
 void setupPins() {
@@ -46,12 +51,10 @@ void setup() {
   key_matrix_init(matrix, NUM_COLS);
 
   comm_set_slave();
-  msg_send_heartbeat();
+  msgs_init();
 }
 
 void loop() {
-  msg_tick();
-
   bool changed = false;
 
   for (uint8_t c = 0; c < NUM_COLS; c++) {
@@ -78,7 +81,13 @@ void loop() {
   }
 
   if (changed) {
-    msg_send_keys(matrix, NUM_COLS);
+    msgs_msg_t new_msg = {};
+    new_msg.kind = MSG_KIND_KEYS;
+    new_msg.size = NUM_COLS;
+    for(uint8_t i = 0; i < NUM_COLS; i++) {
+        new_msg.buffer[i] = matrix[i];
+    }
+    msgs_produce(new_msg);
   }
 
   delay(20);

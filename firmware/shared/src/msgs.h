@@ -98,10 +98,6 @@ void _msg_build_response() {
 }
 
 void msgs_tick2() {
-  if (!comm_data_consumed()) {
-    return;
-  }
-
   _msg_build_response();
 
   msgs_msg_t *message = &msgs_ctx._buffer[msgs_ctx._cursor];

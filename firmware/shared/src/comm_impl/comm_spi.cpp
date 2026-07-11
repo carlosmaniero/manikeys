@@ -5,7 +5,7 @@
 
 void comm_set_slave() {
   pinMode(MISO, OUTPUT);
-  SPCR |= (1 << SPE);
+  SPCR |= (1 << SPE) | (1 << SPIE);
 }
 
 
