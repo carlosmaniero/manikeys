@@ -1,10 +1,18 @@
 #include <Arduino.h>
 #include <comm_spi.h>
+#include <Keyboard.h>
 #include <msg_ctrl.h>
 #include <key_matrix.h>
 
 const uint8_t SLAVE_PIN = 9;
 
+const char key_map[5][7] = {
+  {'-', '-', '1', '2', '3', '4', '5'},
+  {'-', '-', 'q', 'w', 'e', 'r', 't'},
+  {'-', '-', 'a', 's', 'd', 'f', 'g'},
+  {'-', '-', 'z', 'x', 'c', 'v', 'b'},
+  {'-', '-', '-', '-', '-', '-', '-'}
+};
 
 const uint8_t LEFT_MATRIX_ROWS = 5;
 const uint8_t LEFT_MATRIX_COLS = 5;
@@ -21,6 +29,9 @@ void setup() {
   
   comm_spi_set_master();
   comm_spi_add_slave(SLAVE_PIN);
+
+  delay(5000);
+  Keyboard.begin();
 }
 
 void loop() {
@@ -58,20 +69,20 @@ void loop() {
       key_matrix_diff(left_matrix, resp->buffer, diff, LEFT_MATRIX_ROWS);
 
       for (uint8_t r = 0; r < resp->size; r++) {
-        for (uint8_t c = 0; c < LEFT_MATRIX_COLS; c++) {
+        for (uint8_t c = 0; c < 7; c++) {
           if (key_matrix_is_active(diff + r, c)) {
             if (key_matrix_is_active(resp->buffer + r, c)) {
               key_matrix_set_pressed(left_matrix + r, c);
-              Serial.print("Key pressed at row ");
-              Serial.print(r);
-              Serial.print(", col ");
-              Serial.println(c);
+              char key = key_map[r][c];
+              if (key != '-') {
+                Keyboard.press(key);
+              }
             } else {
               key_matrix_set_released(left_matrix + r, c);
-              Serial.print("Key released at row ");
-              Serial.print(r);
-              Serial.print(", col ");
-              Serial.println(c);
+              char key = key_map[r][c];
+              if (key != '-') {
+                Keyboard.release(key);
+              }
             }
           }
         }
