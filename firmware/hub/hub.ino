@@ -7,12 +7,6 @@ const uint8_t SLAVE_PIN = 9;
 void setup() {
   Serial.begin(9600);
   
-  while (!Serial) {
-    ; 
-  }
-  
-  Serial.println("Hub initialized. Setting up SPI...");
-  
   comm_spi_set_master();
   comm_spi_add_slave(SLAVE_PIN);
 }
@@ -20,7 +14,7 @@ void setup() {
 void loop() {
   comm_spi_start_transaction(SLAVE_PIN);
   
-  uint8_t response = comm_spi_transfer(MSG_NULL_BYTE);
+  uint8_t response = comm_spi_transfer(MSG_HEARTBEAT_BYTE);
   
   comm_spi_end_transaction(SLAVE_PIN);
   

@@ -8,6 +8,11 @@
 const uint8_t NUM_ROWS = 5;
 const uint8_t NUM_COLS = 7;
 
+unsigned long last_heard_from_master = 0;
+unsigned long last_logged_timeout = 0;
+const unsigned long MASTER_TIMEOUT_MS = 2000;
+const unsigned long LOG_INTERVAL_MS = 2000;
+
 const uint8_t rowPins[NUM_ROWS] = {A0, A1, A2, A3, A4};
 const uint8_t colPins[NUM_COLS] = {3, 4, 5, 6, 7, 8, 9};
 
@@ -50,6 +55,8 @@ void setup() {
     ;
   }
 
+  last_heard_from_master = millis();
+
   setupPins();
   key_matrix_init(matrix, NUM_COLS);
 }
@@ -88,6 +95,28 @@ void loop() {
         new_msg.buffer[i] = matrix[i];
     }
     msg_ctrl_produce(new_msg);
+  }
+
+  noInterrupts();
+  msg_t *resp = msg_ctrl_consume_response();
+  interrupts();
+
+  if (resp != NULL) {
+    if (resp->kind == MSG_KIND_HEARTBEAT) {
+      last_heard_from_master = millis();
+    } else {
+      Serial.print("Received non-heartbeat message of kind: 0x");
+      Serial.println(resp->kind, HEX);
+    }
+  }
+
+
+
+  if (millis() - last_heard_from_master > MASTER_TIMEOUT_MS) {
+    if (millis() - last_logged_timeout > LOG_INTERVAL_MS) {
+      Serial.println("Warning: Haven't heard from master");
+      last_logged_timeout = millis();
+    }
   }
 
   delay(20);

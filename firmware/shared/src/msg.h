@@ -7,7 +7,7 @@
 #define MSG_HEARTBEAT_BYTE 0b01011010
 #define MSG_NULL_BYTE 0b00000000
 #define MSG_MAX_MSG_SIZE 8
-#define MSG_MAX_MSGS 64
+#define MSG_MAX_MSGS 32
 #define MSG_KIND_HAS_PAYLOAD 1 << 7
 
 enum {
