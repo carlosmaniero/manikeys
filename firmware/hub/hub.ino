@@ -5,10 +5,17 @@
 
 const uint8_t SLAVE_PIN = 9;
 
+
+const uint8_t LEFT_MATRIX_ROWS = 5;
+const uint8_t LEFT_MATRIX_COLS = 5;
+
+uint8_t left_matrix[LEFT_MATRIX_ROWS];
+
 void setup() {
   Serial.begin(9600);
   
   msg_ctrl_init();
+  key_matrix_init(left_matrix, LEFT_MATRIX_ROWS);
 
   Serial.println("Hub initialized. Setting up SPI...");
   
@@ -46,20 +53,28 @@ void loop() {
 
     if (resp->kind == MSG_KIND_KEYS) {
       bool any_pressed = false;
+      uint8_t diff[LEFT_MATRIX_ROWS];
+
+      key_matrix_diff(left_matrix, resp->buffer, diff, LEFT_MATRIX_ROWS);
+
       for (uint8_t r = 0; r < resp->size; r++) {
-        for (uint8_t c = 0; c < 7; c++) {
-          if (key_matrix_is_active(&resp->buffer[r], c)) {
-            Serial.print("Col ");
-            Serial.print(c);
-            Serial.print(", Row ");
-            Serial.print(r);
-            Serial.println(" is PRESSED");
-            any_pressed = true;
+        for (uint8_t c = 0; c < LEFT_MATRIX_COLS; c++) {
+          if (key_matrix_is_active(diff + r, c)) {
+            if (key_matrix_is_active(resp->buffer + r, c)) {
+              key_matrix_set_pressed(left_matrix + r, c);
+              Serial.print("Key pressed at row ");
+              Serial.print(r);
+              Serial.print(", col ");
+              Serial.println(c);
+            } else {
+              key_matrix_set_released(left_matrix + r, c);
+              Serial.print("Key released at row ");
+              Serial.print(r);
+              Serial.print(", col ");
+              Serial.println(c);
+            }
           }
         }
-      }
-      if (!any_pressed) {
-        Serial.println("No keys are pressed");
       }
     } else if (resp->kind != MSG_KIND_HEARTBEAT) {
       Serial.print("Received message of kind: 0x");
