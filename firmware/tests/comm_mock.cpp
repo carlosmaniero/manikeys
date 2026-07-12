@@ -24,3 +24,7 @@ bool comm_data_consumed() {
 uint8_t comm_received_data() {
     return mock_received_data_return;
 }
+
+bool comm_is_deselected() {
+    return false;
+}

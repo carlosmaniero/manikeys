@@ -18,5 +18,6 @@ void msg_ctrl_produce(msg_t msg);
 void msg_ctrl_build_response();
 void msg_ctrl_tick();
 msg_t* msg_ctrl_consume_response();
+void msg_ctrl_tick_all();
 
 #endif // MSG_CTRL_H

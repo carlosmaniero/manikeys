@@ -36,6 +36,22 @@ uint8_t comm_received_data() {
   return SPDR;
 }
 
+bool comm_is_deselected() {
+  if (is_master) {
+    return false;
+  }
+
+#ifdef ARDUINO
+#if defined(__AVR_ATmega328P__)
+  return (PINB & (1 << PB2));
+#else
+  return (digitalRead(SS) == HIGH);
+#endif
+#else
+  return false;
+#endif
+}
+
 void comm_spi_set_master() {
   is_master = true;
   SPI.begin();

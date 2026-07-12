@@ -51,6 +51,30 @@ void msg_ctrl_tick() {
   }
 }
 
+void msg_ctrl_tick_all() {
+  msg_ctrl_tick();
+
+  while (true) {
+    msg_t *rx_msg = queue_get_last(&msg_ctrl.rx);
+    msg_t *tx_msg = queue_get(&msg_ctrl.tx);
+
+    bool rx_in_progress = (rx_msg != NULL && rx_msg->_cursor > 0);
+    bool tx_in_progress = (tx_msg != NULL && tx_msg->_cursor > 0);
+
+    if (!rx_in_progress && !tx_in_progress) {
+      break;
+    }
+
+    while (!comm_data_consumed()) {
+      if (comm_is_deselected()) {
+        return;
+      }
+    }
+
+    msg_ctrl_tick();
+  }
+}
+
 msg_t* msg_ctrl_consume_response() {
   msg_t *message = queue_get(&msg_ctrl.rx);
   if (message == NULL) {
