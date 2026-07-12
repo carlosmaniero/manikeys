@@ -7,23 +7,23 @@
 #include "tests.h"
 
 TEST_START(test_key_matrix_init)
-  uint8_t cols = 5;
-  uint8_t matrix[cols];
+  uint8_t size = 5;
+  uint8_t matrix[size];
   
-  key_matrix_init(matrix, cols);
+  key_matrix_init(matrix, size);
   
-  for (int i = 0; i < cols - 1; i++) {
+  for (int i = 0; i < size - 1; i++) {
       assert(matrix[i] == 1);
   }
   
-  assert(matrix[cols - 1] == 0);
+  assert(matrix[size - 1] == 0);
 TEST_END
 
 TEST_START(test_key_pressed_released)
-  uint8_t cols = 5;
-  uint8_t matrix[cols];
+  uint8_t size = 5;
+  uint8_t matrix[size];
 
-  key_matrix_init(matrix, cols);
+  key_matrix_init(matrix, size);
 
   assert(key_matrix_is_pressed(&matrix[1], 2) == 0);
 
@@ -43,10 +43,10 @@ TEST_START(test_key_pressed_released)
 TEST_END
 
 TEST_START(test_key_matrix_next)
-  uint8_t cols = 3;
-  uint8_t matrix[cols];
+  uint8_t size = 3;
+  uint8_t matrix[size];
 
-  key_matrix_init(matrix, cols);
+  key_matrix_init(matrix, size);
 
   uint8_t* current = matrix;
   

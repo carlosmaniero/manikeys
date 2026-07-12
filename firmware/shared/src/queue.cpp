@@ -27,6 +27,8 @@ void queue_commit_last(queue_t *q) {
   if (q->_cursor == q->_latest) {
     q->_cursor = queue_next_index(q->_cursor);
   }
+
+  msg_reset(&q->_buffer[q->_latest]);
 }
 
 void queue_consume(queue_t *q) {

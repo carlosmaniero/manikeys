@@ -16,7 +16,7 @@ const unsigned long LOG_INTERVAL_MS = 2000;
 const uint8_t rowPins[NUM_ROWS] = {A0, A1, A2, A3, A4};
 const uint8_t colPins[NUM_COLS] = {3, 4, 5, 6, 7, 8, 9};
 
-uint8_t matrix[NUM_COLS];
+uint8_t matrix[NUM_ROWS];
 
 void debug_print_key_state(uint8_t is_pressed, uint8_t r, uint8_t c) {
   if (is_pressed) {
@@ -58,7 +58,7 @@ void setup() {
   last_heard_from_master = millis();
 
   setupPins();
-  key_matrix_init(matrix, NUM_COLS);
+  key_matrix_init(matrix, NUM_ROWS);
 }
 
 void loop() {
@@ -71,15 +71,15 @@ void loop() {
     for (uint8_t r = 0; r < NUM_ROWS; r++) {
       uint8_t is_pressed = digitalRead(rowPins[r]) == LOW;
 
-      if (is_pressed != key_matrix_is_pressed(matrix + c, r)) {
+      if (is_pressed != key_matrix_is_pressed(matrix + r, c)) {
         changed = true;
 
         debug_print_key_state(is_pressed, r, c);
 
         if (is_pressed) {
-          key_matrix_set_pressed(matrix + c, r);
+          key_matrix_set_pressed(matrix + r, c);
         } else {
-          key_matrix_set_released(matrix + c, r);
+          key_matrix_set_released(matrix + r, c);
         }
       }
     }
@@ -89,19 +89,28 @@ void loop() {
 
   if (changed) {
     msg_t new_msg = {};
+
     new_msg.kind = MSG_KIND_KEYS;
-    new_msg.size = NUM_COLS;
-    for(uint8_t i = 0; i < NUM_COLS; i++) {
+    new_msg.size = NUM_ROWS;
+
+    for(uint8_t i = 0; i < NUM_ROWS; i++) {
         new_msg.buffer[i] = matrix[i];
     }
+
+    noInterrupts();
     msg_ctrl_produce(new_msg);
+    interrupts();
   }
 
-  noInterrupts();
-  msg_t *resp = msg_ctrl_consume_response();
-  interrupts();
+  while (true) {
+    noInterrupts();
+    msg_t *resp = msg_ctrl_consume_response();
+    interrupts();
 
-  if (resp != NULL) {
+    if (resp == NULL) {
+      break;
+    }
+
     if (resp->kind == MSG_KIND_HEARTBEAT) {
       last_heard_from_master = millis();
     } else {
