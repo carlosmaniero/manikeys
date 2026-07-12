@@ -71,7 +71,7 @@ void loop() {
     for (uint8_t r = 0; r < NUM_ROWS; r++) {
       uint8_t is_pressed = digitalRead(rowPins[r]) == LOW;
 
-      if (is_pressed != key_matrix_is_pressed(matrix + r, c)) {
+      if (is_pressed != key_matrix_is_active(matrix + r, c)) {
         changed = true;
 
         debug_print_key_state(is_pressed, r, c);

@@ -48,7 +48,7 @@ void loop() {
       bool any_pressed = false;
       for (uint8_t r = 0; r < resp->size; r++) {
         for (uint8_t c = 0; c < 7; c++) {
-          if (key_matrix_is_pressed(&resp->buffer[r], c)) {
+          if (key_matrix_is_active(&resp->buffer[r], c)) {
             Serial.print("Col ");
             Serial.print(c);
             Serial.print(", Row ");

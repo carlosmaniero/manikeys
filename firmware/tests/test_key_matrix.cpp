@@ -25,21 +25,21 @@ TEST_START(test_key_pressed_released)
 
   key_matrix_init(matrix, size);
 
-  assert(key_matrix_is_pressed(&matrix[1], 2) == 0);
+  assert(key_matrix_is_active(&matrix[1], 2) == 0);
 
   key_matrix_set_pressed(&matrix[1], 2);
 
-  assert(key_matrix_is_pressed(&matrix[1], 0) == 0);
-  assert(key_matrix_is_pressed(&matrix[1], 1) == 0);
-  assert(key_matrix_is_pressed(&matrix[1], 2));
-  assert(key_matrix_is_pressed(&matrix[1], 3) == 0);
-  assert(key_matrix_is_pressed(&matrix[1], 4) == 0);
-  assert(key_matrix_is_pressed(&matrix[1], 5) == 0);
-  assert(key_matrix_is_pressed(&matrix[1], 6) == 0);
+  assert(key_matrix_is_active(&matrix[1], 0) == 0);
+  assert(key_matrix_is_active(&matrix[1], 1) == 0);
+  assert(key_matrix_is_active(&matrix[1], 2));
+  assert(key_matrix_is_active(&matrix[1], 3) == 0);
+  assert(key_matrix_is_active(&matrix[1], 4) == 0);
+  assert(key_matrix_is_active(&matrix[1], 5) == 0);
+  assert(key_matrix_is_active(&matrix[1], 6) == 0);
 
   key_matrix_set_released(&matrix[1], 2);
 
-  assert(key_matrix_is_pressed(&matrix[1], 2) == 0);
+  assert(key_matrix_is_active(&matrix[1], 2) == 0);
 TEST_END
 
 TEST_START(test_key_matrix_next)
@@ -60,12 +60,39 @@ TEST_START(test_key_matrix_next)
   assert(current == 0);
 TEST_END
 
+TEST_START(test_key_matrix_diff)
+  uint8_t size = 3;
+  uint8_t prev[size];
+  uint8_t curr[size];
+  uint8_t diff[size];
+
+  // Test 1: Key Pressed
+  key_matrix_init(prev, size);
+  key_matrix_init(curr, size);
+  key_matrix_init(diff, size);
+  key_matrix_set_pressed(&curr[1], 2); // Press index 1, bit 2 in curr
+
+  key_matrix_diff(prev, curr, diff, size);
+  assert(key_matrix_is_active(&diff[1], 2) == 1);
+  assert(key_matrix_is_active(&diff[1], 1) == 0);
+
+  // Test 2: Key Released
+  key_matrix_init(prev, size);
+  key_matrix_init(curr, size);
+  key_matrix_init(diff, size);
+  key_matrix_set_pressed(&prev[1], 2); // prev has it pressed, curr has it released
+
+  key_matrix_diff(prev, curr, diff, size);
+  assert(key_matrix_is_active(&diff[1], 2) == 1);
+TEST_END
+
 int main() {
   std::cout << "Running tests..." << std::endl;
 
   test_key_matrix_init();
   test_key_pressed_released();
   test_key_matrix_next();
+  test_key_matrix_diff();
 
   std::cout << "All tests passed successfully!" << std::endl;
 

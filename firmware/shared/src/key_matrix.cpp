@@ -19,7 +19,7 @@ void key_matrix_set_released(uint8_t* matrix, uint8_t bit_index) {
   *matrix &= ~(_key_matrix_mask(bit_index));
 }
 
-uint8_t key_matrix_is_pressed(uint8_t* matrix, uint8_t bit_index) {
+uint8_t key_matrix_is_active(uint8_t* matrix, uint8_t bit_index) {
   return (*matrix & _key_matrix_mask(bit_index)) ? 1 : 0;
 }
 
@@ -28,4 +28,10 @@ uint8_t* key_matrix_next(uint8_t* matrix) {
     return matrix + 1;
   }
   return 0;
+}
+
+void key_matrix_diff(uint8_t* prev, uint8_t* curr, uint8_t* diff, uint8_t size) {
+  for (uint8_t i = 0; i < size; i++) {
+    diff[i] = prev[i] ^ curr[i];
+  }
 }
