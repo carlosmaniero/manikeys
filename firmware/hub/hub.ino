@@ -28,7 +28,7 @@ void loop() {
     if (resp != NULL) {
       break;
     }
-    delayMicroseconds(50);
+    delayMicroseconds(30);
   }
 
   comm_spi_end_transaction(SLAVE_PIN);
