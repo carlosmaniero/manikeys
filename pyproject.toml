@@ -13,6 +13,10 @@ dependencies = [
     "fast-simplification>=0.1.13",
     "meshoptimizer>=0.2.30a0",
     "manifold3d>=3.4.1",
+    "trimesh>=4.12.2",
+    "lxml>=6.1.1",
+    "scipy>=1.18.0",
+    "networkx>=3.6.1",
 ]
 
 [dependency-groups]

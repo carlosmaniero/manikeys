@@ -1,19 +1,19 @@
 from __future__ import annotations
 import sys
-import openscad as osc
 from typing import Iterator
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_many_stl
-from core.openscad_ext.object import OSCObject
+from core.loader import load_many_stl_to_trimesh
+from core.trimesh_ext.object import TrimeshObject
+import trimesh
 
 
 @singleton
 @inject
 @dataclass
-class Keyboard(OSCObject):
-    def assemble(self) -> Iterator[osc.PyOpenSCAD]:
+class Keyboard(TrimeshObject):
+    def assemble(self) -> Iterator[trimesh.Trimesh]:
         paths = [
             "build/assembly/cad/full_keyboard.stl",
             "build/assembly/base_plate/cad/base_plate.stl",
@@ -31,15 +31,27 @@ class Keyboard(OSCObject):
             switches,
             rj11,
             rj11_adapter,
-        ) = load_many_stl(paths)
+        ) = load_many_stl_to_trimesh(paths)
 
-        yield body_part.color("#c0b89b")
-        yield bottom.color("#c0b89b")
-        yield socket_shell.color("#c0b89b")
-        yield sockets.color("#c0b89b")
-        yield switches.color("#bec0b1")
-        yield rj11.color("#5a5a5a")
-        yield rj11_adapter.color("#c0b89b")
+        def hex_to_rgba(hex_str: str) -> list[int]:
+            hex_str = hex_str.lstrip("#")
+            return [int(hex_str[i : i + 2], 16) for i in (0, 2, 4)] + [255]
+
+        body_part.visual.face_colors = hex_to_rgba("#ffb89b")
+        bottom.visual.face_colors = hex_to_rgba("#c0b89b")
+        socket_shell.visual.face_colors = hex_to_rgba("#c0b89b")
+        sockets.visual.face_colors = hex_to_rgba("#c0b89b")
+        switches.visual.face_colors = hex_to_rgba("#bec0b1")
+        rj11.visual.face_colors = hex_to_rgba("#5a5a5a")
+        rj11_adapter.visual.face_colors = hex_to_rgba("#c0b89b")
+
+        yield body_part
+        yield bottom
+        yield socket_shell
+        yield sockets
+        yield switches
+        yield rj11
+        yield rj11_adapter
 
 
 if __name__ == "__main__":
