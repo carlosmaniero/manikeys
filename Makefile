@@ -56,16 +56,16 @@ build/switches/cad/switch_hole_grid.stl: src/switches/cad/switch_hole_grid.py bu
 build/switches/cad/switch_decorator_thumb_grid.stl: src/switches/cad/switch_decorator_thumb_grid.py build/switches/cad/switch_hole_decorator.stl
 build/switches/cad/switch_thumb_hole.stl: src/switches/cad/switch_thumb_hole.py build/switches/cad/switch_hole.stl
 build/switches/socket/cad/hot_swap_grid.stl: src/switches/socket/cad/hot_swap_grid.py build/switches/socket/cad/hot_swap.stl
-build/components/oled_096/cad/placement.stl: src/cad/components/oled_096_placement.py build/components/oled_096/cad/oled.stl
-build/components/oled_096/cad/masks/body.stl: src/cad/components/oled_096_placement_body_mask.py
-build/components/oled_096/cad/masks/shell.stl: src/cad/components/oled_096_placement_shell_mask.py
+build/components/oled_096/cad/placement.stl: src/components/oled_096/cad/placement.py build/components/oled_096/cad/oled.stl
+build/components/oled_096/cad/masks/body.stl: src/components/oled_096/cad/masks/body.py
+build/components/oled_096/cad/masks/shell.stl: src/components/oled_096/cad/masks/shell.py
 
-build/connectors/rj11/cad/adapter_trimmed.stl: src/cad/connectors/rj11_adapter_trimmed.py build/connectors/rj11/cad/adapter.stl build/structure/body/shape.stl
-build/connectors/rj11/cad/placement.stl: src/cad/connectors/rj11_adapter_placement.py build/structure/body/shape.stl
-build/connectors/usbc/cad/adapter.stl: src/cad/connectors/usbc_adapter.py build/connectors/usbc/cad/masks/connector.stl
-build/connectors/usbc/cad/adapter_trimmed.stl: src/cad/connectors/usbc_adapter_trimmed.py build/connectors/usbc/cad/adapter.stl build/structure/body/shape.stl
-build/connectors/usbc/cad/masks/usbc.stl: src/cad/connectors/usbc_mask.py build/connectors/usbc/cad/masks/connector.stl
-build/connectors/usbc/cad/masks/placement.stl: src/cad/connectors/usbc_placement_mask.py
+build/connectors/rj11/cad/adapter_trimmed.stl: src/connectors/rj11/cad/adapter_trimmed.py build/connectors/rj11/cad/adapter.stl build/structure/body/shape.stl
+build/connectors/rj11/cad/placement.stl: src/connectors/rj11/cad/placement.py build/structure/body/shape.stl
+build/connectors/usbc/cad/adapter.stl: src/connectors/usbc/cad/adapter.py build/connectors/usbc/cad/masks/connector.stl
+build/connectors/usbc/cad/adapter_trimmed.stl: src/connectors/usbc/cad/adapter_trimmed.py build/connectors/usbc/cad/adapter.stl build/structure/body/shape.stl
+build/connectors/usbc/cad/masks/usbc.stl: src/connectors/usbc/cad/masks/usbc.py build/connectors/usbc/cad/masks/connector.stl
+build/connectors/usbc/cad/masks/placement.stl: src/connectors/usbc/cad/masks/placement.py
 
 build/connectors/rj45/cad/placement.stl: src/connectors/rj45/cad/placement.py build/connectors/rj45/cad/adapter_front.stl build/structure/body/shape.stl
 build/connectors/pogo/cad/pogo_pin_mask.stl: src/connectors/pogo/cad/pogo_pin_mask.py
