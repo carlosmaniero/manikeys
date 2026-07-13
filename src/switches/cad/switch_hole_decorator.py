@@ -1,23 +1,41 @@
+from __future__ import annotations
 import sys
-from dataclasses import dataclass, field
-import openscad as osc
+from dataclasses import dataclass
+import manifold3d
 from injector import inject, singleton
 from models.parameters import SwitchesParameters
-from core.openscad_ext.object import OSCObject
+from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 
 
 @singleton
 @inject
 @dataclass
-class SwitchHoleDecoratorCAD(OSCObject):
+class SwitchHoleDecoratorCAD(ManifoldObject):
     switches_parameters: SwitchesParameters
-    fn: int = field(default=20, init=False)
 
-    def assemble(self):
+    def assemble(self) -> manifold3d.Manifold:
         p = self.switches_parameters
+        fn = 20
+        w = p.size + p.border * 2
+        d = p.size + p.border * 2
+        h = p.thickness
+        r = p.border / 4
 
-        squared_bottom = osc.cube(
+        # Rounded cube using cylinder hull
+        cyl = manifold3d.Manifold.cylinder(
+            h, r, center=True, circular_segments=fn
+        )
+
+        x_off = w / 2 - r
+        y_off = d / 2 - r
+        c1 = cyl.translate([x_off, y_off, 0])
+        c2 = cyl.translate([-x_off, y_off, 0])
+        c3 = cyl.translate([x_off, -y_off, 0])
+        c4 = cyl.translate([-x_off, -y_off, 0])
+        obj = (c1 + c2 + c3 + c4).hull()
+
+        squared_bottom = manifold3d.Manifold.cube(
             [
                 p.size + p.border * 2,
                 p.size + p.border * 2,
@@ -25,27 +43,13 @@ class SwitchHoleDecoratorCAD(OSCObject):
             ],
             center=True,
         )
+        squared_bottom = squared_bottom.translate([0, 0, -p.thickness / 4])
 
-        squared_bottom += [0, 0, -p.thickness / 4]
+        obj = obj + squared_bottom
 
-        obj = osc.cube(
-            [
-                p.size + p.border * 2,
-                p.size + p.border * 2,
-                p.thickness,
-            ],
-            center=True,
-        )
-        obj = obj.fillet(p.border / 4, fn=self.fn)
+        obj = obj.translate([0, 0, -(p.thickness / 2 - p.outer.thickness)])
 
-        obj |= squared_bottom
-
-        obj -= [0, 0, p.thickness / 2 - p.outer.thickness]
-
-        return self.colorize(obj)
-
-    def colorize(self, obj):
-        return osc.color(obj, "orange")
+        return obj
 
 
 if __name__ == "__main__":
