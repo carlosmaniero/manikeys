@@ -36,9 +36,9 @@ class BodyCAD(VistaObject):
 
         top_z = self.model.z(x, y)
 
-        bottom_z = np.full_like(x, -self.model.body_parameters.height)
-
-        return create_full_surface(x, y, top_z, bottom_z)
+        return create_full_surface(
+            x, y, top_z, -self.model.body_parameters.height
+        )
 
 
 if __name__ == "__main__":
