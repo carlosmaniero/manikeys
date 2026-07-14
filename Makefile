@@ -1,6 +1,6 @@
 SIMPLIFY ?= 1
 
-.PHONY: build test lint render clean sphere build_watch viewer
+.PHONY: build test lint render clean build_watch viewer
 
 build: build/main.stl build/main.3mf \
 	build/assembly/cad/main.stl \
@@ -27,15 +27,9 @@ build_watch:
 		src/
 
 
-sphere: build/sphere.png
-
 render: build/render.png build/render_back.png build/render_top.png build/render_side.png build/render_side_inv.png \
 	build/render_angle0.png build/render_angle45.png build/render_angle90.png build/render_angle135.png \
 	build/render_angle180.png build/render_angle225.png build/render_angle270.png build/render_angle315.png
-
-build/sphere.3mf: src/openscad_ext/demo.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
 
 build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/assembly/base_plate/cad/base_plate.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/connectors/rj11/cad/rj11.stl build/connectors/rj11/cad/adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
@@ -96,50 +90,7 @@ build/%.stl: src/%.py
 	+PYTHONPATH=src uv run python $< -o $@
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
-build/%.stl: src/%.scad
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $< -o $@ --export-format binstl
-	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
-build_with_pythonscad:
-	@if [ "$(suffix $(FILE))" = ".stl" ]; then \
-		$(MAKE) _pythonscad_stl FILE=$(FILE); \
-	elif [ "$(suffix $(FILE))" = ".3mf" ]; then \
-		$(MAKE) _pythonscad_3mf FILE=$(FILE); \
-	else \
-		$(MAKE) _pythonscad_other FILE=$(FILE); \
-	fi
-
-_pythonscad_stl:
-	mkdir -p $(dir $(FILE))
-	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
-	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
-		part=$${FILE#build/structure/}; \
-		part=$${part%/shape.*}; \
-		src_file="src/structure/$$part/cad/shape.py"; \
-	fi; \
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE) --export-format binstl
-	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $(FILE) -o $(FILE); fi
-
-_pythonscad_3mf:
-	mkdir -p $(dir $(FILE))
-	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
-	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
-		part=$${FILE#build/structure/}; \
-		part=$${part%/shape.*}; \
-		src_file="src/structure/$$part/cad/shape.py"; \
-	fi; \
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE) -O export-3mf/material-type=color
-
-_pythonscad_other:
-	mkdir -p $(dir $(FILE))
-	@src_file=$(patsubst build/%,src/%,$(basename $(FILE)).py); \
-	if [ "$${FILE#build/structure/}" != "$$FILE" ]; then \
-		part=$${FILE#build/structure/}; \
-		part=$${part%/shape.*}; \
-		src_file="src/structure/$$part/cad/shape.py"; \
-	fi; \
-	PYTHONPATH=src uv run pythonscad --backend Manifold --trust-python $$src_file -o $(FILE)
 
 
 

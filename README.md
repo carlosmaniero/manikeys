@@ -13,12 +13,11 @@
 | ![270°](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_angle270.png) | ![315°](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_angle315.png) | ![Top](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_top.png) |
 | ![Side](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_side.png) | ![Side Inv](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_side_inv.png) | ![Back](https://raw.githubusercontent.com/carlosmaniero/manikey/assets/render_back.png) |
 
-This project uses [PythonSCAD](https://pythonscad.org) to design a custom 3D-printable keyboard based on spherical projections.
+This project uses standard Python with [Manifold3D](https://github.com/elalish/manifold) and [PyVista](https://pyvista.org) to design a custom 3D-printable keyboard based on spherical projections.
 
 ## Requirements
 
-- **PythonSCAD**: Required for core CAD operations.
-- **F3D**: Required **only** for the `render` step (generating PNGs).
+- **F3D**: Required for the `render` step (generating PNGs).
 
 ## Development
 
