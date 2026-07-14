@@ -75,4 +75,4 @@ jobs:
           path: |
             build/main.stl
             build/main.3mf
-            build/main*.png
+            build/render*.png
