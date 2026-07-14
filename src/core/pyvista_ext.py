@@ -21,9 +21,8 @@ def normalize_to_grid(
     z: npt.NDArray[np.float64] | float,
 ) -> pv.StructuredGrid:
     if isinstance(z, (int, float)):
-        bx, by = np.meshgrid([x[0, 0], x[-1, -1]], [y[0, 0], y[-1, -1]])
-        bz = np.full_like(bx, z)
-        return pv.StructuredGrid(bx, by, bz)
+        bz = np.full_like(x, z)
+        return pv.StructuredGrid(x, y, bz)
     return pv.StructuredGrid(x, y, z)
 
 
