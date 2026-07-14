@@ -9,7 +9,9 @@ void comm_set_slave() {
 }
 
 bool is_master = false;
+
 uint8_t last_received_data = 0;
+uint8_t message_to_be_sent = 0;
 
 
 bool comm_data_consumed() {
@@ -20,12 +22,19 @@ bool comm_data_consumed() {
   return (SPSR & (1 << SPIF));
 }
 
-void comm_send_data(uint8_t data) {
+void comm_prepare_message(uint8_t data) {
   if (is_master) {
     last_received_data = SPI.transfer(data);
     return;
   }
-  SPDR = data;
+  message_to_be_sent = data;
+}
+
+void comm_send_data() {
+  if (is_master) {
+    return;
+  }
+  SPDR = message_to_be_sent;
 }
 
 uint8_t comm_received_data() {

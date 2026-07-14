@@ -32,23 +32,29 @@ void msg_ctrl_build_response() {
   }
 }
 
-void msg_ctrl_tick() {
-  msg_ctrl_build_response();
-
+inline void _msg_prepare_message() {
   msg_t *message = queue_get(&msg_ctrl.tx);
 
   if (message == NULL) {
-    comm_send_data(MSG_HEARTBEAT_BYTE);
+    comm_prepare_message(MSG_HEARTBEAT_BYTE);
     return;
   }
 
   uint8_t *raw = (uint8_t*) message;
 
-  comm_send_data(*(raw + message->_cursor++));
+  comm_prepare_message(*(raw + message->_cursor++));
 
   if (msg_is_completed(message)) {
     queue_consume(&msg_ctrl.tx);
   }
+}
+
+void msg_ctrl_tick() {
+  _msg_prepare_message();
+
+  msg_ctrl_build_response();
+
+  comm_send_data();
 }
 
 void msg_ctrl_tick_all() {
