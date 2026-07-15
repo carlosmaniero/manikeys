@@ -17,7 +17,11 @@ all: $(TARGETS)
 $(TARGETS):
 	@if [ ! -f $@/FQBN ]; then echo "Error: FQBN file missing in $@/"; exit 1; fi
 	@echo "Compiling $@ for board $$(cat $@/FQBN)..."
-	$(ARDUINO_CLI) compile --fqbn $$(cat $@/FQBN) --library $(CURDIR)/shared --output-dir $(BUILD_DIR)/$@ $@
+	@if [ "$@" = "hub" ]; then \
+		$(ARDUINO_CLI) compile --fqbn $$(cat $@/FQBN) --library $(CURDIR)/shared --build-property "compiler.cpp.extra_flags=-DIS_MASTER" --output-dir $(BUILD_DIR)/$@ $@; \
+	else \
+		$(ARDUINO_CLI) compile --fqbn $$(cat $@/FQBN) --library $(CURDIR)/shared --build-property "compiler.cpp.extra_flags=-DIS_SLAVE" --output-dir $(BUILD_DIR)/$@ $@; \
+	fi
 
 # Rule to upload a sketch
 # Usage: make upload DIR=matrix_scaner PORT=/dev/ttyUSB0

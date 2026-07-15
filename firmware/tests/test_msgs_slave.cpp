@@ -141,8 +141,18 @@ TEST_START(test_msg_produce_after_empty)
     assert(mock_sent_data[2] == MSG_KIND_KEYS);
 TEST_END
 
+TEST_START(test_msg_tick_all)
+    comm_mock_reset();
+    msg_ctrl_init();
+
+    // Verify msg_ctrl_tick_all compiles and runs
+    msg_ctrl_tick_all();
+    assert(mock_sent_data.size() == 1);
+    assert(mock_sent_data[0] == MSG_HEARTBEAT_BYTE);
+TEST_END
+
 int main() {
-    std::cout << "Running msgs tests..." << std::endl;
+    std::cout << "Running slave msgs tests..." << std::endl;
 
     test_msg_tick();
     test_msg_produce_keys();
@@ -150,7 +160,8 @@ int main() {
     test_msg_queue_multiple_responses();
     test_msg_buffer_overflow();
     test_msg_produce_after_empty();
+    test_msg_tick_all();
 
-    std::cout << "All msgs tests passed successfully!" << std::endl;
+    std::cout << "All slave msgs tests passed successfully!" << std::endl;
     return 0;
 }

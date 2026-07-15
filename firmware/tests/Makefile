@@ -2,18 +2,26 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -I. -I../shared/src
 BUILD_DIR = build
 
-TEST_SRCS = $(wildcard test_*.cpp)
-TEST_EXECS = $(patsubst %.cpp,$(BUILD_DIR)/%,$(TEST_SRCS))
-MOCK_SRCS = $(filter-out $(TEST_SRCS), $(wildcard *.cpp))
+MOCK_SRCS = comm_mock.cpp
 SHARED_SRCS = ../shared/src/key_matrix.cpp ../shared/src/msg.cpp ../shared/src/queue.cpp ../shared/src/msg_ctrl.cpp
+
+TEST_EXECS = $(BUILD_DIR)/test_key_matrix $(BUILD_DIR)/test_msgs_master $(BUILD_DIR)/test_msgs_slave
 
 all: $(BUILD_DIR) $(TEST_EXECS) run_all
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-# Compile each test with the mocks and shared library sources
-$(BUILD_DIR)/%: %.cpp $(MOCK_SRCS) $(SHARED_SRCS)
+# Compile key_matrix tests
+$(BUILD_DIR)/test_key_matrix: test_key_matrix.cpp $(MOCK_SRCS) $(SHARED_SRCS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compile msgs tests for master configuration
+$(BUILD_DIR)/test_msgs_master: test_msgs_master.cpp $(MOCK_SRCS) $(SHARED_SRCS)
+	$(CXX) $(CXXFLAGS) -DIS_MASTER -o $@ $^
+
+# Compile msgs tests for slave configuration
+$(BUILD_DIR)/test_msgs_slave: test_msgs_slave.cpp $(MOCK_SRCS) $(SHARED_SRCS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 run_all: $(TEST_EXECS)
