@@ -17,11 +17,9 @@ bool comm_data_consumed() {
 
 uint8_t last_received_data = 0;
 
-void comm_prepare_message(uint8_t data) {
+void comm_send_data(uint8_t data) {
   last_received_data = SPI.transfer(data);
 }
-
-void comm_send_data() {}
 
 uint8_t comm_received_data() {
   return last_received_data;
@@ -66,18 +64,12 @@ void comm_set_slave() {
   SPCR |= (1 << SPE) | (1 << SPIE);
 }
 
-uint8_t message_to_be_sent = 0;
-
 bool comm_data_consumed() {
   return (SPSR & (1 << SPIF));
 }
 
-void comm_prepare_message(uint8_t data) {
-  message_to_be_sent = data;
-}
-
-void comm_send_data() {
-  SPDR = message_to_be_sent;
+void comm_send_data(uint8_t data) {
+  SPDR = data;
 }
 
 uint8_t comm_received_data() {

@@ -26,31 +26,27 @@ TEST_START(test_msg_produce_keys)
     msg.buffer[2] = 30;
 
     msg_ctrl_produce(msg);
-
-    msg_ctrl_tick();
+    assert(mock_sent_data.size() == 1);
     assert(mock_sent_data[0] == MSG_KIND_KEYS);
 
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 2);
-
-    msg_ctrl_tick();
-    assert(mock_sent_data.size() == 3);
     assert(mock_sent_data[1] == 3);
 
     msg_ctrl_tick();
-    assert(mock_sent_data.size() == 4);
+    assert(mock_sent_data.size() == 3);
     assert(mock_sent_data[2] == 10);
 
     msg_ctrl_tick();
-    assert(mock_sent_data.size() == 5);
+    assert(mock_sent_data.size() == 4);
     assert(mock_sent_data[3] == 20);
 
     msg_ctrl_tick();
-    assert(mock_sent_data.size() == 6);
+    assert(mock_sent_data.size() == 5);
     assert(mock_sent_data[4] == 30);
 
     msg_ctrl_tick();
-    assert(mock_sent_data.size() == 7);
+    assert(mock_sent_data.size() == 6);
     assert(mock_sent_data[5] == MSG_HEARTBEAT_BYTE);
 TEST_END
 
@@ -112,16 +108,16 @@ TEST_START(test_msg_buffer_overflow)
         msg_ctrl_produce(msg);
     }
 
-    msg_ctrl_tick();
     assert(mock_sent_data[0] == MSG_KIND_KEYS);
 
     msg_ctrl_tick();
-    assert(mock_sent_data[1] == 1);
+    assert(mock_sent_data[1] == MSG_KIND_KEYS);
 
     msg_ctrl_tick();
-    // Once the buffer was overflowed, the next message the first message
-    // before the overflow to happen, which is 43 (41 + 2)
-    assert(mock_sent_data[2] == 43);
+    assert(mock_sent_data[2] == 1);
+
+    msg_ctrl_tick();
+    assert(mock_sent_data[3] == 43);
 TEST_END
 
 TEST_START(test_msg_produce_after_empty)
@@ -137,7 +133,6 @@ TEST_START(test_msg_produce_after_empty)
     msg.buffer[0] = 99;
     msg_ctrl_produce(msg);
 
-    msg_ctrl_tick();
     assert(mock_sent_data[2] == MSG_KIND_KEYS);
 TEST_END
 

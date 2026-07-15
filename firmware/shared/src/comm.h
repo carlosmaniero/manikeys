@@ -4,8 +4,7 @@
 
 void comm_set_slave();
 void comm_send_heartbeat();
-void comm_prepare_message(uint8_t data);
-void comm_send_data();
+void comm_send_data(uint8_t data);
 bool comm_data_consumed();
 uint8_t comm_received_data();
 bool comm_is_deselected();
