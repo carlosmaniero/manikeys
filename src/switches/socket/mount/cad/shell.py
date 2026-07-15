@@ -78,6 +78,9 @@ class MountShellCAD(ManifoldObject):
             - load_stl_to_manifold(
                 "build/switches/socket/mount/cad/screw_clearance.stl"
             )
+            + load_stl_to_manifold(
+                "build/switches/cad/switch_hole_decorator_shell_grid.stl"
+            )
             - load_stl_to_manifold("build/switches/cad/switch_hole_grid.stl")
             - load_stl_to_manifold("build/switches/cad/switch_thumb_hole.stl")
             - load_stl_to_manifold("build/connectors/pogo/cad/cable_path.stl")
