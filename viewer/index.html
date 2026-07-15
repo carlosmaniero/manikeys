@@ -453,6 +453,8 @@
         let measurePoints = [];
         let measureMarkers = [];
         let isMeasuring = false;
+        let isShiftPressed = false;
+        let lastMouseMoveEvent = null;
         let isWatching = false;
         let savedCameraPosition = null;
         let savedCameraTarget = null;
@@ -587,6 +589,13 @@
             window.addEventListener('keydown', (event) => {
                 if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
 
+                if (event.key === 'Shift') {
+                    if (!isShiftPressed) {
+                        isShiftPressed = true;
+                        updateMeasurementTargets();
+                    }
+                }
+
                 switch(event.key.toLowerCase()) {
                     case 'm': toggleMeasure(); break;
                     case 'f': fitCamera(); break;
@@ -606,6 +615,25 @@
                     case '6': window.setView('right'); break;
                 }
             });
+
+            window.addEventListener('keyup', (event) => {
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') return;
+
+                if (event.key === 'Shift') {
+                    if (isShiftPressed) {
+                        isShiftPressed = false;
+                        updateMeasurementTargets();
+                    }
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                if (isShiftPressed) {
+                    isShiftPressed = false;
+                    updateMeasurementTargets();
+                }
+            });
+
             animate();
         }
 
@@ -734,18 +762,32 @@
             renderer.render(scene, camera);
         }
 
+        function updateMeasurementTargets() {
+            const showAll = isMeasuring && isShiftPressed;
+
+            if (verticesMesh) verticesMesh.visible = showAll || (isMeasuring && verticesMesh === activeVerticesMesh);
+            if (edgesMesh) edgesMesh.visible = showAll || (isMeasuring && edgesMesh === activeEdgesMesh);
+
+            Object.keys(refVerticesMeshes).forEach(id => {
+                const vMesh = refVerticesMeshes[id];
+                if (vMesh) vMesh.visible = showAll || (isMeasuring && vMesh === activeVerticesMesh);
+            });
+            Object.keys(refEdgesMeshes).forEach(id => {
+                const eMesh = refEdgesMeshes[id];
+                if (eMesh) eMesh.visible = showAll || (isMeasuring && eMesh === activeEdgesMesh);
+            });
+
+            if (isMeasuring && lastMouseMoveEvent) {
+                onMouseMove(lastMouseMoveEvent);
+            }
+        }
+
         function toggleMeasure() {
             isMeasuring = !isMeasuring;
             measureBtn.classList.toggle('active', isMeasuring);
             measureInfo.style.display = isMeasuring ? 'inline' : 'none';
 
-            if (verticesMesh) verticesMesh.visible = false;
-            if (edgesMesh) edgesMesh.visible = false;
-            Object.values(refVerticesMeshes).forEach(v => v.visible = false);
-            Object.values(refEdgesMeshes).forEach(e => e.visible = false);
-
-            if (isMeasuring && activeVerticesMesh) activeVerticesMesh.visible = true;
-            if (isMeasuring && activeEdgesMesh) activeEdgesMesh.visible = true;
+            updateMeasurementTargets();
 
             if (hoverLine) hoverLine.visible = false;
             if (hoverPoint) hoverPoint.visible = false;
@@ -773,7 +815,22 @@
         }
 
         function onMouseMove(event) {
-            if (!isMeasuring || !activeEdgesMesh || !activeVerticesMesh) return;
+            lastMouseMoveEvent = event;
+            if (!isMeasuring) return;
+
+            let targetVertices = [];
+            let targetEdges = [];
+            if (isShiftPressed) {
+                if (verticesMesh) targetVertices.push(verticesMesh);
+                if (edgesMesh) targetEdges.push(edgesMesh);
+                Object.values(refVerticesMeshes).forEach(v => { if (v) targetVertices.push(v); });
+                Object.values(refEdgesMeshes).forEach(e => { if (e) targetEdges.push(e); });
+            } else {
+                if (activeVerticesMesh) targetVertices.push(activeVerticesMesh);
+                if (activeEdgesMesh) targetEdges.push(activeEdgesMesh);
+            }
+
+            if (targetVertices.length === 0 || targetEdges.length === 0) return;
 
             const rect = container.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
@@ -781,11 +838,13 @@
 
             raycaster.setFromCamera(mouse, camera);
 
-            const vIntersects = raycaster.intersectObject(activeVerticesMesh);
+            const vIntersects = raycaster.intersectObjects(targetVertices);
             if (vIntersects.length > 0) {
-                const index = vIntersects[0].index;
-                const pos = activeVerticesMesh.geometry.attributes.position;
-                const p = new THREE.Vector3().fromBufferAttribute(pos, index).applyMatrix4(activeVerticesMesh.matrixWorld);
+                const intersect = vIntersects[0];
+                const index = intersect.index;
+                const targetVMesh = intersect.object;
+                const pos = targetVMesh.geometry.attributes.position;
+                const p = new THREE.Vector3().fromBufferAttribute(pos, index).applyMatrix4(targetVMesh.matrixWorld);
 
                 hoverPoint.position.copy(p);
                 hoverPoint.visible = true;
@@ -813,13 +872,14 @@
             highlightedEdge = null;
 
             if (!highlightedVertex) {
-                const eIntersects = raycaster.intersectObject(activeEdgesMesh);
+                const eIntersects = raycaster.intersectObjects(targetEdges);
                 if (eIntersects.length > 0) {
                     const intersect = eIntersects[0];
                     const idx = intersect.index;
-                    const posAttr = activeEdgesMesh.geometry.attributes.position;
-                    const A = new THREE.Vector3().fromBufferAttribute(posAttr, idx).applyMatrix4(activeEdgesMesh.matrixWorld);
-                    const B = new THREE.Vector3().fromBufferAttribute(posAttr, idx + 1).applyMatrix4(activeEdgesMesh.matrixWorld);
+                    const targetEMesh = intersect.object;
+                    const posAttr = targetEMesh.geometry.attributes.position;
+                    const A = new THREE.Vector3().fromBufferAttribute(posAttr, idx).applyMatrix4(targetEMesh.matrixWorld);
+                    const B = new THREE.Vector3().fromBufferAttribute(posAttr, idx + 1).applyMatrix4(targetEMesh.matrixWorld);
 
                     hoverLine.geometry.setFromPoints([A, B]);
                     hoverLine.visible = true;
@@ -919,7 +979,7 @@
 
             let point = null;
 
-            if (isMeasuring && activeMesh) {
+            if (isMeasuring && (activeMesh || isShiftPressed)) {
                 if (highlightedVertex) {
                     point = highlightedVertex.clone();
                 } else if (highlightedEdge) {
@@ -932,7 +992,14 @@
                         const t = u.dot(v) / v.dot(v);
                         point = new THREE.Vector3().addVectors(A, v.multiplyScalar(t));
                     } else {
-                        const eIntersects = raycaster.intersectObject(activeEdgesMesh);
+                        let targetEdges = [];
+                        if (isShiftPressed) {
+                            if (edgesMesh) targetEdges.push(edgesMesh);
+                            Object.values(refEdgesMeshes).forEach(e => { if (e) targetEdges.push(e); });
+                        } else {
+                            if (activeEdgesMesh) targetEdges.push(activeEdgesMesh);
+                        }
+                        const eIntersects = raycaster.intersectObjects(targetEdges);
                         if (eIntersects.length > 0) {
                             point = eIntersects[0].point.clone();
                         }

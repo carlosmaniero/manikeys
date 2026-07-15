@@ -78,7 +78,7 @@ class NumPyCapsBottomSphere:
         return self.divider_x_main(offset) + self.switches_parameters.gap
 
     def z(self, x: np.ndarray, y: np.ndarray, offset: float) -> np.ndarray:
-        radius = self.body_parameters.radius - offset
+        radius = self.body_parameters.radius
         distance = np.sqrt(x**2 + y**2)
         start_fixed = self.divider_x_main(offset)
 
