@@ -12,7 +12,12 @@ def assert_pos_equal(pos1, pos2):
 
 def test_layout_grid():
     caps = SwitchesParameters(
-        size=14.0, thickness=5.0, border=0.5, gap=2.5, outer=None
+        size=14.0,
+        thickness=5.0,
+        border=0.5,
+        border_shell=0.5,
+        gap=2.5,
+        outer=None,
     )
     columns = [
         LayoutColumn(keys=2, offsetY=10),

@@ -19,7 +19,7 @@ class SwitchHoleDecoratorShellGridCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         grid = []
         decorator = load_stl_to_manifold(
-            "build/switches/cad/switch_hole_decorator.stl"
+            "build/switches/cad/switch_hole_decorator_shell.stl"
         )
         offset = self.mount_model.offset
 

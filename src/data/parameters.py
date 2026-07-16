@@ -24,6 +24,7 @@ class ParametersModule(Module):
             size=14,
             thickness=5,
             border=2,
+            border_shell=3,
             gap=5,
             outer=CapsOuterParameters(thickness=1.5),
         )

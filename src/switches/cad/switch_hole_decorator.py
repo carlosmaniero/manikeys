@@ -6,6 +6,7 @@ from injector import inject, singleton
 from models.parameters import SwitchesParameters
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
+from core.loader import load_stl_to_manifold
 
 
 @singleton
@@ -49,7 +50,8 @@ class SwitchHoleDecoratorCAD(ManifoldObject):
 
         obj = obj.translate([0, 0, -(p.thickness / 2 - p.outer.thickness)])
 
-        return obj
+        switch_hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
+        return obj - switch_hole
 
 
 if __name__ == "__main__":

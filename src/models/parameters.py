@@ -11,6 +11,7 @@ class SwitchesParameters:
     size: float
     thickness: float
     border: float
+    border_shell: float
     outer: CapsOuterParameters
     gap: float
 
