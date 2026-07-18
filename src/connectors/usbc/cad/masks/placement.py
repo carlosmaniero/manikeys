@@ -24,11 +24,7 @@ class USBCPlacementMaskCAD(ManifoldObject):
 
     @property
     def width(self) -> float:
-        return (
-            self.model.pcb_length
-            + self.thickness * 6
-            + self.wall_parameters.fillet
-        )
+        return self.model.width + self.thickness
 
     @property
     def length(self) -> float:
@@ -78,19 +74,12 @@ class USBCPlacementMaskCAD(ManifoldObject):
             [
                 0,
                 y_center,
-                z_center + self.body_model.highest / 2,
+                z_center - self.body_model.highest / 2,
             ]
         )
 
     def assemble(self) -> manifold3d.Manifold:
-        offset = self.model.body_offset
-        return self.main_block.translate(
-            [
-                self.body_model.start_x() + self.width / 2,
-                offset[1],
-                offset[2],
-            ]
-        )
+        return self.main_block.translate(self.model.body_offset)
 
 
 if __name__ == "__main__":

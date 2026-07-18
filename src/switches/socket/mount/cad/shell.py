@@ -60,19 +60,22 @@ class MountShellCAD(ManifoldObject):
             ]
         )
 
+        screw_walls = load_stl_to_manifold(
+            "build/switches/socket/mount/cad/screw_clearance_cavity.stl"
+        ) ^ load_stl_to_manifold("build/switches/socket/mount/cad/body.stl")
+
         return (
             load_stl_to_manifold("build/switches/socket/mount/cad/body.stl")
             - load_stl_to_manifold(
                 "build/switches/socket/mount/cad/cavity_sections.stl"
             )
-            - side_divider
-            - body_divider
             - load_stl_to_manifold(
                 "build/connectors/rj45/cad/masks/placement.stl"
             )
             - load_stl_to_manifold(
                 "build/connectors/usbc/cad/masks/placement.stl"
             )
+            + screw_walls
             - load_stl_to_manifold(
                 "build/switches/socket/mount/cad/screw_clearance.stl"
             )
@@ -88,6 +91,8 @@ class MountShellCAD(ManifoldObject):
             - load_stl_to_manifold(
                 "build/components/oled_096/cad/masks/shell.stl"
             )
+            - side_divider
+            - body_divider
         )
 
 
