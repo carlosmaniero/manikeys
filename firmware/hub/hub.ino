@@ -1,10 +1,37 @@
 #include <Arduino.h>
 #include <comm_spi.h>
 #include <Keyboard.h>
+#include <Adafruit_NeoPixel.h>
 #include <msg_ctrl.h>
 #include <key_matrix.h>
 
 const uint8_t SLAVE_PIN = 9;
+
+#define LED_PIN 10
+#define NUM_LEDS 3
+Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+enum LedColor { LED_YELLOW, LED_GREEN, LED_RED };
+static LedColor current_led_color = (LedColor)-1;
+
+void set_led_color(LedColor color) {
+  if (current_led_color == color) return;
+  current_led_color = color;
+
+  uint8_t r = 0, g = 0, b = 0;
+  if (color == LED_YELLOW) {
+    r = 150; g = 100; b = 0;
+  } else if (color == LED_GREEN) {
+    r = 0; g = 150; b = 0;
+  } else if (color == LED_RED) {
+    r = 150; g = 0; b = 0;
+  }
+
+  for (uint8_t i = 0; i < NUM_LEDS; i++) {
+    pixels.setPixelColor(i, pixels.Color(r, g, b));
+  }
+  pixels.show();
+}
 
 const char key_map[5][7] = {
   {'-', '-', '1', '2', '3', '4', '5'},
@@ -19,19 +46,26 @@ const uint8_t LEFT_MATRIX_COLS = 5;
 
 uint8_t left_matrix[LEFT_MATRIX_ROWS];
 
+static unsigned long last_heard_from_slave = 0;
+
 void setup() {
+  pixels.begin();
+  set_led_color(LED_YELLOW);
+
   Serial.begin(9600);
-  
+
   msg_ctrl_init();
   key_matrix_init(left_matrix, LEFT_MATRIX_ROWS);
 
   Serial.println("Hub initialized. Setting up SPI...");
-  
+
   comm_spi_set_master();
   comm_spi_add_slave(SLAVE_PIN);
 
   delay(5000);
   Keyboard.begin();
+  set_led_color(LED_GREEN);
+  last_heard_from_slave = millis();
 }
 
 void loop() {
@@ -43,20 +77,31 @@ void loop() {
   for (uint8_t i = 0; i < 32; i++) {
     msg_ctrl_tick();
     resp = msg_ctrl_consume_response();
+
     if (resp != NULL) {
       break;
     }
+
     delayMicroseconds(30);
   }
 
   comm_spi_end_transaction(SLAVE_PIN);
 
   if (resp == NULL) {
+    msg_t *rx_msg = queue_get_last(&msg_ctrl.rx);
+    if (rx_msg->_cursor > 0) {
+      msg_reset(rx_msg);
+    }
+    if (millis() - last_heard_from_slave > 2000) {
+      set_led_color(LED_RED);
+    }
     if (is_alive) {
       Serial.println("Error: Slave disconnected!");
       is_alive = false;
     }
   } else {
+    last_heard_from_slave = millis();
+    set_led_color(LED_GREEN);
     if (!is_alive) {
       Serial.println("Slave on pin 9 is ALIVE!");
       is_alive = true;
