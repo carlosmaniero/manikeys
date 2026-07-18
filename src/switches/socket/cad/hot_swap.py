@@ -144,7 +144,7 @@ class SocketAdapter2CAD(ManifoldObject):
 
     def center_hole(self) -> Manifold:
         return self.countersink(
-            self.hot_swap_parameters.center_hole_radius + 1,
+            self.hot_swap_parameters.center_hole_radius + 0.5,
             self.hot_swap_parameters.center_hole_radius,
             self.hot_swap_parameters.body_thickness,
         )
@@ -159,7 +159,7 @@ class SocketAdapter2CAD(ManifoldObject):
 
     @property
     def pin_hole_diameter(self) -> float:
-        return 1.5
+        return 1.2
 
     @property
     def soldering_placement(self) -> Manifold:
@@ -196,12 +196,18 @@ class SocketAdapter2CAD(ManifoldObject):
                     self.right_pin_hole[1] + 2,
                 ]
             )
+            + self.create_wire_hole(
+                [
+                    self.left_pin_hole[0],
+                    self.left_pin_hole[1],
+                ]
+            )
         )
 
     def create_wire_hole(self, point: list[float]) -> Manifold:
         cylinder = Manifold.cylinder(
             self.hot_swap_parameters.body_thickness,
-            self.pin_hole_diameter / 2,
+            self.pin_hole_diameter / 3,
             circular_segments=64,
         )
 

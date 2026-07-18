@@ -45,12 +45,15 @@ build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_p
 build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj11/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl
 build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl
 build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py build/switches/socket/mount/cad/cavity.stl
+build/switches/cad/switch_hole_decorator.stl: src/switches/cad/switch_hole_decorator.py build/switches/cad/switch_hole.stl
 build/switches/cad/switch_hole_decorator_grid.stl: src/switches/cad/switch_hole_decorator_grid.py build/switches/cad/switch_hole_decorator.stl
-build/switches/cad/switch_hole_decorator_shell_grid.stl: src/switches/cad/switch_hole_decorator_shell_grid.py build/switches/cad/switch_hole_decorator.stl
+build/switches/cad/switch_hole_decorator_shell.stl: src/switches/cad/switch_hole_decorator_shell.py build/switches/socket/cad/hot_swap_placement_mask.stl build/switches/cad/switch_hole.stl
+build/switches/cad/switch_hole_decorator_shell_grid.stl: src/switches/cad/switch_hole_decorator_shell_grid.py build/switches/cad/switch_hole_decorator_shell.stl
 build/switches/cad/switch_hole_grid.stl: src/switches/cad/switch_hole_grid.py build/switches/cad/switch_hole.stl
 build/switches/cad/switch_decorator_thumb_grid.stl: src/switches/cad/switch_decorator_thumb_grid.py build/switches/cad/switch_hole_decorator.stl
 build/switches/cad/switch_thumb_hole.stl: src/switches/cad/switch_thumb_hole.py build/switches/cad/switch_hole.stl
 build/switches/socket/cad/hot_swap_grid.stl: src/switches/socket/cad/hot_swap_grid.py build/switches/socket/cad/hot_swap.stl
+build/switches/socket/cad/hot_swap_placement_mask.stl: src/switches/socket/cad/hot_swap_placement_mask.py
 build/components/oled_096/cad/placement.stl: src/components/oled_096/cad/placement.py build/components/oled_096/cad/oled.stl
 build/components/oled_096/cad/masks/body.stl: src/components/oled_096/cad/masks/body.py
 build/components/oled_096/cad/masks/shell.stl: src/components/oled_096/cad/masks/shell.py
