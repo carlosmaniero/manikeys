@@ -53,11 +53,6 @@ class BasePlateCAD(ManifoldObject):
             center=False,
         ).translate(self.model.coords)
 
-        cavity = manifold3d.Manifold.cube(
-            self.model.cavity_dimensions,
-            center=False,
-        ).translate(self.model.cavity_coords)
-
         pro_case = (
             load_stl_to_manifold(
                 "build/components/arduino_pro_micro_case/cad/housing.stl"
@@ -75,7 +70,6 @@ class BasePlateCAD(ManifoldObject):
 
         return (
             bottom
-            - cavity
             - self.screw_holes()
             - self.screw_head_holes()
             + pro_case

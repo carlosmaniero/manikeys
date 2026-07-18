@@ -35,6 +35,7 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             "build/components/light_indicator/cad/panel_frame.stl",
             "build/components/oled_096/cad/masks/body.stl",
             "build/components/oled_096/cad/placement.stl",
+            "build/assembly/base_plate/cad/masks/base_plate.stl",
         ]
 
         manifolds = load_many_stl_to_manifold(paths)
@@ -58,9 +59,11 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             light_indicator_panel_frame,
             oled_placement_body_mask,
             oled_placement,
+            base_plate_mask,
         ) = manifolds
 
         body = body - body_cavity_sections
+        body = body - base_plate_mask
         body = body + switch_grid
         body = body - switch_hole_grid
         body = body + switch_thumb
