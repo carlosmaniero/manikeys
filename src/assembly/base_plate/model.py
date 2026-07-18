@@ -22,16 +22,24 @@ class BasePlateModel:
     @property
     def dimensions(self) -> list[float]:
         return [
-            self.screw_placement_model.body.width,
-            self.screw_placement_model.body.depth,
+            self.screw_placement_model.body.width
+            - self.wall_parameters.thickness * 2
+            - self.parameters.clearance * 2,
+            self.screw_placement_model.body.depth
+            - self.wall_parameters.thickness * 2
+            - self.parameters.clearance * 2,
             self.screw_placement_model.bottom_thickness,
         ]
 
     @property
     def coords(self) -> list[float]:
         return [
-            self.screw_placement_model.body.start_x(),
-            self.screw_placement_model.body.start_y(),
+            self.screw_placement_model.body.start_x()
+            + self.wall_parameters.thickness
+            + self.parameters.clearance,
+            self.screw_placement_model.body.start_y()
+            + self.wall_parameters.thickness
+            + self.parameters.clearance,
             -(
                 self.body_parameters.height
                 + self.screw_placement_model.bottom_thickness
@@ -126,76 +134,3 @@ class BasePlateModel:
         y = self.cavity_coords[1] + gap + nano_y_size / 2
         z = self.cavity_coords[2] + self.nano_model.dimensions[2] / 2
         return [x, y, z]
-
-    @property
-    def cable_path_radius(self) -> float:
-        return (
-            self.body_parameters.bottom_thickness
-            - self.wall_parameters.thickness
-        )
-
-    @property
-    def cable_path_inner_radius(self) -> float:
-        return self.cable_path_radius - self.wall_parameters.thickness
-
-    @property
-    def cable_path_height(self) -> float:
-        return self.wall_parameters.thickness
-
-    @property
-    def cable_path_mask_dimensions(self) -> list[float]:
-        return [
-            self.cable_path_radius,
-            self.cable_path_radius * 2,
-            self.cable_path_height,
-        ]
-
-    @property
-    def cable_path_mask_coords(self) -> list[float]:
-        return [-self.cable_path_radius / 2, 0, 0]
-
-    @property
-    def cable_path_grid_coords(self) -> list[list[float]]:
-        # Calculate Y layout
-        count_y = int(self.cavity_dimensions[1] // (self.cable_path_radius * 2))
-        if count_y == 0:
-            return []
-
-        available_y = self.cavity_dimensions[1] - (
-            count_y * self.cable_path_radius * 2
-        )
-        gap_y = available_y / (count_y + 1)
-
-        y_starts = []
-        for i in range(count_y):
-            y_starts.append(
-                self.cavity_coords[1]
-                + gap_y
-                + self.cable_path_radius
-                + i * (gap_y + self.cable_path_radius * 2)
-            )
-
-        # Calculate X layout
-        pro_min_x = self.pro_case_coords[0] - self.pro_model.dimensions[1] / 2
-        nano_min_x = (
-            self.nano_case_coords[0] - self.nano_model.dimensions[1] / 2
-        )
-        cases_min_x = min(pro_min_x, nano_min_x)
-
-        available_x = cases_min_x - self.cavity_coords[0]
-        rows = self.parameters.cable_path_rows
-
-        gap_x = (available_x - rows * self.cable_path_height) / (rows + 1)
-
-        coords = []
-        for i in range(rows):
-            x = (
-                self.cavity_coords[0]
-                + gap_x
-                + self.cable_path_height / 2
-                + i * (gap_x + self.cable_path_height)
-            )
-            for y in y_starts:
-                coords.append([x, y, self.cavity_coords[2]])
-
-        return coords
