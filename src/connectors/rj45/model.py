@@ -213,5 +213,8 @@ class RJ45PlacementModel:
         return [
             self.body_model.end_x() - self.wall_parameters.fillet - self.max_x,
             self.body_model.end_y() - self.max_y,
-            self.body_model.bottom_z + self.rj45_model.body[2] / 2,
+            self.body_model.bottom_z
+            + self.body_model.connectors_bottom_offset
+            - self.rj45_model.thickness / 2
+            + self.rj45_model.rj45.height / 2,
         ]

@@ -32,18 +32,16 @@ class MountShellCAD(ManifoldObject):
             [
                 self.model.width * 3,
                 divider_size,
-                self.model.sphere.highest + self.body_parameters.height,
+                self.model.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.model.start_x() - self.model.width,
                 divider_y,
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
-
-        height = self.model.sphere.highest + self.body_parameters.height
 
         side_divider_size = self.body_parameters.clearance
 
@@ -51,14 +49,14 @@ class MountShellCAD(ManifoldObject):
             [
                 side_divider_size,
                 self.body.divider_y - self.body.start_y(),
-                height * 2,
+                self.body.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.body.hand_support_end_x + self.wall_parameters.thickness,
                 self.body.start_y(),
-                -self.body_parameters.height,
+                self.body.bottom_z,
             ]
         )
 

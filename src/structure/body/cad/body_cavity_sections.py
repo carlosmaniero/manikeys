@@ -28,18 +28,16 @@ class BodyInnerSections(ManifoldObject):
             [
                 self.model.width,
                 divider_size,
-                self.model.sphere.highest + self.body_parameters.height,
+                self.model.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.model.start_x(),
                 divider_y,
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
-
-        height = self.model.sphere.highest + self.body_parameters.height
 
         side_mask = manifold3d.Manifold.cube(
             [
@@ -47,14 +45,14 @@ class BodyInnerSections(ManifoldObject):
                 - self.body.start_x()
                 + self.wall_parameters.thickness,
                 self.body.divider_y - self.body.start_y(),
-                height * 2,
+                self.body.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.body.start_x(),
                 self.body.start_y(),
-                -self.body_parameters.height,
+                self.body.bottom_z,
             ]
         )
 

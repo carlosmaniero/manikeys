@@ -54,7 +54,10 @@ class MountCavityCAD(VistaObject):
 
         top_z = self.model.z(x, y)
         return create_full_surface(
-            x, y, top_z, -self.model.body_parameters.height
+            x,
+            y,
+            top_z,
+            self.model.bottom_z,
         )
 
 

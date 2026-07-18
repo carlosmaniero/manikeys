@@ -26,20 +26,18 @@ class MountCavitySectionsCAD(ManifoldObject):
         )
         divider_y = self.model.divider_y - divider_size / 2
 
-        height = self.model.sphere.highest + self.body_parameters.height
-
         divider = manifold3d.Manifold.cube(
             [
                 self.model.width,
                 divider_size,
-                height,
+                self.model.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.model.start_x(),
                 divider_y,
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 
@@ -47,14 +45,14 @@ class MountCavitySectionsCAD(ManifoldObject):
             [
                 self.model.hand_support_end_x - self.model.hand_support_start_x,
                 divider_y - self.model.start_y(),
-                height,
+                self.model.height * 2,
             ],
             center=False,
         ).translate(
             [
                 self.model.start_x(),
                 self.model.start_y(),
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 

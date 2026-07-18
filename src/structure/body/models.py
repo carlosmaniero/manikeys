@@ -105,7 +105,10 @@ class BodyLowBottom:
     hand_support_parameters: HandSupportParameters
 
     def z(self, x: np.ndarray, _y: np.ndarray) -> np.ndarray:
-        return np.full_like(x, -self.body_parameters.height)
+        return np.full_like(
+            x,
+            self.body_parameters.bottom_z,
+        )
 
 
 @singleton
@@ -266,7 +269,11 @@ class BodyModel:
 
     @property
     def bottom_z(self) -> float:
-        return -self.body_parameters.height
+        return self.body_parameters.bottom_z
+
+    @property
+    def connectors_bottom_offset(self) -> float:
+        return self.body_parameters.connectors_bottom_offset
 
     @property
     def height(self) -> float:

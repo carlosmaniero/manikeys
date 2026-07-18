@@ -36,7 +36,7 @@ class ScrewPlacementModel:
 
     @property
     def z(self) -> float:
-        return -self.body_parameters.height
+        return self.bottom_z
 
     @property
     def mask_z(self) -> float:
@@ -88,7 +88,7 @@ class ScrewPlacementModel:
 
     @property
     def bottom_z(self) -> float:
-        return self.z - self.bottom_thickness
+        return self.body.bottom_z
 
     @property
     def screw_head_z(self) -> float:
