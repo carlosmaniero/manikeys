@@ -24,12 +24,13 @@ class BodyShellMask(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2 + self.wall_parameters.thickness
+        r_comp = self.indicator_model.body_depth / 2
+        r_mask = r_comp + self.wall_parameters.thickness / 2
 
         corner_cyl = manifold3d.Manifold.cylinder(
             height=self.height,
-            radius_low=r,
-            radius_high=r,
+            radius_low=r_mask,
+            radius_high=r_mask,
             center=True,
             circular_segments=32,
         )
@@ -37,29 +38,29 @@ class BodyShellMask(ManifoldObject):
         corners = (
             corner_cyl.translate(
                 [
-                    self.indicator_model.left_edge + r,
-                    -self.indicator_model.body_depth / 2 + r,
+                    self.indicator_model.left_edge + r_comp,
+                    -self.indicator_model.body_depth / 2 + r_comp,
                     0,
                 ]
             )
             + corner_cyl.translate(
                 [
-                    self.indicator_model.right_edge - r,
-                    -self.indicator_model.body_depth / 2 + r,
+                    self.indicator_model.right_edge - r_comp,
+                    -self.indicator_model.body_depth / 2 + r_comp,
                     0,
                 ]
             )
             + corner_cyl.translate(
                 [
-                    self.indicator_model.left_edge + r,
-                    self.indicator_model.body_depth / 2 - r,
+                    self.indicator_model.left_edge + r_comp,
+                    self.indicator_model.body_depth / 2 - r_comp,
                     0,
                 ]
             )
             + corner_cyl.translate(
                 [
-                    self.indicator_model.right_edge - r,
-                    self.indicator_model.body_depth / 2 - r,
+                    self.indicator_model.right_edge - r_comp,
+                    self.indicator_model.body_depth / 2 - r_comp,
                     0,
                 ]
             )
