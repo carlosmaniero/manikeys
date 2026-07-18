@@ -3,8 +3,9 @@ import sys
 from dataclasses import dataclass
 import manifold3d
 from injector import inject, singleton
-from models.parameters import SwitchesParameters
+from switches.model import SwitchHoleDecoratorShellModel
 from globals.wall.parameters import WallParameters
+from core.manifold_ext.helpers import rounded_box, half_rounded
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 from core.loader import load_stl_to_manifold
@@ -14,141 +15,80 @@ from core.loader import load_stl_to_manifold
 @inject
 @dataclass
 class SwitchHoleDecoratorShellCAD(ManifoldObject):
-    switches_parameters: SwitchesParameters
+    model: SwitchHoleDecoratorShellModel
     wall_parameters: WallParameters
 
     @property
-    def cable_radius(self) -> float:
-        return 1
+    def y_cable_path(self) -> manifold3d.Manifold:
+        body = half_rounded(
+            self.model.y_cable_path_cube_size,
+        ).rotate([180, 0, 0])
+        return body.translate(self.model.y_cable_path_translation)
 
     @property
-    def cable_path_wall_thickness(self) -> float:
-        return 1
-
-    @property
-    def col_cable_path_wall_thickness(self) -> float:
-        return 3
-
-    @property
-    def col_cable_path_wall(self) -> manifold3d.Manifold:
-        radius = self.cable_radius + self.col_cable_path_wall_thickness
-        height = self.cable_radius + self.col_cable_path_wall_thickness
-        outer = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            height=height,
-            center=True,
-            circular_segments=32,
-        ) + manifold3d.Manifold.cube(
-            [radius * 2, radius, height],
-            center=True,
-        ).translate([0, radius / 2, 0])
-        return outer.rotate([90, 0, 90]).translate(
-            [
-                -self.switches_parameters.size / 2
-                - self.switches_parameters.border,
-                self.switches_parameters.size / 4
-                - self.wall_parameters.thickness,
-                -self.switches_parameters.thickness
-                - (self.cable_radius + self.cable_path_wall_thickness) * 2,
-            ]
+    def x_cable_path(self) -> manifold3d.Manifold:
+        body = (
+            half_rounded(
+                self.model.x_cable_path_cube_size,
+            )
+            .rotate([0, 0, 90])
+            .rotate([180, 0, 0])
         )
+        return body.translate(self.model.x_cable_path_translation)
 
     @property
-    def col_cable_path_inner(self) -> manifold3d.Manifold:
-        height = self.cable_radius + self.col_cable_path_wall_thickness
-        inner = manifold3d.Manifold.cylinder(
-            radius_low=self.cable_radius,
-            height=height,
+    def cable_hole(self) -> manifold3d.Manifold:
+        hole = manifold3d.Manifold.cylinder(
+            self.model.cable_hole_length,
+            self.model.cable_hole_radius,
             center=True,
             circular_segments=32,
         )
-        return inner.rotate([90, 0, 90]).translate(
-            [
-                -self.switches_parameters.size / 2
-                - self.switches_parameters.border,
-                self.switches_parameters.size / 4
-                + 2
-                - self.wall_parameters.thickness,
-                -self.switches_parameters.thickness
-                - (self.cable_radius + self.cable_path_wall_thickness) * 2
-                - 1,
-            ]
+        return hole.rotate([90, 0, 0]).translate(
+            self.model.y_cable_path_translation
         )
 
     @property
-    def cable_path_wall(self) -> manifold3d.Manifold:
-        radius = self.cable_radius + self.cable_path_wall_thickness
-        height = self.switches_parameters.size * 0.8
-        outer = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            height=height,
+    def x_cable_hole(self) -> manifold3d.Manifold:
+        hole = manifold3d.Manifold.cylinder(
+            self.model.x_cable_hole_length,
+            self.model.cable_hole_radius,
             center=True,
             circular_segments=32,
-        ) + manifold3d.Manifold.cube(
-            [radius * 2, radius, height],
-            center=True,
-        ).translate([0, radius / 2, 0])
-        return outer.rotate([90, 0, 0]).translate(
-            [
-                -self.switches_parameters.size / 2
-                - self.switches_parameters.border,
-                -self.switches_parameters.size / 4
-                + self.wall_parameters.thickness,
-                -self.switches_parameters.thickness,
-            ]
+        )
+        return hole.rotate([0, 90, 0]).translate(
+            self.model.x_cable_hole_translation
         )
 
     @property
-    def cable_path_inner(self) -> manifold3d.Manifold:
-        height = self.switches_parameters.size * 0.8
-        inner = manifold3d.Manifold.cylinder(
-            radius_low=self.cable_radius,
-            height=height,
-            center=True,
-            circular_segments=32,
+    def body(self) -> manifold3d.Manifold:
+        return rounded_box(
+            self.model.cube_size, self.wall_parameters.thickness
+        ).translate(self.model.translation)
+
+    @property
+    def hot_swap_placement_mask(self) -> manifold3d.Manifold:
+        return (
+            load_stl_to_manifold(
+                "build/switches/socket/cad/hot_swap_placement_mask.stl"
+            )
+            .rotate([180, 0, 180])
+            .translate(self.model.mask_translation)
         )
-        return inner.rotate([90, 0, 0]).translate(
-            [
-                -self.switches_parameters.size / 2
-                - self.switches_parameters.border,
-                -self.switches_parameters.size / 4
-                + self.wall_parameters.thickness,
-                -self.switches_parameters.thickness,
-            ]
-        )
+
+    @property
+    def switch_hole(self) -> manifold3d.Manifold:
+        return load_stl_to_manifold("build/switches/cad/switch_hole.stl")
 
     def assemble(self) -> manifold3d.Manifold:
-        parameters = self.switches_parameters
-
-        width = parameters.size + parameters.border + parameters.border_shell
-        depth = parameters.size + parameters.border * 2
-        height = parameters.thickness
-
-        obj = manifold3d.Manifold.cube([width, depth, height], center=True)
-
-        obj = obj.translate(
-            [0, 0, -(parameters.thickness / 2 - parameters.outer.thickness)]
+        return (
+            self.body
+            - self.hot_swap_placement_mask
+            - self.switch_hole
+            + manifold3d.Manifold.hull(self.y_cable_path + self.x_cable_path)
+            - self.cable_hole
+            - self.x_cable_hole
         )
-
-        mask = load_stl_to_manifold(
-            "build/switches/socket/cad/hot_swap_placement_mask.stl"
-        )
-
-        mask = mask.rotate([180, 0, 180]).translate(
-            [0, 0, parameters.outer.thickness]
-        )
-
-        switch_hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
-        walls = obj + manifold3d.Manifold.hull(
-            self.cable_path_wall + self.col_cable_path_wall
-        )
-        masks = (
-            switch_hole
-            + mask
-            + self.cable_path_inner
-            + self.col_cable_path_inner
-        )
-        return walls - masks
 
 
 if __name__ == "__main__":

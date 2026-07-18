@@ -1,6 +1,7 @@
 from __future__ import annotations
 from globals.wall.parameters import WallParameters
 from switches.socket.parameters import HotSwapParameters
+from models.parameters import SwitchesParameters
 import sys
 from manifold3d import Manifold
 from dataclasses import dataclass
@@ -17,12 +18,13 @@ class HotSwapPlacementMaskCAD(ManifoldObject):
     wall_parameters: WallParameters
     hot_swap_parameters: HotSwapParameters
     led: LedParameters
+    switches_parameters: SwitchesParameters
 
     def body(self) -> Manifold:
         clearance = self.hot_swap_parameters.mask_clearance
         cube = Manifold.cube(
             [
-                self.hot_swap_parameters.cube_size + clearance,
+                self.switches_parameters.size,
                 self.hot_swap_parameters.cube_size
                 - self.wall_parameters.thickness
                 + clearance,
@@ -44,8 +46,8 @@ class HotSwapPlacementMaskCAD(ManifoldObject):
         return self.centralize_led_object(
             Manifold.cube(
                 [
-                    self.hot_swap_parameters.cube_size + clearance,
-                    self.hot_swap_parameters.cube_size + clearance,
+                    self.switches_parameters.size,
+                    self.switches_parameters.size,
                     h,
                 ],
                 center=True,
@@ -74,8 +76,8 @@ class HotSwapPlacementMaskCAD(ManifoldObject):
         clearance = self.hot_swap_parameters.mask_clearance
         body_holder = Manifold.cube(
             [
-                self.hot_swap_parameters.cube_size + clearance,
-                self.hot_swap_parameters.cube_size + clearance,
+                self.switches_parameters.size,
+                self.switches_parameters.size,
                 self.hot_swap_parameters.switch_socket_height + clearance,
             ],
             center=True,
@@ -90,7 +92,7 @@ class HotSwapPlacementMaskCAD(ManifoldObject):
             Manifold.cube(
                 [
                     self.hot_swap_parameters.switch_socket_width + clearance,
-                    self.hot_swap_parameters.cube_size + clearance,
+                    self.switches_parameters.size,
                     self.hot_swap_parameters.switch_socket_height + clearance,
                 ],
                 center=True,

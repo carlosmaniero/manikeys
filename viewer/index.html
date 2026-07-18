@@ -168,6 +168,10 @@
             box-sizing: border-box;
             display: inline-block;
         }
+        .ref-row input[type="checkbox"]:disabled {
+            cursor: not-allowed;
+            border-color: #555;
+        }
 
         label { display: block; margin-bottom: 0; font-size: 1.1rem; color: #0f0; }
 
@@ -372,6 +376,12 @@
                         <label class="checkbox-label">
                             <input type="checkbox" id="invertTransparency"> Invert Transparency
                         </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showGrid"> Show Grid
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAxis"> Show Axis
+                        </label>
                     </div>
                     <div class="controls-stack" style="margin-top: 0; gap: 4px;">
                         <label for="refOpacity" style="display: flex; justify-content: space-between; align-items: center;">
@@ -488,6 +498,8 @@
         const invertTransparency = document.getElementById('invertTransparency');
         const refOpacity = document.getElementById('refOpacity');
         const refOpacityVal = document.getElementById('refOpacityVal');
+        const showGrid = document.getElementById('showGrid');
+        const showAxis = document.getElementById('showAxis');
         const fitCameraBtn = document.getElementById('fitCameraBtn');
         const perspBtn = document.getElementById('perspBtn');
         const orthoBtn = document.getElementById('orthoBtn');
@@ -601,6 +613,14 @@
                 localStorage.setItem('refOpacity', refOpacity.value);
                 updateMaterials();
             });
+            showGrid.addEventListener('change', () => {
+                localStorage.setItem('showGrid', showGrid.checked);
+                if (grid) grid.visible = showGrid.checked;
+            });
+            showAxis.addEventListener('change', () => {
+                localStorage.setItem('showAxis', showAxis.checked);
+                if (axesHelper) axesHelper.visible = showAxis.checked;
+            });
             fitCameraBtn.addEventListener('click', () => {
                 fitCamera();
             });
@@ -612,6 +632,8 @@
             watchBuild.checked = localStorage.getItem('watchBuild') === 'true';
             gridAtBottom.checked = localStorage.getItem('gridAtBottom') !== 'false'; // Default to true
             invertTransparency.checked = localStorage.getItem('invertTransparency') === 'true';
+            showGrid.checked = localStorage.getItem('showGrid') !== 'false';
+            showAxis.checked = localStorage.getItem('showAxis') !== 'false';
             const savedOpacity = localStorage.getItem('refOpacity');
             if (savedOpacity !== null) {
                 refOpacity.value = savedOpacity;
@@ -648,9 +670,11 @@
             grid.rotation.x = Math.PI / 2;
             grid.material.transparent = true;
             grid.material.opacity = 0.5;
+            grid.visible = showGrid.checked;
             scene.add(grid);
 
             axesHelper = new THREE.AxesHelper(100);
+            axesHelper.visible = showAxis.checked;
             scene.add(axesHelper);
 
             previewLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 }));
@@ -1692,7 +1716,7 @@
                 visibleCheckbox.disabled = ref.value === '';
                 visibleCheckbox.style.borderColor = ref.value !== '' ? colorHex : '#555';
                 visibleCheckbox.style.accentColor = ref.value !== '' ? colorHex : '#555';
-                visibleCheckbox.style.opacity = ref.value !== '' ? '1' : '0';
+                visibleCheckbox.style.opacity = ref.value !== '' ? '1' : '0.4';
                 visibleCheckbox.title = 'Toggle Visibility';
                 visibleCheckbox.onclick = (e) => {
                     ref.visible = e.target.checked;

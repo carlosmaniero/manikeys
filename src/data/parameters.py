@@ -3,7 +3,6 @@ from globals.wall.parameters import WallParameters
 from injector import Module, provider, singleton
 from models.parameters import (
     SwitchesParameters,
-    CapsOuterParameters,
     HandSupportParameters,
 )
 from switches.socket.parameters import HotSwapParameters
@@ -20,14 +19,7 @@ class ParametersModule(Module):
     @singleton
     @provider
     def provide_switches_parameters(self) -> SwitchesParameters:
-        return SwitchesParameters(
-            size=14,
-            thickness=5,
-            border=2,
-            border_shell=3,
-            gap=5,
-            outer=CapsOuterParameters(thickness=1.5),
-        )
+        return SwitchesParameters()
 
     @singleton
     @provider

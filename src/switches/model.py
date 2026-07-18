@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import List, Protocol
 from models.projection import SphereProjection
 from dataclasses import field
+from injector import inject, singleton
+from globals.wall.parameters import WallParameters
 
 
 @dataclass
@@ -171,4 +173,104 @@ class Layout:
             bottom_left,
             bottom_right,
             top_right,
+        ]
+
+
+@singleton
+@inject
+@dataclass
+class SwitchHoleDecoratorShellModel:
+    switches_parameters: SwitchesParameters
+    wall_parameters: WallParameters
+
+    @property
+    def width(self) -> float:
+        return (
+            self.switches_parameters.size
+            + self.switches_parameters.border
+            + self.switches_parameters.border_shell
+        )
+
+    @property
+    def x_boder_size(self) -> float:
+        return (
+            self.switches_parameters.border
+            + self.switches_parameters.border_shell
+        ) / 2
+
+    @property
+    def depth(self) -> float:
+        return (
+            self.switches_parameters.size + self.switches_parameters.border * 2
+        )
+
+    @property
+    def height(self) -> float:
+        return self.switches_parameters.thickness
+
+    @property
+    def cube_size(self) -> list[float]:
+        return [self.width, self.depth, self.height]
+
+    @property
+    def translation(self) -> list[float]:
+        return [
+            0.0,
+            0.0,
+            -(
+                self.switches_parameters.thickness / 2
+                - self.switches_parameters.outer.thickness
+            ),
+        ]
+
+    @property
+    def mask_translation(self) -> list[float]:
+        return [0.0, 0.0, self.switches_parameters.outer.thickness]
+
+    @property
+    def y_cable_path_cube_size(self) -> list[float]:
+        return [
+            self.x_boder_size,
+            self.cube_size[1] - self.x_boder_size * 2,
+            self.x_boder_size,
+        ]
+
+    @property
+    def y_cable_path_translation(self) -> list[float]:
+        return [
+            self.cube_size[0] / 2 - self.x_boder_size / 2,
+            0.0,
+            self.translation[2] - self.cube_size[2] / 2 - self.x_boder_size / 2,
+        ]
+
+    @property
+    def cable_hole_radius(self) -> float:
+        return self.switches_parameters.cable_radius
+
+    @property
+    def cable_hole_length(self) -> float:
+        return self.y_cable_path_cube_size[1]
+
+    @property
+    def x_cable_path_cube_size(self) -> list[float]:
+        return [self.x_boder_size, self.x_boder_size, self.x_boder_size * 2]
+
+    @property
+    def x_cable_path_translation(self) -> list[float]:
+        return [
+            self.y_cable_path_translation[0],
+            self.y_cable_path_cube_size[1] / 2 - self.x_boder_size / 2,
+            self.y_cable_path_translation[2] - self.x_boder_size * 1.5,
+        ]
+
+    @property
+    def x_cable_hole_length(self) -> float:
+        return self.x_boder_size
+
+    @property
+    def x_cable_hole_translation(self) -> list[float]:
+        return [
+            self.x_cable_path_translation[0],
+            self.x_cable_path_translation[1],
+            self.x_cable_path_translation[2] - self.x_boder_size / 2,
         ]

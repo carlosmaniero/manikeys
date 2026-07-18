@@ -1,19 +1,23 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class CapsOuterParameters:
-    thickness: float
+    thickness: float = 1.5
 
 
 @dataclass
 class SwitchesParameters:
-    size: float
-    thickness: float
-    border: float
-    border_shell: float
-    outer: CapsOuterParameters
-    gap: float
+    size: float = 14.0
+    thickness: float = 5.0
+    border: float = 2.0
+    border_shell: float = 3.0
+    outer: CapsOuterParameters = field(default_factory=CapsOuterParameters)
+    gap: float = 5.0
+    cable_radius: float = 0.5
+
+    cable_path_wall_thickness: float = 0.25
+    col_cable_path_wall_thickness: float = 3.0
 
     @property
     def full_offset(self) -> float:
