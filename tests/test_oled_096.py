@@ -107,6 +107,7 @@ def test_oled_096_placement_position():
     mock_body_model.sphere.highest = 350.0
     mock_body_model.bottom_z = -10.0
     mock_body_model.hand_support_end_x = 100.0
+
     mock_body_model.divider_y = 200.0
 
     mock_switch_thumb = Mock()

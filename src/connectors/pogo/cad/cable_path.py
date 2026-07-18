@@ -88,7 +88,10 @@ class CablePath(ManifoldObject):
             [
                 self.model.end_x() - self.radius - thickness * 3,
                 self.model.divider_y,
-                self.body_model.bottom_z + thickness * 2,
+                self.body_model.bottom_z
+                + self.body_model.connectors_bottom_offset
+                + self.pogo_model.body_width / 2
+                + 0.2,
             ]
         )
 
