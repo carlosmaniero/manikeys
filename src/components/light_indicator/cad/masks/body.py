@@ -4,6 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from core.manifold_ext.helpers import rounded_box
 from components.light_indicator.model import LightIndicatorModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -22,48 +23,14 @@ class BodyMask(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2
-
-        corner_cyl = manifold3d.Manifold.cylinder(
-            height=self.height,
-            radius_low=r - 0.1,
-            radius_high=r - 0.1,
-            center=True,
-            circular_segments=32,
+        return rounded_box(
+            [
+                self.indicator_model.width - 0.2,
+                self.indicator_model.body_depth - 0.2,
+                self.height,
+            ],
+            self.indicator_model.body_depth / 2 - 0.1,
         )
-
-        corners = (
-            corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r,
-                    -self.indicator_model.body_depth / 2 + r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r,
-                    -self.indicator_model.body_depth / 2 + r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r,
-                    self.indicator_model.body_depth / 2 - r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r,
-                    self.indicator_model.body_depth / 2 - r,
-                    0,
-                ]
-            )
-        )
-
-        return manifold3d.Manifold.hull(corners)
 
     def assemble(self) -> manifold3d.Manifold:
         return self.body_hull.rotate(

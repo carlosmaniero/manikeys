@@ -4,6 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from core.manifold_ext.helpers import capsule
 from connectors.pogo.models import PogoPinModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -16,40 +17,26 @@ class PogoPinCAD(ManifoldObject):
     model: PogoPinModel
     body_model: BodyModel
 
-    def rounded_box(
-        self, length: float, width: float, height: float
-    ) -> manifold3d.Manifold:
-        radius = width / 2
-        cylinder = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            radius_high=radius,
-            height=height,
-            circular_segments=60,
-            center=True,
-        )
-        x_offset = (length / 2) - radius
-        if x_offset <= 0:
-            return cylinder
-
-        return manifold3d.Manifold.hull(
-            cylinder.translate([-x_offset, 0, 0])
-            + cylinder.translate([x_offset, 0, 0])
-        )
-
     @property
     def main_body(self) -> manifold3d.Manifold:
-        return self.rounded_box(
-            self.model.body_length,
-            self.model.body_width,
-            self.model.body_height,
+        return capsule(
+            [
+                self.model.body_length,
+                self.model.body_width,
+                self.model.body_height,
+            ],
+            circular_segments=60,
         )
 
     @property
     def flanges(self) -> manifold3d.Manifold:
-        return self.rounded_box(
-            self.model.flange_full_length,
-            self.model.body_width,
-            self.model.flange_thickness,
+        return capsule(
+            [
+                self.model.flange_full_length,
+                self.model.body_width,
+                self.model.flange_thickness,
+            ],
+            circular_segments=60,
         ).translate(
             [
                 0,

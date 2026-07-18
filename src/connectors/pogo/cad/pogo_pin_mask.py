@@ -4,6 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from core.manifold_ext.helpers import capsule
 from connectors.pogo.models import PogoPinModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -14,43 +15,29 @@ from core.manifold_ext.object import ManifoldObject
 class PogoPinMaskCAD(ManifoldObject):
     model: PogoPinModel
 
-    def rounded_box(
-        self, length: float, width: float, height: float
-    ) -> manifold3d.Manifold:
-        radius = width / 2
-        cylinder = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            radius_high=radius,
-            height=height,
-            circular_segments=60,
-            center=True,
-        )
-        x_offset = (length / 2) - radius
-        if x_offset <= 0:
-            return cylinder
-
-        return manifold3d.Manifold.hull(
-            cylinder.translate([-x_offset, 0, 0])
-            + cylinder.translate([x_offset, 0, 0])
-        )
-
     @property
     def body_mask(self) -> manifold3d.Manifold:
         # Main body with some error margin
         error = 0.2
-        return self.rounded_box(
-            self.model.body_length + error * 2,
-            self.model.body_width + error * 2,
-            self.model.body_height + error,
+        return capsule(
+            [
+                self.model.body_length + error * 2,
+                self.model.body_width + error * 2,
+                self.model.body_height + error,
+            ],
+            circular_segments=60,
         ).translate([0, 0, error / 2])
 
     @property
     def flange_mask(self) -> manifold3d.Manifold:
         error = 0.2
-        return self.rounded_box(
-            self.model.flange_full_length + error * 2,
-            self.model.body_width + error * 2,
-            self.model.flange_thickness + error,
+        return capsule(
+            [
+                self.model.flange_full_length + error * 2,
+                self.model.body_width + error * 2,
+                self.model.flange_thickness + error,
+            ],
+            circular_segments=60,
         ).translate(
             [
                 0,

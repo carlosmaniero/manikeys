@@ -6,6 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from connectors.usbc.model import USBCModel
 from structure.body.models import BodyModel
+from core.manifold_ext.helpers import capsule
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -34,27 +35,20 @@ class USBCCAD(ManifoldObject):
         depth = self.model.connector_depth
         height = self.model.connector_height
         width = self.model.connector_width
-        radius = height / 2
 
-        # Cylinder axis along X (width)
-        cylinder = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            radius_high=radius,
-            height=depth,
-            center=True,
-            circular_segments=60,
-        ).rotate([90, 0, 0])
-
-        x_offset = (width / 2) - radius
-        left_cyl = cylinder.translate([-x_offset, 0, 0])
-        right_cyl = cylinder.translate([x_offset, 0, 0])
-
-        return manifold3d.Manifold.hull(left_cyl + right_cyl).translate(
-            [
-                0,
-                self.model.pcb_width / 2 - depth / 2 + 1.5,
-                -self.model.pcb_height / 2 - height / 2,
-            ]
+        return (
+            capsule(
+                [width, height, depth],
+                circular_segments=60,
+            )
+            .rotate([90, 0, 0])
+            .translate(
+                [
+                    0,
+                    self.model.pcb_width / 2 - depth / 2 + 1.5,
+                    -self.model.pcb_height / 2 - height / 2,
+                ]
+            )
         )
 
     @property

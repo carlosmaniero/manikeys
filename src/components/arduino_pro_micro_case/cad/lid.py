@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.manifold_ext.object import ManifoldObject
+from core.manifold_ext.helpers import rounded_box
 from components.arduino_pro_micro_case.model import ArduinoProMicroCaseModel
 
 
@@ -87,20 +88,9 @@ class ArduinoProMicroCaseLidCAD(ManifoldObject):
 
     @property
     def body(self) -> M:
-        r = self.model.body_fillet_radius
-        w, d, h = self.model.lid_dimensions
-
-        cyl = M.cylinder(h, r, center=True, circular_segments=32)
-
-        x_off = w / 2 - r
-        y_off = d / 2 - r
-
-        c1 = cyl.translate([x_off, y_off, 0])
-        c2 = cyl.translate([-x_off, y_off, 0])
-        c3 = cyl.translate([x_off, -y_off, 0])
-        c4 = cyl.translate([-x_off, -y_off, 0])
-
-        return (c1 + c2 + c3 + c4).hull().translate(self.model.lid_coords)
+        return rounded_box(
+            self.model.lid_dimensions, self.model.body_fillet_radius
+        ).translate(self.model.lid_coords)
 
     def assemble(self) -> M:
         return (

@@ -5,6 +5,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from core.manifold_ext.helpers import rounded_box
 from components.light_indicator.model import LightIndicatorModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -24,49 +25,15 @@ class BodyShellMask(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r_comp = self.indicator_model.body_depth / 2
-        r_mask = r_comp + self.wall_parameters.thickness / 2
-
-        corner_cyl = manifold3d.Manifold.cylinder(
-            height=self.height,
-            radius_low=r_mask,
-            radius_high=r_mask,
-            center=True,
-            circular_segments=32,
+        t = self.wall_parameters.thickness
+        return rounded_box(
+            [
+                self.indicator_model.width + t,
+                self.indicator_model.body_depth + t,
+                self.height,
+            ],
+            self.indicator_model.body_depth / 2 + t / 2,
         )
-
-        corners = (
-            corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r_comp,
-                    -self.indicator_model.body_depth / 2 + r_comp,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r_comp,
-                    -self.indicator_model.body_depth / 2 + r_comp,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r_comp,
-                    self.indicator_model.body_depth / 2 - r_comp,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r_comp,
-                    self.indicator_model.body_depth / 2 - r_comp,
-                    0,
-                ]
-            )
-        )
-
-        return manifold3d.Manifold.hull(corners)
 
     def assemble(self) -> manifold3d.Manifold:
         return self.body_hull.rotate(

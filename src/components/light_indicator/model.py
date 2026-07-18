@@ -103,16 +103,10 @@ class LightIndicatorModel:
         return -(self.right_screw_x)
 
     @property
-    def left_edge(self) -> float:
-        return (
-            self.left_screw_x - self.screw_hole_radius - self.margin_thickness
-        )
-
-    @property
-    def right_edge(self) -> float:
+    def width(self) -> float:
         return (
             self.right_screw_x + self.screw_hole_radius + self.margin_thickness
-        )
+        ) * 2
 
     @property
     def placement_rotation(self) -> list[float]:
@@ -123,7 +117,7 @@ class LightIndicatorModel:
         r = self.body_depth / 2
         height = self.margin_thickness * 2
 
-        t1_x = (self.left_edge) / 2 - r * 2
+        t1_x = (-self.width / 2) / 2 - r * 2
 
         return [
             self.body_model.start_fixed_x + 12,

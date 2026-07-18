@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from connectors.usbc.model import USBCModel
+from core.manifold_ext.helpers import capsule
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -27,29 +28,23 @@ class USBCConnectorMaskCAD(ManifoldObject):
         height = self.model.connector_height + self.model.error_margin * 2
         width = self.model.connector_width + self.model.error_margin * 2
 
-        radius = height / 2
-
-        cylinder = manifold3d.Manifold.cylinder(
-            radius_low=radius,
-            radius_high=radius,
-            height=depth,
-            center=True,
-            circular_segments=60,
-        ).rotate([90, 0, 0])
-
-        x_offset = (width / 2) - radius
-        left_cyl = cylinder.translate([-x_offset, 0, 0])
-        right_cyl = cylinder.translate([x_offset, 0, 0])
-
-        return manifold3d.Manifold.hull(left_cyl + right_cyl).translate(
-            [
-                0,
-                self.model.pcb_width / 2
-                + depth / 2
-                - self.model.connector_depth
-                + 1.5,
-                -self.model.pcb_height / 2 - self.model.connector_height / 2,
-            ]
+        return (
+            capsule(
+                [width, height, depth],
+                circular_segments=60,
+            )
+            .rotate([90, 0, 0])
+            .translate(
+                [
+                    0,
+                    self.model.pcb_width / 2
+                    + depth / 2
+                    - self.model.connector_depth
+                    + 1.5,
+                    -self.model.pcb_height / 2
+                    - self.model.connector_height / 2,
+                ]
+            )
         )
 
 

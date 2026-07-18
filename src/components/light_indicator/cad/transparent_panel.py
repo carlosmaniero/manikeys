@@ -6,6 +6,7 @@ from injector import inject, singleton
 from core.context import injector
 from components.light_indicator.model import LightIndicatorModel
 from core.manifold_ext.object import ManifoldObject
+from core.manifold_ext.helpers import rounded_box
 
 
 @singleton
@@ -35,48 +36,14 @@ class TransparentPanelCad(ManifoldObject):
 
     @property
     def body_hull(self) -> manifold3d.Manifold:
-        r = self.indicator_model.body_depth / 2
-
-        corner_cyl = manifold3d.Manifold.cylinder(
-            height=self.indicator_model.transparent_panel_thickness,
-            radius_low=r,
-            radius_high=r,
-            center=True,
-            circular_segments=32,
+        return rounded_box(
+            [
+                self.indicator_model.width,
+                self.indicator_model.body_depth,
+                self.indicator_model.transparent_panel_thickness,
+            ],
+            self.indicator_model.body_depth / 2,
         )
-
-        corners = (
-            corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r,
-                    -self.indicator_model.body_depth / 2 + r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r,
-                    -self.indicator_model.body_depth / 2 + r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.left_edge + r,
-                    self.indicator_model.body_depth / 2 - r,
-                    0,
-                ]
-            )
-            + corner_cyl.translate(
-                [
-                    self.indicator_model.right_edge - r,
-                    self.indicator_model.body_depth / 2 - r,
-                    0,
-                ]
-            )
-        )
-
-        return manifold3d.Manifold.hull(corners)
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:
