@@ -7,6 +7,7 @@ from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 from core.loader import load_stl_to_manifold
 from switches.socket.mount.models import MountModel
+from models.switch_thumb import SwitchThumbModel
 
 
 @singleton
@@ -15,6 +16,7 @@ from switches.socket.mount.models import MountModel
 class SwitchHoleDecoratorShellGridCAD(ManifoldObject):
     layout: Layout
     mount_model: MountModel
+    switch_thumb_model: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
@@ -30,6 +32,9 @@ class SwitchHoleDecoratorShellGridCAD(ManifoldObject):
                     .rotate(key.rotation)
                     .translate(key.position)
                 )
+
+        for pos in self.switch_thumb_model.get_positions():
+            grid.append(decorator.translate([0, 0, offset]).translate(pos))
 
         return manifold3d.Manifold.batch_boolean(grid, manifold3d.OpType.Add)
 

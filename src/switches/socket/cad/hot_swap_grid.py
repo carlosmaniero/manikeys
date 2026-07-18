@@ -30,7 +30,7 @@ class HotSwapGridCAD(ManifoldObject):
         main_offset = [0, 0, decorator_top + self.mount_model.offset]
         hot_swap_main = hot_swap.translate(main_offset)
 
-        thumb_offset = [0, 0, decorator_top]
+        thumb_offset = [0, 0, decorator_top + self.mount_model.offset]
         hot_swap_thumb = hot_swap.translate(thumb_offset)
 
         for column in self.layout.grid:

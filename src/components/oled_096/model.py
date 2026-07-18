@@ -185,3 +185,24 @@ class Oled096PlacementModel:
     @property
     def shell_mask_coords(self) -> list[float]:
         return self.placement_position
+
+    @property
+    def cable_mask_size(self) -> list[float]:
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        return [
+            self.oled.parameters.cable_clearance[0],
+            self.oled.parameters.cable_clearance[1],
+            height_z,
+        ]
+
+    @property
+    def cable_mask_coords(self) -> list[float]:
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        rotated_y = -(
+            self.oled.pcb_pocket[1] / 2
+            + self.oled.parameters.cable_clearance[1] / 2
+        )
+        x = self.placement_position[0]
+        y = self.placement_position[1] + rotated_y
+        z = self.body_model.highest - height_z / 2
+        return [x, y, z]

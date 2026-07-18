@@ -43,7 +43,7 @@ build/switches/socket/mount/cad/screw_clearance.stl: src/switches/socket/mount/c
 build/switches/socket/mount/cad/screw_clearance_cavity.stl: src/switches/socket/mount/cad/screw_clearance_cavity.py
 build/structure/body/screws/cad/hole.stl: src/structure/body/screws/cad/hole.py
 build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_plate.py build/components/arduino_nano_case/cad/case.stl build/components/arduino_pro_micro_case/cad/housing.stl
-build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj45/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/socket/mount/cad/screw_clearance_cavity.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl
+build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj45/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/socket/mount/cad/screw_clearance_cavity.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl build/components/oled_096/cad/masks/shell_cavity.stl build/components/oled_096/cad/masks/cable.stl
 build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl
 build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py build/switches/socket/mount/cad/cavity.stl
 build/switches/cad/switch_hole_decorator.stl: src/switches/cad/switch_hole_decorator.py build/switches/cad/switch_hole.stl
@@ -58,6 +58,8 @@ build/switches/socket/cad/hot_swap_placement_mask.stl: src/switches/socket/cad/h
 build/components/oled_096/cad/placement.stl: src/components/oled_096/cad/placement.py build/components/oled_096/cad/oled.stl
 build/components/oled_096/cad/masks/body.stl: src/components/oled_096/cad/masks/body.py
 build/components/oled_096/cad/masks/shell.stl: src/components/oled_096/cad/masks/shell.py
+build/components/oled_096/cad/masks/shell_cavity.stl: src/components/oled_096/cad/masks/shell_cavity.py
+build/components/oled_096/cad/masks/cable.stl: src/components/oled_096/cad/masks/cable.py
 
 build/connectors/rj11/cad/adapter_trimmed.stl: src/connectors/rj11/cad/adapter_trimmed.py build/connectors/rj11/cad/adapter.stl build/structure/body/shape.stl
 build/connectors/rj11/cad/placement.stl: src/connectors/rj11/cad/placement.py build/structure/body/shape.stl

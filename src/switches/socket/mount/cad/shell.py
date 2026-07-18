@@ -73,6 +73,8 @@ class MountShellCAD(ManifoldObject):
             "build/connectors/pogo/cad/cable_path.stl",
             "build/components/light_indicator/cad/masks/body_shell.stl",
             "build/components/oled_096/cad/masks/shell.stl",
+            "build/components/oled_096/cad/masks/shell_cavity.stl",
+            "build/components/oled_096/cad/masks/cable.stl",
         ]
 
         (
@@ -88,15 +90,19 @@ class MountShellCAD(ManifoldObject):
             cable_path,
             light_indicator_body_shell,
             oled_shell,
+            oled_shell_cavity,
+            oled_cable,
         ) = load_many_stl_to_manifold(paths)
 
         screw_walls = screw_clearance_cavity ^ body
+        oled_walls = oled_shell_cavity ^ body
 
         return (
             body
             - cavity_sections
             - rj45_placement
             - usbc_placement
+            + oled_walls
             + screw_walls
             - screw_clearance
             + switch_hole_decorator_shell_grid
@@ -104,9 +110,10 @@ class MountShellCAD(ManifoldObject):
             - switch_thumb_hole
             - cable_path
             - light_indicator_body_shell
-            - oled_shell
             - side_divider
             - body_divider
+            - oled_shell
+            - oled_cable
         )
 
 
