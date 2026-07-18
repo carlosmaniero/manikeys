@@ -6,7 +6,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_stl_to_manifold
+from core.loader import load_many_stl_to_manifold
 from switches.socket.mount.models import MountCavityModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
@@ -60,37 +60,51 @@ class MountShellCAD(ManifoldObject):
             ]
         )
 
-        screw_walls = load_stl_to_manifold(
-            "build/switches/socket/mount/cad/screw_clearance_cavity.stl"
-        ) ^ load_stl_to_manifold("build/switches/socket/mount/cad/body.stl")
+        paths = [
+            "build/switches/socket/mount/cad/body.stl",
+            "build/switches/socket/mount/cad/screw_clearance_cavity.stl",
+            "build/switches/socket/mount/cad/cavity_sections.stl",
+            "build/connectors/rj45/cad/masks/placement.stl",
+            "build/connectors/usbc/cad/masks/placement.stl",
+            "build/switches/socket/mount/cad/screw_clearance.stl",
+            "build/switches/cad/switch_hole_decorator_shell_grid.stl",
+            "build/switches/cad/switch_hole_grid.stl",
+            "build/switches/cad/switch_thumb_hole.stl",
+            "build/connectors/pogo/cad/cable_path.stl",
+            "build/components/light_indicator/cad/masks/body_shell.stl",
+            "build/components/oled_096/cad/masks/shell.stl",
+        ]
+
+        (
+            body,
+            screw_clearance_cavity,
+            cavity_sections,
+            rj45_placement,
+            usbc_placement,
+            screw_clearance,
+            switch_hole_decorator_shell_grid,
+            switch_hole_grid,
+            switch_thumb_hole,
+            cable_path,
+            light_indicator_body_shell,
+            oled_shell,
+        ) = load_many_stl_to_manifold(paths)
+
+        screw_walls = screw_clearance_cavity ^ body
 
         return (
-            load_stl_to_manifold("build/switches/socket/mount/cad/body.stl")
-            - load_stl_to_manifold(
-                "build/switches/socket/mount/cad/cavity_sections.stl"
-            )
-            - load_stl_to_manifold(
-                "build/connectors/rj45/cad/masks/placement.stl"
-            )
-            - load_stl_to_manifold(
-                "build/connectors/usbc/cad/masks/placement.stl"
-            )
+            body
+            - cavity_sections
+            - rj45_placement
+            - usbc_placement
             + screw_walls
-            - load_stl_to_manifold(
-                "build/switches/socket/mount/cad/screw_clearance.stl"
-            )
-            + load_stl_to_manifold(
-                "build/switches/cad/switch_hole_decorator_shell_grid.stl"
-            )
-            - load_stl_to_manifold("build/switches/cad/switch_hole_grid.stl")
-            - load_stl_to_manifold("build/switches/cad/switch_thumb_hole.stl")
-            - load_stl_to_manifold("build/connectors/pogo/cad/cable_path.stl")
-            - load_stl_to_manifold(
-                "build/components/light_indicator/cad/masks/body_shell.stl"
-            )
-            - load_stl_to_manifold(
-                "build/components/oled_096/cad/masks/shell.stl"
-            )
+            - screw_clearance
+            + switch_hole_decorator_shell_grid
+            - switch_hole_grid
+            - switch_thumb_hole
+            - cable_path
+            - light_indicator_body_shell
+            - oled_shell
             - side_divider
             - body_divider
         )
