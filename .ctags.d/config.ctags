@@ -1,0 +1,6 @@
+--exclude=.venv
+--exclude=build
+--exclude=__pycache__
+--exclude=.git
+--exclude=.ruff_cache
+--exclude=manikeys.egg-info
