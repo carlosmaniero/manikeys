@@ -74,22 +74,22 @@ class BasePlateModel:
 
     @property
     def cavity_dimensions(self) -> list[float]:
-        cube_size = self.screw_placement_model.cube_size
+        standoff_size = self.screw_placement_model.standoff_size
         return [
-            self.dimensions[0] - cube_size * 2,
+            self.dimensions[0] - standoff_size * 2,
             self.screw_placement_model.body.end_y()
             - self.screw_placement_model.body.divider_y
-            - cube_size * 2,
+            - standoff_size * 2,
             self.screw_placement_model.bottom_thickness
             - self.wall_parameters.thickness,
         ]
 
     @property
     def cavity_coords(self) -> list[float]:
-        cube_size = self.screw_placement_model.cube_size
+        standoff_size = self.screw_placement_model.standoff_size
         return [
-            self.coords[0] + cube_size,
-            self.screw_placement_model.body.divider_y + cube_size,
+            self.coords[0] + standoff_size,
+            self.screw_placement_model.body.divider_y + standoff_size,
             self.coords[2] + self.wall_parameters.thickness,
         ]
 

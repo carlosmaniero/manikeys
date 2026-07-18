@@ -16,27 +16,26 @@ class ScrewPlacementModel:
     body_parameters: BodyParameters
 
     @property
-    def cube_size(self) -> float:
+    def standoff_size(self) -> float:
         return (
-            self.screw_parameters.m2_diameter
-            + self.wall_parameters.thickness * 2
+            self.screw_parameters.m2_diameter + self.wall_parameters.thickness
         )
 
     @property
-    def cube_height(self) -> float:
-        return self.mask_height
+    def standoff_height(self) -> float:
+        return self.body.highest - self.z
 
     @property
     def mask_size(self) -> float:
-        return self.cube_size + self.wall_parameters.thickness
+        return self.standoff_size * 2 + self.wall_parameters.thickness
 
     @property
     def mask_height(self) -> float:
-        return abs(self.bottom_z)
+        return self.body.height
 
     @property
     def z(self) -> float:
-        return self.bottom_z
+        return self.bottom_z + self.bottom_thickness
 
     @property
     def mask_z(self) -> float:
@@ -44,10 +43,18 @@ class ScrewPlacementModel:
 
     @property
     def main_points(self) -> list[tuple[float, float]]:
-        x_start = self.body.start_x()
-        x_end = self.body.end_x() - self.cube_size
-        y_divider = self.body.divider_y
-        y_end = self.body.end_y() - self.cube_size
+        x_start = self.body.start_x() + self.wall_parameters.thickness
+        x_end = (
+            self.body.end_x()
+            - self.standoff_size
+            - self.wall_parameters.thickness
+        )
+        y_divider = self.body.divider_y + self.wall_parameters.thickness
+        y_end = (
+            self.body.end_y()
+            - self.standoff_size
+            - self.wall_parameters.thickness
+        )
 
         return [
             (x_start, y_divider),
@@ -58,10 +65,18 @@ class ScrewPlacementModel:
 
     @property
     def hand_points(self) -> list[tuple[float, float]]:
-        x_start = self.body.hand_support_end_x
-        x_end = self.body.end_x() - self.cube_size
-        y_start = self.body.start_y()
-        y_divider_end = self.body.divider_y - self.cube_size
+        x_start = self.body.hand_support_end_x + self.wall_parameters.thickness
+        x_end = (
+            self.body.end_x()
+            - self.standoff_size
+            - self.wall_parameters.thickness
+        )
+        y_start = self.body.start_y() + self.wall_parameters.thickness
+        y_divider_end = (
+            self.body.divider_y
+            - self.standoff_size
+            - self.wall_parameters.thickness
+        )
 
         return [
             (x_start, y_start),
@@ -107,9 +122,9 @@ class ScrewPlacementModel:
         return self.z
 
     def get_centered_points(self) -> list[tuple[float, float]]:
-        offset = self.cube_size / 2
+        offset = self.standoff_size / 2
         return [(x + offset, y + offset) for x, y in self.points]
 
     def get_mask_points(self) -> list[tuple[float, float]]:
-        offset = (self.mask_size - self.cube_size) / 2
+        offset = (self.mask_size - self.standoff_size) / 2
         return [(x - offset, y - offset) for x, y in self.points]

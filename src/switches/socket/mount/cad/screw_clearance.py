@@ -15,19 +15,19 @@ class MountScrewClearanceCAD(ManifoldObject):
     model: ScrewPlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
-        cubes = []
-        for x, y in self.model.get_mask_points():
-            cube = manifold3d.Manifold.cube(
-                [
-                    self.model.mask_size,
-                    self.model.mask_size,
-                    self.model.mask_height,
-                ],
+        clearances = []
+        for x, y in self.model.get_centered_points():
+            clearance = manifold3d.Manifold.cylinder(
+                self.model.mask_height,
+                self.model.mask_size / 2,
+                circular_segments=100,
                 center=False,
             ).translate([x, y, self.model.mask_z])
-            cubes.append(cube)
+            clearances.append(clearance)
 
-        return manifold3d.Manifold.batch_boolean(cubes, manifold3d.OpType.Add)
+        return manifold3d.Manifold.batch_boolean(
+            clearances, manifold3d.OpType.Add
+        )
 
 
 if __name__ == "__main__":

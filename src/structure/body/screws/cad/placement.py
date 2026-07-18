@@ -16,25 +16,26 @@ class ScrewPlacementCAD(ManifoldObject):
     model: ScrewPlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
-        cubes = []
+        standoffs = []
         for x, y in self.model.points:
-            cube = manifold3d.Manifold.cylinder(
-                self.model.cube_height,
-                self.model.cube_size / 2,
+            standoff = manifold3d.Manifold.cylinder(
+                self.model.standoff_height,
+                self.model.standoff_size,
                 center=True,
             ).translate(
                 [
-                    x + self.model.cube_size / 2,
-                    y + self.model.cube_size / 2,
-                    self.model.z,
+                    x + self.model.standoff_size / 2,
+                    y + self.model.standoff_size / 2,
+                    self.model.z + self.model.standoff_height / 2,
                 ]
             )
-            cubes.append(cube)
+
+            standoffs.append(standoff)
 
         body = load_stl_to_manifold("build/structure/body/shape.stl")
 
         return (
-            manifold3d.Manifold.batch_boolean(cubes, manifold3d.OpType.Add)
+            manifold3d.Manifold.batch_boolean(standoffs, manifold3d.OpType.Add)
             ^ body
         )
 
