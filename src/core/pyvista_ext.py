@@ -36,7 +36,9 @@ def normalize_to_surface(
         for i in range(nx - 2, 0, -1):
             perimeter_x.append(x[i, 0])
             perimeter_y.append(y[i, 0])
-        pts = np.column_stack((perimeter_x, perimeter_y, np.full_like(perimeter_x, z)))
+        pts = np.column_stack(
+            (perimeter_x, perimeter_y, np.full_like(perimeter_x, z))
+        )
         faces = [len(pts)] + list(range(len(pts)))
         return pv.PolyData(pts, faces).triangulate()
     return pv.StructuredGrid(x, y, z).extract_surface(algorithm=None)

@@ -34,7 +34,11 @@ class SwitchHoleDecoratorShellGridCAD(ManifoldObject):
                 )
 
         for pos in self.switch_thumb_model.get_positions():
-            grid.append(decorator.translate([0, 0, offset]).translate(pos))
+            grid.append(
+                decorator.translate([0, 0, offset])
+                .scale([-1, 1, 1])
+                .translate(pos)
+            )
 
         return manifold3d.Manifold.batch_boolean(grid, manifold3d.OpType.Add)
 
