@@ -43,14 +43,22 @@ build/switches/socket/mount/cad/screw_clearance.stl: src/switches/socket/mount/c
 build/switches/socket/mount/cad/screw_clearance_cavity.stl: src/switches/socket/mount/cad/screw_clearance_cavity.py
 build/structure/body/screws/cad/hole.stl: src/structure/body/screws/cad/hole.py
 build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_plate.py build/components/arduino_nano_case/cad/case.stl build/components/arduino_pro_micro_case/cad/housing.stl
-pin_headers: build/components/female_pin_header/cad/female_pin_header_2.stl \
-             build/components/female_pin_header/cad/female_pin_header_3.stl \
-             build/components/female_pin_header/cad/female_pin_header_4.stl \
-             build/components/female_pin_header/cad/female_pin_header_5.stl \
-             build/components/female_pin_header/cad/female_pin_header_6.stl \
-             build/components/female_pin_header/cad/female_pin_header_7.stl \
-             build/components/female_pin_header/cad/female_pin_header_8.stl \
-             build/components/female_pin_header/cad/female_pin_header_9.stl
+pin_headers: build/components/female_pin_header/cad/female_pin_header_lid_2.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_3.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_4.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_5.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_6.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_7.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_8.stl \
+             build/components/female_pin_header/cad/female_pin_header_lid_9.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_2.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_3.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_4.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_5.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_6.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_7.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_8.stl \
+             build/components/female_pin_header/cad/female_pin_header_body_9.stl
 
 build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj45/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/socket/mount/cad/screw_clearance_cavity.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl build/components/oled_096/cad/masks/shell_cavity.stl build/components/oled_096/cad/masks/cable.stl build/assembly/base_plate/cad/masks/base_plate.stl build/switches/socket/mount/cad/col_cable_path.stl build/switches/socket/mount/cad/row_cable_path.stl pin_headers src/switches/socket/mount/models.py
 build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl

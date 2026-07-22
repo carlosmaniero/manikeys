@@ -52,20 +52,10 @@ class ColCablePathModel:
     def pin_header_position(self) -> tuple[float, float, float]:
         y_center = (self.body_model.end_y() + self.body_model.divider_y) / 2
 
-        base_thickness = self.wall_parameters.thickness * 2
-        z = self.body_model.highest - base_thickness * 3
-
-        last_key = len(self.layout.grid) - 1
-        cols = len(self.layout.grid[last_key])
-        max_height = self.wall_parameters.thickness
-        max_height_below = self.wall_parameters.thickness * (cols + 1) / 2
-        z_min_bigger = z - max_height
-        z_min_new = z_min_bigger - self.wall_parameters.thickness * 2
-
         z_pos = (
-            z_min_new
-            - self.female_pin_header_model.outer_height / 2
-            - self.wall_parameters.thickness
+            self.body_model.bottom_z
+            + self.female_pin_header_model.inner_height
+            + self.wall_parameters.thickness
         )
         x = self.body_model.end_x() - self.wall_parameters.thickness
         return (x, y_center, z_pos)
@@ -136,18 +126,10 @@ class RowCablePathModel:
             + self.wall_parameters.thickness
             + self.female_pin_header_model.outer_width / 2
         )
-        base_thickness = self.wall_parameters.thickness * 2
-        z_col = self.body_model.highest - base_thickness * 3
-        last_key = len(self.layout.grid) - 1
-        cols = len(self.layout.grid[last_key])
-        max_height = self.wall_parameters.thickness
-        z_min_bigger = z_col - max_height
-        z_min_new = z_min_bigger - self.wall_parameters.thickness * 2
-
         z_pos = (
-            z_min_new
-            - self.female_pin_header_model.outer_height / 2
-            - self.wall_parameters.thickness
+            self.body_model.bottom_z
+            + self.female_pin_header_model.inner_height
+            + self.wall_parameters.thickness
         )
         return (x, y, z_pos)
 

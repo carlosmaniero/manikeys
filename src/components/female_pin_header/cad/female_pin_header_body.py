@@ -6,7 +6,7 @@ from components.female_pin_header.model import FemalePinHeaderModel
 
 
 @dataclass
-class FemalePinHeaderBaseCAD(ManifoldObject):
+class FemalePinHeaderBodyBaseCAD(ManifoldObject):
     model: FemalePinHeaderModel
 
     def create_housing(self, pins: int) -> manifold3d.Manifold:
@@ -54,6 +54,28 @@ class FemalePinHeaderBaseCAD(ManifoldObject):
                 self.model.outer_height + 2.0,
             ],
             center=True,
-        ).translate([0.0, -self.model.outer_width / 2, 0.0])
+        ).translate([0.0, self.model.outer_width / 2, 0.0])
 
-        return housing ^ cut_box
+        half_body = housing ^ cut_box
+
+        extra_width = 3.0
+        extra_structure = manifold3d.Manifold.cube(
+            [
+                self.model.outer_length(pins),
+                extra_width,
+                self.model.outer_height,
+            ],
+            center=True,
+        ).translate([0.0, self.model.outer_width / 2 + extra_width / 2, 0.0])
+
+        holes = manifold3d.Manifold()
+        hole_radius = 0.6
+        for col in range(pins):
+            x = (col - (pins - 1) / 2) * self.model.parameters.pitch
+            hole = manifold3d.Manifold.cube(
+                [1.2, 1.2, self.model.outer_height + 0.2],
+                center=True,
+            ).translate([x, self.model.outer_width / 2 + extra_width / 2, 0.0])
+            holes += hole
+
+        return half_body + (extra_structure - holes)
