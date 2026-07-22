@@ -5,31 +5,53 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.manifold_ext.object import ManifoldObject
-from core.manifold_ext.helpers import path_extrude
-from structure.body.models import BodyModel
+from globals.wall.parameters import WallParameters
+from switches.socket.mount.models import ColCablePathModel
 
 
 @singleton
 @inject
 @dataclass
 class ColCablePathCAD(ManifoldObject):
-    body_model: BodyModel
-
-    @property
-    def path(self) -> list[list[float]]:
-        x = self.body_model.end_x()
-        start_y = self.body_model.divider_y
-        end_y = self.body_model.end_y()
-        z = self.body_model.bottom_z
-        return [[x, start_y, z], [x, end_y, z]]
+    model: ColCablePathModel
+    wall_parameters: WallParameters
 
     def assemble(self) -> manifold3d.Manifold:
-        radius = 2
-        square = manifold3d.CrossSection.square(
-            [radius + 2, radius + 2], center=True
-        )
+        inner_radius = self.model.cable_radius
+        radius = self.model.outer_radius
+        offset_x = self.wall_parameters.thickness
+        result = manifold3d.Manifold()
 
-        return path_extrude(square, self.path)
+        for x, y, z_min, height in self.model.path:
+            outer_cyl = manifold3d.Manifold.cylinder(
+                height=height,
+                radius_low=radius,
+                circular_segments=16,
+            ).translate([x, y, z_min])
+
+            outer_cube = manifold3d.Manifold.cube(
+                [offset_x, radius * 2, height],
+                center=True,
+            ).translate([x + offset_x / 2, y, z_min + height / 2])
+
+            outer = outer_cyl + outer_cube
+
+            inner_cyl = manifold3d.Manifold.cylinder(
+                height=height,
+                radius_low=inner_radius,
+                circular_segments=16,
+            ).translate([x, y, z_min])
+
+            inner_cube = manifold3d.Manifold.cube(
+                [offset_x + 0.2, inner_radius * 2, height + 0.2],
+                center=True,
+            ).translate([x + offset_x / 2 + 0.1, y, z_min + height / 2])
+
+            inner = inner_cyl + inner_cube
+
+            result += outer - inner
+
+        return result
 
 
 if __name__ == "__main__":
