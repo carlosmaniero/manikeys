@@ -6,8 +6,12 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_many_stl_to_manifold
-from switches.socket.mount.models import MountCavityModel
+from core.loader import load_many_stl_to_manifold, load_stl_to_manifold
+from switches.socket.mount.models import (
+    MountCavityModel,
+    ColCablePathModel,
+    RowCablePathModel,
+)
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -20,6 +24,8 @@ class MountShellCAD(ManifoldObject):
     body: BodyModel
     wall_parameters: WallParameters
     body_parameters: BodyParameters
+    col_cable_path_model: ColCablePathModel
+    row_cable_path_model: RowCablePathModel
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (

@@ -18,19 +18,11 @@ class RowCablePathCAD(ManifoldObject):
     wall_parameters: WallParameters
 
     def assemble(self) -> manifold3d.Manifold:
-        cable_hook = load_stl_to_manifold(
-            "build/components/cable_hook/cad/cable_hook.stl"
+        row_pins = len(self.model.layout.grid)
+        row_header = load_stl_to_manifold(
+            f"build/components/female_pin_header/cad/female_pin_header_{row_pins}.stl"
         )
-        result = manifold3d.Manifold()
-
-        for x, y, z_min, height in self.model.path:
-            result += (
-                cable_hook.scale([1.0, 1.0, height])
-                .rotate([0, 0, -90])
-                .translate([x, y, z_min])
-            )
-
-        return result
+        return row_header.translate(self.model.pin_header_position)
 
 
 if __name__ == "__main__":

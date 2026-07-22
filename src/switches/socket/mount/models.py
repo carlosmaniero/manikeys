@@ -5,6 +5,7 @@ from structure.body.models import BodyInnerModel
 from globals.wall.parameters import WallParameters
 from switches.model import Layout
 from models.parameters import SwitchesParameters
+from connectors.pogo.models import PogoPinModel
 
 
 @singleton
@@ -26,6 +27,9 @@ class MountCavityModel(MountModel):
         return super().offset - self.wall_parameters.thickness
 
 
+from components.female_pin_header.model import FemalePinHeaderModel
+
+
 @singleton
 @inject
 @dataclass
@@ -34,6 +38,7 @@ class ColCablePathModel:
     wall_parameters: WallParameters
     layout: Layout
     switches_parameters: SwitchesParameters
+    female_pin_header_model: FemalePinHeaderModel
 
     @property
     def cable_radius(self) -> float:
@@ -44,6 +49,28 @@ class ColCablePathModel:
         return self.cable_radius + 0.8
 
     @property
+    def pin_header_position(self) -> tuple[float, float, float]:
+        y_center = (self.body_model.end_y() + self.body_model.divider_y) / 2
+
+        base_thickness = self.wall_parameters.thickness * 2
+        z = self.body_model.highest - base_thickness * 3
+
+        last_key = len(self.layout.grid) - 1
+        cols = len(self.layout.grid[last_key])
+        max_height = self.wall_parameters.thickness
+        max_height_below = self.wall_parameters.thickness * (cols + 1) / 2
+        z_min_bigger = z - max_height
+        z_min_new = z_min_bigger - self.wall_parameters.thickness * 2
+
+        z_pos = (
+            z_min_new
+            - self.female_pin_header_model.outer_height / 2
+            - self.wall_parameters.thickness
+        )
+        x = self.body_model.end_x() - self.wall_parameters.thickness
+        return (x, y_center, z_pos)
+
+    @property
     def path(self) -> list[tuple[float, float, float, float]]:
         base_thickness = self.wall_parameters.thickness * 2
         offset_x = self.wall_parameters.thickness
@@ -51,37 +78,21 @@ class ColCablePathModel:
         cols = len(self.layout.grid[last_key])
 
         paths = []
-        max_height = 0
-        z = (
-            self.body_model.highest
-            - base_thickness * 3
-            - self.wall_parameters.thickness * 3
-        )
+        z = self.body_model.highest - base_thickness * 3
 
         for col in range(cols):
             first_key = self.layout.grid[last_key][col]
-            x = self.body_model.end_x() - offset_x
+            x = (
+                self.body_model.end_x()
+                - offset_x
+                - (self.outer_radius + self.cable_radius)
+            )
             y = first_key.position[1]
 
-            if col == 0:
-                height = self.wall_parameters.thickness
-            else:
-                height = self.wall_parameters.thickness * (col + 2) / 2
+            height = self.wall_parameters.thickness
 
-            max_height = max(max_height, height)
             z_min = z - height
             paths.append((x, y, z_min, height))
-
-        z_min_bigger = z - max_height
-        first_key = self.layout.grid[last_key][0]
-        y_first = first_key.position[1]
-        z_min_new = z_min_bigger - self.wall_parameters.thickness * 3
-        height_new = self.wall_parameters.thickness
-
-        for col in range(cols):
-            x = self.body_model.end_x() - offset_x
-            y = y_first + col * (self.outer_radius + self.cable_radius)
-            paths.append((x, y, z_min_new, height_new))
 
         return paths
 
@@ -97,22 +108,24 @@ class RowCablePathModel:
     wall_parameters: WallParameters
     body_parameters: BodyParameters
     layout: Layout
-    switches_parameters: SwitchesParameters
+    female_pin_header_model: FemalePinHeaderModel
+    pogo_model: PogoPinModel
 
     @property
-    def cable_radius(self) -> float:
-        return self.switches_parameters.cable_radius
-
-    @property
-    def outer_radius(self) -> float:
-        return self.cable_radius + 0.8
-
-    @property
-    def path(self) -> list[tuple[float, float, float, float]]:
-        num_hooks = len(self.layout.grid)
-        spacing = self.outer_radius + self.cable_radius
-
-        middle_x = (self.body_model.start_x() + self.body_model.end_x()) / 2
+    def pin_header_position(self) -> tuple[float, float, float]:
+        pogo_radius = self.pogo_model.adapter_width / 2
+        x_pogo = (
+            self.body_model.end_x()
+            - pogo_radius
+            - self.wall_parameters.thickness * 3
+        )
+        x = (
+            x_pogo
+            - pogo_radius
+            - self.wall_parameters.thickness
+            - self.female_pin_header_model.outer_length(len(self.layout.grid))
+            / 2
+        )
         divider_size = (
             self.wall_parameters.thickness * 2
             + self.body_parameters.clearance * 2
@@ -120,14 +133,24 @@ class RowCablePathModel:
         y = (
             self.body_model.divider_y
             + divider_size / 2
-            + self.wall_parameters.thickness * 2
+            + self.wall_parameters.thickness
+            + self.female_pin_header_model.outer_width / 2
         )
-        z = self.layout.bounds.lowest[2] - self.wall_parameters.thickness * 3
-        height = self.wall_parameters.thickness
+        base_thickness = self.wall_parameters.thickness * 2
+        z_col = self.body_model.highest - base_thickness * 3
+        last_key = len(self.layout.grid) - 1
+        cols = len(self.layout.grid[last_key])
+        max_height = self.wall_parameters.thickness
+        z_min_bigger = z_col - max_height
+        z_min_new = z_min_bigger - self.wall_parameters.thickness * 2
 
-        paths = []
-        for col in range(num_hooks):
-            x = middle_x + (col - (num_hooks - 1) / 2) * spacing
-            paths.append((x, y, z, height))
+        z_pos = (
+            z_min_new
+            - self.female_pin_header_model.outer_height / 2
+            - self.wall_parameters.thickness
+        )
+        return (x, y, z_pos)
 
-        return paths
+    @property
+    def path(self) -> list[tuple[float, float, float, float]]:
+        return []
