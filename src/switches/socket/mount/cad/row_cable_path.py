@@ -20,9 +20,9 @@ class RowCablePathCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         row_pins = len(self.model.layout.grid)
         row_header = load_stl_to_manifold(
-            f"build/components/female_pin_header/cad/female_pin_header_lid_{row_pins}.stl"
+            f"build/components/female_pin_header/cad/female_pin_header_body_{row_pins}.stl"
         )
-        return row_header.rotate([0, 180, 0]).translate(
+        return row_header.rotate([0, 180, 180]).translate(
             self.model.pin_header_position
         )
 

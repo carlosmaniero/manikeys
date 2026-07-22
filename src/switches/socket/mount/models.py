@@ -57,7 +57,11 @@ class ColCablePathModel:
             + self.female_pin_header_model.inner_height
             + self.wall_parameters.thickness
         )
-        x = self.body_model.end_x() - self.wall_parameters.thickness
+        x = (
+            self.body_model.end_x()
+            - self.wall_parameters.thickness
+            - self.female_pin_header_model.outer_width / 2
+        )
         return (x, y_center, z_pos)
 
     @property
@@ -123,8 +127,8 @@ class RowCablePathModel:
         y = (
             self.body_model.divider_y
             + divider_size / 2
-            + self.wall_parameters.thickness
             + self.female_pin_header_model.outer_width / 2
+            + self.wall_parameters.thickness * 2
         )
         z_pos = (
             self.body_model.bottom_z
