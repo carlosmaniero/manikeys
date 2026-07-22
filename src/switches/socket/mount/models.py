@@ -52,7 +52,11 @@ class ColCablePathModel:
 
         paths = []
         max_height = 0
-        z = self.body_model.highest - base_thickness * 3
+        z = (
+            self.body_model.highest
+            - base_thickness * 3
+            - self.wall_parameters.thickness * 3
+        )
 
         for col in range(cols):
             first_key = self.layout.grid[last_key][col]
@@ -78,5 +82,52 @@ class ColCablePathModel:
             x = self.body_model.end_x() - offset_x
             y = y_first + col * (self.outer_radius + self.cable_radius)
             paths.append((x, y, z_min_new, height_new))
+
+        return paths
+
+
+from structure.body.parameters import BodyParameters
+
+
+@singleton
+@inject
+@dataclass
+class RowCablePathModel:
+    body_model: MountCavityModel
+    wall_parameters: WallParameters
+    body_parameters: BodyParameters
+    layout: Layout
+    switches_parameters: SwitchesParameters
+
+    @property
+    def cable_radius(self) -> float:
+        return self.switches_parameters.cable_radius
+
+    @property
+    def outer_radius(self) -> float:
+        return self.cable_radius + 0.8
+
+    @property
+    def path(self) -> list[tuple[float, float, float, float]]:
+        num_hooks = len(self.layout.grid)
+        spacing = self.outer_radius + self.cable_radius
+
+        middle_x = (self.body_model.start_x() + self.body_model.end_x()) / 2
+        divider_size = (
+            self.wall_parameters.thickness * 2
+            + self.body_parameters.clearance * 2
+        )
+        y = (
+            self.body_model.divider_y
+            + divider_size / 2
+            + self.wall_parameters.thickness * 2
+        )
+        z = self.layout.bounds.lowest[2] - self.wall_parameters.thickness * 3
+        height = self.wall_parameters.thickness
+
+        paths = []
+        for col in range(num_hooks):
+            x = middle_x + (col - (num_hooks - 1) / 2) * spacing
+            paths.append((x, y, z, height))
 
         return paths

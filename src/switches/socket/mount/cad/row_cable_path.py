@@ -6,17 +6,15 @@ from injector import inject, singleton
 from core.context import injector
 from core.manifold_ext.object import ManifoldObject
 from globals.wall.parameters import WallParameters
-from switches.socket.mount.models import ColCablePathModel
-
-
+from switches.socket.mount.models import RowCablePathModel
 from core.loader import load_stl_to_manifold
 
 
 @singleton
 @inject
 @dataclass
-class ColCablePathCAD(ManifoldObject):
-    model: ColCablePathModel
+class RowCablePathCAD(ManifoldObject):
+    model: RowCablePathModel
     wall_parameters: WallParameters
 
     def assemble(self) -> manifold3d.Manifold:
@@ -26,13 +24,15 @@ class ColCablePathCAD(ManifoldObject):
         result = manifold3d.Manifold()
 
         for x, y, z_min, height in self.model.path:
-            result += cable_hook.scale([1.0, 1.0, height]).translate(
-                [x, y, z_min]
+            result += (
+                cable_hook.scale([1.0, 1.0, height])
+                .rotate([0, 0, -90])
+                .translate([x, y, z_min])
             )
 
         return result
 
 
 if __name__ == "__main__":
-    cable_path = injector.get(ColCablePathCAD)
+    cable_path = injector.get(RowCablePathCAD)
     cable_path.program(sys.argv)

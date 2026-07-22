@@ -77,6 +77,7 @@ class MountShellCAD(ManifoldObject):
             "build/components/oled_096/cad/masks/cable.stl",
             "build/assembly/base_plate/cad/masks/base_plate.stl",
             "build/switches/socket/mount/cad/col_cable_path.stl",
+            "build/switches/socket/mount/cad/row_cable_path.stl",
         ]
 
         (
@@ -96,6 +97,7 @@ class MountShellCAD(ManifoldObject):
             oled_cable,
             base_plate_mask,
             col_cable_path,
+            row_cable_path,
         ) = load_many_stl_to_manifold(paths)
 
         screw_walls = screw_clearance_cavity ^ body
@@ -120,6 +122,7 @@ class MountShellCAD(ManifoldObject):
             - oled_cable
             - base_plate_mask
             + col_cable_path
+            + row_cable_path
         )
 
 
