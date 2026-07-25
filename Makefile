@@ -33,16 +33,18 @@ render: build/render.png build/render_back.png build/render_top.png build/render
 
 build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/assembly/base_plate/cad/base_plate.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/connectors/rj11/cad/rj11.stl build/connectors/rj11/cad/adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/connectors/usbc/cad/masks/usbc.stl build/connectors/usbc/cad/adapter_trimmed.stl build/connectors/magnet/cad/snap.stl build/components/light_indicator/cad/masks/body.stl build/components/light_indicator/cad/panel_frame.stl build/components/oled_096/cad/masks/body.stl build/components/oled_096/cad/placement.stl build/assembly/base_plate/cad/masks/base_plate.stl build/connectors/rj45/cad/masks/body.stl build/connectors/rj45/cad/placement.stl
-build/connectors/magnet/cad/snap.stl: src/connectors/magnet/cad/snap.py
+build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/connectors/usbc/cad/masks/usbc.stl build/connectors/usbc/cad/adapter_trimmed.stl build/connectors/magnet/cad/snap.stl build/components/light_indicator/cad/masks/body.stl build/components/light_indicator/cad/panel_frame.stl build/components/oled_096/cad/masks/body.stl build/components/oled_096/cad/placement.stl build/assembly/base_plate/cad/masks/base_plate.stl build/connectors/rj45/cad/masks/body.stl build/connectors/rj45/cad/placement.stl
+build/connectors/magnet/cad/snap.stl: src/connectors/magnet/cad/snap.py src/connectors/magnet/models.py src/connectors/magnet/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
-build/connectors/pogo/cad/cable_path.stl: src/connectors/pogo/cad/cable_path.py build/connectors/pogo/cad/pogo_pin_adapter.stl
+build/connectors/pogo/cad/cable_path.stl: src/connectors/pogo/cad/cable_path.py src/connectors/pogo/models.py src/connectors/pogo/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py build/connectors/pogo/cad/pogo_pin_adapter.stl
 build/cad/logo.stl: src/cad/logo.py dist/mani-logo.stl
-build/structure/body/screws/cad/placement.stl: src/structure/body/screws/cad/placement.py build/structure/body/shape.stl
-build/switches/socket/mount/cad/screw_clearance.stl: src/switches/socket/mount/cad/screw_clearance.py
-build/switches/socket/mount/cad/screw_clearance_cavity.stl: src/switches/socket/mount/cad/screw_clearance_cavity.py
-build/structure/body/screws/cad/hole.stl: src/structure/body/screws/cad/hole.py
-build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_plate.py build/components/arduino_nano_case/cad/case.stl build/components/arduino_pro_micro_case/cad/housing.stl
+build/structure/body/screws/cad/placement.stl: src/structure/body/screws/cad/placement.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/screws/models.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/structure/body/shape.stl
+build/switches/socket/mount/cad/screw_clearance.stl: src/switches/socket/mount/cad/screw_clearance.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py
+build/switches/socket/mount/cad/screw_clearance_cavity.stl: src/switches/socket/mount/cad/screw_clearance_cavity.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py
+build/structure/body/screws/cad/hole.stl: src/structure/body/screws/cad/hole.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py
+build/assembly/base_plate/cad/base_plate.stl: src/assembly/base_plate/cad/base_plate.py src/assembly/base_plate/model.py src/assembly/base_plate/parameters.py src/components/arduino_nano_case/model.py src/components/arduino_nano_case/parameters.py src/components/arduino_pro_micro_case/model.py src/components/arduino_pro_micro_case/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py build/components/arduino_nano_case/cad/case.stl build/components/arduino_pro_micro_case/cad/housing.stl
+build/components/arduino_nano_case/cad/case.stl: src/components/arduino_nano_case/cad/case.py src/components/arduino_nano_case/model.py src/components/arduino_nano_case/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py
+build/components/arduino_pro_micro_case/cad/housing.stl: src/components/arduino_pro_micro_case/cad/housing.py src/components/arduino_pro_micro_case/model.py src/components/arduino_pro_micro_case/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py
 pin_headers: build/components/female_pin_header/cad/female_pin_header_lid_2.stl \
              build/components/female_pin_header/cad/female_pin_header_lid_3.stl \
              build/components/female_pin_header/cad/female_pin_header_lid_4.stl \
@@ -60,50 +62,72 @@ pin_headers: build/components/female_pin_header/cad/female_pin_header_lid_2.stl 
              build/components/female_pin_header/cad/female_pin_header_body_8.stl \
              build/components/female_pin_header/cad/female_pin_header_body_9.stl
 
-build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj45/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/socket/mount/cad/screw_clearance_cavity.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl build/components/oled_096/cad/masks/shell_cavity.stl build/components/oled_096/cad/masks/cable.stl build/assembly/base_plate/cad/masks/base_plate.stl build/switches/socket/mount/cad/col_cable_path.stl build/switches/socket/mount/cad/row_cable_path.stl pin_headers src/switches/socket/mount/models.py
-build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl
-build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py build/switches/socket/mount/cad/cavity.stl
-build/switches/socket/mount/cad/col_cable_path.stl: src/switches/socket/mount/cad/col_cable_path.py build/components/cable_hook/cad/cable_hook.stl src/switches/socket/mount/models.py pin_headers
-build/switches/socket/mount/cad/row_cable_path.stl: src/switches/socket/mount/cad/row_cable_path.py src/switches/socket/mount/models.py pin_headers
-build/switches/cad/switch_hole_decorator.stl: src/switches/cad/switch_hole_decorator.py build/switches/cad/switch_hole.stl
-build/switches/cad/switch_hole_decorator_grid.stl: src/switches/cad/switch_hole_decorator_grid.py build/switches/cad/switch_hole_decorator.stl
-build/switches/cad/switch_hole_decorator_shell.stl: src/switches/cad/switch_hole_decorator_shell.py build/switches/socket/cad/hot_swap_placement_mask.stl build/switches/cad/switch_hole.stl
-build/switches/cad/switch_hole_decorator_shell_grid.stl: src/switches/cad/switch_hole_decorator_shell_grid.py build/switches/cad/switch_hole_decorator_shell.stl
-build/switches/cad/switch_hole_grid.stl: src/switches/cad/switch_hole_grid.py build/switches/cad/switch_hole.stl
-build/switches/cad/switch_decorator_thumb_grid.stl: src/switches/cad/switch_decorator_thumb_grid.py build/switches/cad/switch_hole_decorator.stl
-build/switches/cad/switch_thumb_hole.stl: src/switches/cad/switch_thumb_hole.py build/switches/cad/switch_hole.stl
-build/switches/socket/cad/hot_swap_grid.stl: src/switches/socket/cad/hot_swap_grid.py build/switches/socket/cad/hot_swap.stl
-build/switches/socket/cad/hot_swap_placement_mask.stl: src/switches/socket/cad/hot_swap_placement_mask.py
-build/components/oled_096/cad/placement.stl: src/components/oled_096/cad/placement.py build/components/oled_096/cad/oled.stl
-build/components/oled_096/cad/masks/body.stl: src/components/oled_096/cad/masks/body.py
-build/components/oled_096/cad/masks/shell.stl: src/components/oled_096/cad/masks/shell.py
-build/components/oled_096/cad/masks/shell_cavity.stl: src/components/oled_096/cad/masks/shell_cavity.py
-build/components/oled_096/cad/masks/cable.stl: src/components/oled_096/cad/masks/cable.py
-build/assembly/base_plate/cad/masks/base_plate.stl: src/assembly/base_plate/cad/masks/base_plate.py
+build/components/female_pin_header/cad/female_pin_header_%.stl: src/components/female_pin_header/cad/female_pin_header_%.py src/components/female_pin_header/model.py src/components/female_pin_header/parameters.py
+	mkdir -p $(dir $@)
+	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
+
+
+build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.py src/switches/socket/mount/models.py src/components/female_pin_header/model.py src/components/female_pin_header/parameters.py src/connectors/pogo/models.py src/connectors/pogo/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/body.stl build/switches/socket/mount/cad/cavity_sections.stl build/connectors/rj45/cad/masks/placement.stl build/connectors/usbc/cad/masks/placement.stl build/switches/socket/mount/cad/screw_clearance.stl build/switches/socket/mount/cad/screw_clearance_cavity.stl build/switches/cad/switch_hole_decorator_shell_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/components/light_indicator/cad/masks/body_shell.stl build/components/oled_096/cad/masks/shell.stl build/components/oled_096/cad/masks/shell_cavity.stl build/components/oled_096/cad/masks/cable.stl build/assembly/base_plate/cad/masks/base_plate.stl build/switches/socket/mount/cad/col_cable_path.stl build/switches/socket/mount/cad/row_cable_path.stl pin_headers
+build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/structure/body/cad/body_cavity.stl
+build/structure/body/shape.stl: src/structure/body/cad/shape.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/structure/body/cad/body_cavity.stl: src/structure/body/cad/body_cavity.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py build/switches/socket/mount/cad/cavity.stl
+build/switches/socket/mount/cad/col_cable_path.stl: src/switches/socket/mount/cad/col_cable_path.py src/switches/socket/mount/models.py src/components/female_pin_header/model.py src/components/female_pin_header/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/components/cable_hook/cad/cable_hook.stl pin_headers
+build/switches/socket/mount/cad/row_cable_path.stl: src/switches/socket/mount/cad/row_cable_path.py src/switches/socket/mount/models.py src/components/female_pin_header/model.py src/components/female_pin_header/parameters.py src/connectors/pogo/models.py src/connectors/pogo/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py pin_headers
+build/switches/cad/switch_hole.stl: src/switches/cad/switch_hole.py src/models/parameters.py
+build/switches/cad/switch_hole_decorator.stl: src/switches/cad/switch_hole_decorator.py build/switches/cad/switch_hole.stl src/models/parameters.py
+build/switches/cad/switch_hole_decorator_grid.stl: src/switches/cad/switch_hole_decorator_grid.py src/switches/model.py build/switches/cad/switch_hole_decorator.stl
+build/switches/cad/switch_hole_decorator_shell.stl: src/switches/cad/switch_hole_decorator_shell.py src/globals/wall/parameters.py src/models/parameters.py src/switches/model.py build/switches/socket/cad/hot_swap_placement_mask.stl build/switches/cad/switch_hole.stl
+build/switches/cad/switch_hole_decorator_shell_grid.stl: src/switches/cad/switch_hole_decorator_shell_grid.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py build/switches/cad/switch_hole_decorator_shell.stl
+build/switches/cad/switch_hole_grid.stl: src/switches/cad/switch_hole_grid.py src/switches/model.py build/switches/cad/switch_hole.stl
+build/switches/cad/switch_decorator_thumb_grid.stl: src/switches/cad/switch_decorator_thumb_grid.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/cad/switch_hole_decorator.stl
+build/switches/cad/switch_thumb_hole.stl: src/switches/cad/switch_thumb_hole.py build/switches/cad/switch_hole.stl src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/switches/socket/cad/hot_swap_grid.stl: src/switches/socket/cad/hot_swap_grid.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py build/switches/socket/cad/hot_swap.stl
+build/switches/socket/cad/hot_swap_placement_mask.stl: src/switches/socket/cad/hot_swap_placement_mask.py src/components/light_indicator/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/switches/socket/parameters.py
+build/components/oled_096/cad/oled.stl: src/components/oled_096/cad/oled.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py
+build/components/oled_096/cad/placement.stl: src/components/oled_096/cad/placement.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/components/oled_096/cad/oled.stl
+build/components/oled_096/cad/masks/body.stl: src/components/oled_096/cad/masks/body.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/oled_096/cad/masks/shell.stl: src/components/oled_096/cad/masks/shell.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/oled_096/cad/masks/shell_cavity.stl: src/components/oled_096/cad/masks/shell_cavity.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/oled_096/cad/masks/cable.stl: src/components/oled_096/cad/masks/cable.py src/components/oled_096/model.py src/components/oled_096/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/light_indicator/cad/masks/body.stl: src/components/light_indicator/cad/masks/body.py src/components/light_indicator/model.py src/components/light_indicator/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/light_indicator/cad/panel_frame.stl: src/components/light_indicator/cad/panel_frame.py src/components/light_indicator/model.py src/components/light_indicator/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/assembly/base_plate/cad/masks/base_plate.stl: src/assembly/base_plate/cad/masks/base_plate.py src/assembly/base_plate/model.py src/assembly/base_plate/parameters.py src/components/arduino_nano_case/model.py src/components/arduino_nano_case/parameters.py src/components/arduino_pro_micro_case/model.py src/components/arduino_pro_micro_case/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py
 
 build/connectors/rj11/cad/adapter_trimmed.stl: src/connectors/rj11/cad/adapter_trimmed.py build/connectors/rj11/cad/adapter.stl build/structure/body/shape.stl
 build/connectors/rj11/cad/placement.stl: src/connectors/rj11/cad/placement.py build/structure/body/shape.stl
-build/connectors/usbc/cad/adapter.stl: src/connectors/usbc/cad/adapter.py build/connectors/usbc/cad/masks/connector.stl
-build/connectors/usbc/cad/adapter_trimmed.stl: src/connectors/usbc/cad/adapter_trimmed.py build/connectors/usbc/cad/adapter.stl build/structure/body/shape.stl
-build/connectors/usbc/cad/masks/usbc.stl: src/connectors/usbc/cad/masks/usbc.py build/connectors/usbc/cad/masks/connector.stl
-build/connectors/usbc/cad/masks/placement.stl: src/connectors/usbc/cad/masks/placement.py
+build/connectors/usbc/cad/adapter.stl: src/connectors/usbc/cad/adapter.py build/connectors/usbc/cad/masks/connector.stl src/connectors/usbc/model.py src/connectors/usbc/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/connectors/usbc/cad/adapter_trimmed.stl: src/connectors/usbc/cad/adapter_trimmed.py src/connectors/usbc/model.py src/connectors/usbc/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/connectors/usbc/cad/adapter.stl build/structure/body/shape.stl
+build/connectors/usbc/cad/masks/usbc.stl: src/connectors/usbc/cad/masks/usbc.py src/connectors/usbc/model.py src/connectors/usbc/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/connectors/usbc/cad/masks/connector.stl
+build/connectors/usbc/cad/masks/placement.stl: src/connectors/usbc/cad/masks/placement.py src/connectors/usbc/model.py src/connectors/usbc/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/connectors/usbc/cad/masks/connector.stl: src/connectors/usbc/cad/masks/connector.py src/connectors/usbc/model.py src/connectors/usbc/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
 
-build/connectors/rj45/cad/placement.stl: src/connectors/rj45/cad/placement.py build/connectors/rj45/cad/adapter_front.stl build/structure/body/shape.stl
-build/connectors/pogo/cad/pogo_pin_mask.stl: src/connectors/pogo/cad/pogo_pin_mask.py
-build/connectors/pogo/cad/pogo_pin_adapter.stl: src/connectors/pogo/cad/pogo_pin_adapter.py build/connectors/pogo/cad/pogo_pin_mask.stl
+build/connectors/rj45/cad/placement.stl: src/connectors/rj45/cad/placement.py src/connectors/rj45/model.py src/connectors/rj45/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/connectors/rj45/cad/adapter_front.stl build/structure/body/shape.stl
+build/connectors/rj45/cad/adapter_front.stl: src/connectors/rj45/cad/adapter_front.py src/connectors/rj45/model.py src/connectors/rj45/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py
+build/connectors/rj45/cad/masks/body.stl: src/connectors/rj45/cad/masks/body.py src/connectors/rj45/model.py src/connectors/rj45/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/connectors/pogo/cad/pogo_pin_mask.stl: src/connectors/pogo/cad/pogo_pin_mask.py src/connectors/pogo/models.py src/connectors/pogo/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/connectors/pogo/cad/pogo_pin_adapter.stl: src/connectors/pogo/cad/pogo_pin_adapter.py src/connectors/pogo/models.py src/connectors/pogo/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/connectors/pogo/cad/pogo_pin_mask.stl
 
-build/assembly/cad/main.stl: src/assembly/cad/main.py build/assembly/cad/full_keyboard.stl
-build/assembly/base_plate/cad/main.stl: src/assembly/base_plate/cad/main.py build/assembly/base_plate/cad/base_plate.stl
-build/assembly/cad/supports/main.stl: src/assembly/cad/supports/main.py build/assembly/cad/main.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
-build/assembly/cad/hand.stl: src/assembly/cad/hand.py build/assembly/cad/full_keyboard.stl
-build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py build/assembly/cad/hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
-build/assembly/cad/side.stl: src/assembly/cad/side.py build/assembly/cad/full_keyboard.stl
+build/assembly/cad/main.stl: src/assembly/cad/main.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
+build/assembly/base_plate/cad/main.stl: src/assembly/base_plate/cad/main.py src/assembly/base_plate/model.py src/assembly/base_plate/parameters.py src/components/arduino_nano_case/model.py src/components/arduino_nano_case/parameters.py src/components/arduino_pro_micro_case/model.py src/components/arduino_pro_micro_case/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/structure/body/screws/models.py src/switches/model.py build/assembly/base_plate/cad/base_plate.stl
+build/assembly/cad/supports/main.stl: src/assembly/cad/supports/main.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/main.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
+build/assembly/cad/hand.stl: src/assembly/cad/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
+build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
+build/assembly/cad/side.stl: src/assembly/cad/side.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
 
 COMMA := ,
 empty :=
 space := $(empty) $(empty)
-ALL_DEPS = $(filter-out pin_headers,$(filter-out %.py,$(filter-out %.models.py,$^)))
-DEPS_FLAG = $(if $(strip $(ALL_DEPS)),--stls $(subst $(space),$(COMMA),$(strip $(ALL_DEPS))),)
+ALL_STLS = $(filter-out pin_headers,$(filter %.stl,$^))
+ALL_PY_DEPS = $(filter-out $<,$(filter %.py,$^))
+ALL_MODELS = $(ALL_PY_DEPS)
+ALL_PARAMS =
+
+STLS_FLAG = $(if $(strip $(ALL_STLS)),--stls $(subst $(space),$(COMMA),$(strip $(ALL_STLS))),)
+PY_DEPS_FLAG = $(if $(strip $(ALL_PY_DEPS)),--py-deps $(subst $(space),$(COMMA),$(strip $(ALL_PY_DEPS))),)
+PARAMS_FLAG = $(if $(strip $(ALL_PARAMS)),--parameters $(subst $(space),$(COMMA),$(strip $(ALL_PARAMS))),)
+DEPS_FLAG = $(STLS_FLAG) $(PY_DEPS_FLAG)
 
 build/structure/%/shape.3mf: src/structure/%/cad/shape.py
 	mkdir -p $(dir $@)
@@ -175,6 +199,9 @@ lint:
 	uv run ruff check .
 	uv run ruff format --check .
 
+build/switches/socket/cad/hot_swap.stl: src/switches/socket/cad/hot_swap.py src/components/light_indicator/parameters.py src/globals/wall/parameters.py src/switches/socket/parameters.py
+build/switches/socket/mount/cad/body.stl: src/switches/socket/mount/cad/body.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py
+build/switches/socket/mount/cad/cavity.stl: src/switches/socket/mount/cad/cavity.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py
 viewer:
 	uv run python viewer/server.py
 
@@ -185,3 +212,9 @@ clean:
 # Catch-all to allow positional arguments for build_watch
 %:
 	@:
+build/connectors/rj45/cad/masks/placement.stl: src/connectors/rj45/cad/masks/placement.py src/connectors/rj45/model.py src/connectors/rj45/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/light_indicator/cad/masks/body_shell.stl: src/components/light_indicator/cad/masks/body_shell.py src/components/light_indicator/model.py src/components/light_indicator/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/components/cable_hook/cad/cable_hook.stl: src/components/cable_hook/cad/cable_hook.py src/components/cable_hook/model.py src/components/cable_hook/parameters.py src/globals/wall/parameters.py src/models/parameters.py
+build/switches/cad/keycap_grid.stl: src/switches/cad/keycap_grid.py src/models/parameters.py src/switches/model.py src/globals/wall/parameters.py src/models/switch_thumb.py src/structure/body/models.py src/structure/body/parameters.py
+build/connectors/rj11/cad/rj11.stl: src/connectors/rj11/cad/rj11.py src/connectors/rj11/model.py src/connectors/rj11/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py
+build/connectors/rj11/cad/adapter.stl: src/connectors/rj11/cad/adapter.py src/connectors/rj11/model.py src/connectors/rj11/parameters.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py

@@ -1,12 +1,11 @@
 from __future__ import annotations
 import manifold3d
 from dataclasses import dataclass
-from core.manifold_ext.object import ManifoldObject
 from components.female_pin_header.model import FemalePinHeaderModel
 
 
 @dataclass
-class FemalePinHeaderLidBaseCAD(ManifoldObject):
+class FemalePinHeaderLidBaseCAD:
     model: FemalePinHeaderModel
 
     def create_housing(self, pins: int) -> manifold3d.Manifold:

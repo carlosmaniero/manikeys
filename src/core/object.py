@@ -25,7 +25,11 @@ class Object(ABC, Generic[T]):
             "--show", action="store_true", help="Show the object"
         )
         parser.add_argument(
-            "--stls", help="Comma-separated list of dependencies"
+            "--stls", help="Comma-separated list of STL dependencies"
+        )
+        parser.add_argument(
+            "--py-deps",
+            help="Comma-separated list of Python dependencies",
         )
         return parser
 
@@ -61,26 +65,61 @@ class Object(ABC, Generic[T]):
         parser = self._get_program_parser()
 
         if len(argv) == 1:
-            parser.print_help()
-            exit(1)
+            argv = [*argv, "--help"]
 
         args = parser.parse_args(argv[1:])
 
-        deps_list = (
-            [d.strip() for d in args.stls.split(",")] if args.stls else []
-        )
         dep_manager = self.dep_manager
-        if dep_manager is not None and deps_list:
-            load_fn = getattr(
-                dep_manager, "_load_fn", getattr(self, "load_deps_fn", None)
-            )
-            dep_manager.__init__(load_fn=load_fn, deps=deps_list)
+        if args.stls and dep_manager is not None:
+            dep_manager.resolve(args.stls)
 
         if args.output:
             self.save(args.output)
-
-        if args.show:
+        elif args.show:
             self.show()
 
         if args.stls and dep_manager is not None:
             dep_manager.verify_all_used()
+
+        expected_py_deps = set()
+        if args.py_deps:
+            expected_py_deps.update(
+                d.strip() for d in args.py_deps.split(",") if d.strip()
+            )
+
+        from core.dependencies import (
+            collect_python_dependencies,
+            PROJECT_ROOT,
+        )
+        import sys
+        from pathlib import Path
+
+        actual_py_deps = collect_python_dependencies(self)
+        try:
+            own_file = str(
+                Path(sys.argv[0]).resolve().relative_to(PROJECT_ROOT)
+            )
+            actual_py_deps.discard(own_file)
+        except Exception:
+            pass
+
+        self._validate_unused_python_deps(expected_py_deps, actual_py_deps)
+        self._validate_missing_python_deps(expected_py_deps, actual_py_deps)
+
+    def _validate_unused_python_deps(
+        self, expected: set[str], actual: set[str]
+    ) -> None:
+        unused = expected - actual
+        if unused:
+            raise RuntimeError(
+                f"The following Python dependencies passed were not used by {self.__class__.__name__}: {sorted(list(unused))}"
+            )
+
+    def _validate_missing_python_deps(
+        self, expected: set[str], actual: set[str]
+    ) -> None:
+        missing = actual - expected
+        if missing:
+            raise RuntimeError(
+                f"The following Python dependencies were used by {self.__class__.__name__} but not declared in --py-deps: {sorted(list(missing))}"
+            )

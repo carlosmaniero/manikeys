@@ -1,5 +1,10 @@
 from __future__ import annotations
-from typing import Dict, List, Generic, TypeVar, Callable
+import inspect
+from dataclasses import fields, is_dataclass
+from pathlib import Path
+from typing import Dict, List, Generic, TypeVar, Callable, Any, Set
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 T = TypeVar("T")
 
@@ -22,7 +27,19 @@ class DependencyManager(Generic[T]):
                 self._cache[path] = obj
             self.resolve()
 
-    def resolve(self) -> MagicDependencyMap[T]:
+    def resolve(
+        self, stls: str | List[str] | None = None
+    ) -> MagicDependencyMap[T]:
+        if stls:
+            if isinstance(stls, str):
+                deps_list = [d.strip() for d in stls.split(",") if d.strip()]
+            else:
+                deps_list = stls
+            self._deps = deps_list
+            if self._deps:
+                loaded = self._load_fn(self._deps)
+                for path, obj in zip(self._deps, loaded):
+                    self._cache[path] = obj
         if not hasattr(self, "stls") or self.stls is None:
             self.stls = MagicDependencyMap(self)
         return self.stls
@@ -56,3 +73,34 @@ class MagicDependencyMap(Generic[T]):
         if isinstance(key, str):
             return key in self._manager._deps
         return False
+
+
+def collect_python_dependencies(
+    obj: Any, visited: Set[int] | None = None
+) -> Set[str]:
+    if visited is None:
+        visited = set()
+
+    obj_id = id(obj)
+    if obj_id in visited:
+        return set()
+    visited.add(obj_id)
+
+    deps: Set[str] = set()
+
+    obj_type = type(obj)
+    try:
+        source_file = inspect.getfile(obj_type)
+        rel_path = Path(source_file).resolve().relative_to(PROJECT_ROOT)
+        if str(rel_path).startswith("src/"):
+            deps.add(str(rel_path))
+    except (TypeError, ValueError):
+        pass
+
+    if is_dataclass(obj):
+        for f in fields(obj):
+            val = getattr(obj, f.name, None)
+            if val is not None:
+                deps.update(collect_python_dependencies(val, visited))
+
+    return deps

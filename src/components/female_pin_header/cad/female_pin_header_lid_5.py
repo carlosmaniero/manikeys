@@ -3,6 +3,8 @@ import sys
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from components.female_pin_header.model import FemalePinHeaderModel
+from core.manifold_ext.object import ManifoldObject
 from components.female_pin_header.cad.female_pin_header_lid import (
     FemalePinHeaderLidBaseCAD,
 )
@@ -12,9 +14,12 @@ import manifold3d
 @singleton
 @inject
 @dataclass
-class FemalePinHeaderLid5CAD(FemalePinHeaderLidBaseCAD):
+class FemalePinHeaderLid5CAD(ManifoldObject):
+    model: FemalePinHeaderModel
+
     def assemble(self) -> manifold3d.Manifold:
-        return self.create_housing(5)
+        base = FemalePinHeaderLidBaseCAD(self.model)
+        return base.create_housing(5)
 
 
 if __name__ == "__main__":
