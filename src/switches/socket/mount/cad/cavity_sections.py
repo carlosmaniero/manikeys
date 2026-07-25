@@ -7,7 +7,6 @@ import manifold3d
 from dataclasses import dataclass
 from switches.socket.mount.models import MountCavityModel
 from injector import inject, singleton
-from core.loader import load_stl_to_manifold
 from core.manifold_ext.object import ManifoldObject
 
 

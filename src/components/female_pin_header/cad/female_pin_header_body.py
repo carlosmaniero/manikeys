@@ -69,7 +69,6 @@ class FemalePinHeaderBodyBaseCAD(ManifoldObject):
         ).translate([0.0, self.model.outer_width / 2 + extra_width / 2, 0.0])
 
         holes = manifold3d.Manifold()
-        hole_radius = 0.6
         for col in range(pins):
             x = (col - (pins - 1) / 2) * self.model.parameters.pitch
             hole = manifold3d.Manifold.cube(

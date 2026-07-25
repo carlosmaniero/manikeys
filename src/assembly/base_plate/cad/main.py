@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from injector import inject, singleton
 
 from core.context import injector
-from core.loader import load_stl_to_manifold
 from core.manifold_ext.object import ManifoldObject
 from structure.body.models import BodyModel
 from assembly.base_plate.model import BasePlateModel

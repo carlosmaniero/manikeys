@@ -4,7 +4,6 @@ from typing import Iterator
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_many_stl_to_trimesh
 from core.trimesh_ext.object import TrimeshObject
 import trimesh
 

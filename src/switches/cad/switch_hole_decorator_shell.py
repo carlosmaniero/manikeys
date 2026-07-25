@@ -8,7 +8,6 @@ from globals.wall.parameters import WallParameters
 from core.manifold_ext.helpers import rounded_box, half_rounded
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
-from core.loader import load_stl_to_manifold
 
 
 @singleton

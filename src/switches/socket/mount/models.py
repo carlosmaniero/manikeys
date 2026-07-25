@@ -6,6 +6,8 @@ from globals.wall.parameters import WallParameters
 from switches.model import Layout
 from models.parameters import SwitchesParameters
 from connectors.pogo.models import PogoPinModel
+from components.female_pin_header.model import FemalePinHeaderModel
+from structure.body.parameters import BodyParameters
 
 
 @singleton
@@ -25,9 +27,6 @@ class MountCavityModel(MountModel):
     @property
     def offset(self) -> float:
         return super().offset - self.wall_parameters.thickness
-
-
-from components.female_pin_header.model import FemalePinHeaderModel
 
 
 @singleton
@@ -89,9 +88,6 @@ class ColCablePathModel:
             paths.append((x, y, z_min, height))
 
         return paths
-
-
-from structure.body.parameters import BodyParameters
 
 
 @singleton

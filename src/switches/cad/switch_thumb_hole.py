@@ -3,7 +3,6 @@ from dataclasses import dataclass
 import manifold3d
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_stl_to_manifold
 from models.switch_thumb import SwitchThumbModel
 from core.manifold_ext.object import ManifoldObject
 

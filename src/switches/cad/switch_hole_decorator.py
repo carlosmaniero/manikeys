@@ -7,7 +7,6 @@ from models.parameters import SwitchesParameters
 from core.manifold_ext.helpers import rounded_box
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
-from core.loader import load_stl_to_manifold
 
 
 @singleton

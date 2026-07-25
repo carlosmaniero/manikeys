@@ -5,7 +5,6 @@ from injector import inject, singleton
 from switches.model import Layout
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
-from core.loader import load_stl_to_manifold
 
 
 @singleton

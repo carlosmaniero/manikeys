@@ -10,7 +10,6 @@ from switches.socket.mount.models import MountCavityModel
 from connectors.pogo.models import PogoPinModel
 from structure.body.models import BodyModel
 from core.manifold_ext.object import ManifoldObject
-from core.loader import load_stl_to_manifold
 
 
 @singleton

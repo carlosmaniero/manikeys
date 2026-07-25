@@ -6,7 +6,6 @@ from core.context import injector
 from components.female_pin_header.cad.female_pin_header_body import (
     FemalePinHeaderBodyBaseCAD,
 )
-from components.female_pin_header.model import FemalePinHeaderModel
 import manifold3d
 
 
