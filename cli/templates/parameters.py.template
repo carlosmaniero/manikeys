@@ -1,0 +1,6 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class {class_name}Parameters:
+    pass

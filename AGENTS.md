@@ -55,35 +55,26 @@ All generated STL files are post-processed with `simplify.py` to reduce complexi
 
 To create a new CAD component:
 
-1.  **Follow the Component Pattern**: Always separate data, logic, and geometry. Create a new folder (e.g., `src/components/my_part/`) and inside it create:
-    - `parameters.py`: A `@dataclass` holding physical dimensions (e.g., `MyPartParameters`).
-    - `model.py`: A `@dataclass` that injects the parameters and calculates bounding boxes, coordinates, and spacing (e.g., `MyPartModel`).
-    - `cad/my_part.py`: The actual CAD generation file.
-
-2.  **Implement the CAD Class**: Inside `cad/my_part.py`, define a class that generates your 3D object.
-    - For `manifold3d`-based models (recommended for CSG), the `assemble` method should return a `manifold3d.Manifold` object.
-    - Ensure your CAD class is injectable (using `@inject` and `@singleton`) and inherits from `ManifoldObject` (or `VistaObject` for PyVista points, `OSCObject` for raw OpenSCAD), which provides a `program` method to handle command-line execution.
-
-3.  **Add Main Execution Block**: Add the following boilerplate to the end of your file to make it executable. Make sure to import `sys`, `injector`, and your new class.
-
-    ```python
-    if __name__ == "__main__":
-        my_part = injector.get(MyPartCAD)
-        my_part.program(sys.argv)
+1.  **Use the Boilerplate CLI**: Generate component files using `cli/boilerplate.py`:
+    ```sh
+    python3 cli/boilerplate.py src/components/my_part/cad/my_part.py [--with-model] [--with-parameters]
     ```
+    This automatically creates the standard structure, component folder, and injectable boilerplate code. Pass `--with-model` and `--with-parameters` if the component requires data separation via `model.py` and `parameters.py`.
 
-4.  **Update Makefile**: You need to tell `make` how to build your file.
-    - For simple cases where `src/cad/foo.py` generates `build/cad/foo.stl`, the existing generic rules might be sufficient.
-    - If your script depends on other generated files (e.g., it uses `load_stl("build/cad/dependency.stl")`), you **must** declare this dependency in the `Makefile`:
+2.  **Implement the CAD Class**: Inside `cad/my_part.py`, define your logic in `assemble()`.
+    - For `manifold3d`-based models (recommended for CSG), `assemble()` should return a `manifold3d.Manifold` object.
+
+3.  **Update Makefile**:
+    - For simple cases where `src/components/my_part/cad/my_part.py` generates `build/components/my_part/cad/my_part.stl`, the existing generic rules might be sufficient.
+    - If your script depends on other generated files (e.g., it uses `load_stl("build/cad/dependency.stl")`), declare this dependency in the `Makefile`:
       ```makefile
-      build/cad/my_new_part.stl: src/cad/my_new_part.py build/cad/dependency.stl
+      build/components/my_part/cad/my_part.stl: src/components/my_part/cad/my_part.py build/cad/dependency.stl
       ```
-      This ensures `make` builds the dependency first.
 
-5.  **Build the File**: Run `make` with the path to the desired output file in the `build/` directory. For example:
+4.  **Build the File**: Run `make` with the path to the desired output file in the `build/` directory:
 
     ```sh
-    make build/cad/my_new_part.stl
+    make build/components/my_part/cad/my_part.stl
     ```
 
-The `Makefile` contains generic rules that will find your script (`src/cad/my_new_part.py`), execute it, and save the output file. For STLs, it will also run the simplification script.
+The `Makefile` contains generic rules that will find your script (`src/components/my_part/cad/my_part.py`), execute it, and save the output file. For STLs, it will also run the simplification script.

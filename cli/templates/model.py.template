@@ -1,0 +1,10 @@
+from dataclasses import dataclass
+from injector import inject, singleton
+from {import_prefix}.parameters import {class_name}Parameters
+
+
+@singleton
+@inject
+@dataclass
+class {class_name}Model:
+    parameters: {class_name}Parameters

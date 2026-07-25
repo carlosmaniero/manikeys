@@ -1,0 +1,23 @@
+from __future__ import annotations
+import sys
+import manifold3d
+from dataclasses import dataclass
+from injector import inject, singleton
+from core.context import injector
+from core.manifold_ext.object import ManifoldObject
+from {import_prefix}.model import {class_name}Model
+
+
+@singleton
+@inject
+@dataclass
+class {class_name}CAD(ManifoldObject):
+    model: {class_name}Model
+
+    def assemble(self) -> manifold3d.Manifold:
+        return manifold3d.Manifold.cube([69.0, 69.0, 69.0])
+
+
+if __name__ == "__main__":
+    {var_name} = injector.get({class_name}CAD)
+    {var_name}.program(sys.argv)
