@@ -54,16 +54,14 @@ class BasePlateCAD(ManifoldObject):
         ).translate(self.model.coords)
 
         pro_case = (
-            load_stl_to_manifold(
+            self.deps.stls[
                 "build/components/arduino_pro_micro_case/cad/housing.stl"
-            )
+            ]
             .rotate([0, 0, 90])
             .translate(self.model.pro_case_coords)
         )
         nano_case = (
-            load_stl_to_manifold(
-                "build/components/arduino_nano_case/cad/case.stl"
-            )
+            self.deps.stls["build/components/arduino_nano_case/cad/case.stl"]
             .rotate([0, 0, 90])
             .translate(self.model.nano_case_coords)
         )

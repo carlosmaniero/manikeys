@@ -36,9 +36,7 @@ class PogoPinAdapterCAD(ManifoldObject):
 
     @property
     def internal_mask(self) -> manifold3d.Manifold:
-        return load_stl_to_manifold(
-            "build/connectors/pogo/cad/pogo_pin_mask.stl"
-        )
+        return self.deps.stls["build/connectors/pogo/cad/pogo_pin_mask.stl"]
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:

@@ -75,9 +75,7 @@ class USBCAdapterCAD(ManifoldObject):
 
     @property
     def connector_mask(self) -> manifold3d.Manifold:
-        return load_stl_to_manifold(
-            "build/connectors/usbc/cad/masks/connector.stl"
-        )
+        return self.deps.stls["build/connectors/usbc/cad/masks/connector.stl"]
 
     @property
     def screw_holes(self) -> manifold3d.Manifold:

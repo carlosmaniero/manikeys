@@ -33,7 +33,7 @@ render: build/render.png build/render_back.png build/render_top.png build/render
 
 build/main.stl build/main.3mf: src/main.py build/assembly/cad/full_keyboard.stl build/assembly/base_plate/cad/base_plate.stl build/switches/socket/mount/cad/shell.stl build/switches/socket/cad/hot_swap_grid.stl build/switches/cad/keycap_grid.stl build/connectors/rj11/cad/rj11.stl build/connectors/rj11/cad/adapter_trimmed.stl
 build/render.3mf: src/render.py build/main.3mf
-build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/cad/logo.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/connectors/rj11/cad/masks/rj11.stl build/connectors/rj11/cad/placement.stl build/connectors/usbc/cad/masks/usbc.stl build/connectors/usbc/cad/adapter_trimmed.stl build/connectors/magnet/cad/snap.stl build/components/light_indicator/cad/masks/body.stl build/components/light_indicator/cad/panel_frame.stl build/components/oled_096/cad/masks/body.stl build/components/oled_096/cad/placement.stl build/assembly/base_plate/cad/masks/base_plate.stl build/connectors/rj45/cad/masks/body.stl build/connectors/rj45/cad/placement.stl
+build/assembly/cad/full_keyboard.stl build/full_keyboard.3mf: src/assembly/cad/full_keyboard.py build/structure/body/shape.stl build/structure/body/cad/body_cavity_sections.stl build/structure/body/screws/cad/placement.stl build/structure/body/screws/cad/hole.stl build/switches/cad/switch_hole_decorator_grid.stl build/switches/cad/switch_hole_grid.stl build/switches/cad/switch_decorator_thumb_grid.stl build/switches/cad/switch_thumb_hole.stl build/connectors/pogo/cad/cable_path.stl build/connectors/usbc/cad/masks/usbc.stl build/connectors/usbc/cad/adapter_trimmed.stl build/connectors/magnet/cad/snap.stl build/components/light_indicator/cad/masks/body.stl build/components/light_indicator/cad/panel_frame.stl build/components/oled_096/cad/masks/body.stl build/components/oled_096/cad/placement.stl build/assembly/base_plate/cad/masks/base_plate.stl build/connectors/rj45/cad/masks/body.stl build/connectors/rj45/cad/placement.stl
 build/connectors/magnet/cad/snap.stl: src/connectors/magnet/cad/snap.py
 build/cad/magnet_demo.stl: src/cad/magnet_demo.py
 build/connectors/pogo/cad/cable_path.stl: src/connectors/pogo/cad/cable_path.py build/connectors/pogo/cad/pogo_pin_adapter.stl
@@ -64,7 +64,7 @@ build/switches/socket/mount/cad/shell.stl: src/switches/socket/mount/cad/shell.p
 build/structure/body/cad/body_cavity_sections.stl: src/structure/body/cad/body_cavity_sections.py build/structure/body/cad/body_cavity.stl
 build/switches/socket/mount/cad/cavity_sections.stl: src/switches/socket/mount/cad/cavity_sections.py build/switches/socket/mount/cad/cavity.stl
 build/switches/socket/mount/cad/col_cable_path.stl: src/switches/socket/mount/cad/col_cable_path.py build/components/cable_hook/cad/cable_hook.stl src/switches/socket/mount/models.py pin_headers
-build/switches/socket/mount/cad/row_cable_path.stl: src/switches/socket/mount/cad/row_cable_path.py build/components/cable_hook/cad/cable_hook.stl src/switches/socket/mount/models.py pin_headers
+build/switches/socket/mount/cad/row_cable_path.stl: src/switches/socket/mount/cad/row_cable_path.py src/switches/socket/mount/models.py pin_headers
 build/switches/cad/switch_hole_decorator.stl: src/switches/cad/switch_hole_decorator.py build/switches/cad/switch_hole.stl
 build/switches/cad/switch_hole_decorator_grid.stl: src/switches/cad/switch_hole_decorator_grid.py build/switches/cad/switch_hole_decorator.stl
 build/switches/cad/switch_hole_decorator_shell.stl: src/switches/cad/switch_hole_decorator_shell.py build/switches/socket/cad/hot_swap_placement_mask.stl build/switches/cad/switch_hole.stl
@@ -99,22 +99,28 @@ build/assembly/cad/hand.stl: src/assembly/cad/hand.py build/assembly/cad/full_ke
 build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py build/assembly/cad/hand.stl build/structure/body/cad/body_cavity.stl build/structure/body/screws/cad/hole.stl
 build/assembly/cad/side.stl: src/assembly/cad/side.py build/assembly/cad/full_keyboard.stl
 
+COMMA := ,
+empty :=
+space := $(empty) $(empty)
+ALL_DEPS = $(filter-out pin_headers,$(filter-out %.py,$(filter-out %.models.py,$^)))
+DEPS_FLAG = $(if $(strip $(ALL_DEPS)),--stls $(subst $(space),$(COMMA),$(strip $(ALL_DEPS))),)
+
 build/structure/%/shape.3mf: src/structure/%/cad/shape.py
 	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
+	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 
 build/structure/%/shape.stl: src/structure/%/cad/shape.py
 	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
+	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 build/%.3mf: src/%.py
 	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
+	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 
 build/%.stl: src/%.py
 	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@
+	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 

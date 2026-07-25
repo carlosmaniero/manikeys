@@ -69,16 +69,16 @@ class SwitchHoleDecoratorShellCAD(ManifoldObject):
     @property
     def hot_swap_placement_mask(self) -> manifold3d.Manifold:
         return (
-            load_stl_to_manifold(
+            self.deps.stls[
                 "build/switches/socket/cad/hot_swap_placement_mask.stl"
-            )
+            ]
             .rotate([180, 0, 180])
             .translate(self.model.mask_translation)
         )
 
     @property
     def switch_hole(self) -> manifold3d.Manifold:
-        return load_stl_to_manifold("build/switches/cad/switch_hole.stl")
+        return self.deps.stls["build/switches/cad/switch_hole.stl"]
 
     def assemble(self) -> manifold3d.Manifold:
         return (

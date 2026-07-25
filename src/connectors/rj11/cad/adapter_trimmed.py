@@ -13,11 +13,8 @@ from core.manifold_ext.object import ManifoldObject
 @dataclass
 class RJ11AdapterTrimmedCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
-        paths = [
-            "build/connectors/rj11/cad/adapter.stl",
-            "build/structure/body/shape.stl",
-        ]
-        adapter, body = load_many_stl_to_manifold(paths)
+        adapter = self.deps.stls["build/connectors/rj11/cad/adapter.stl"]
+        body = self.deps.stls["build/structure/body/shape.stl"]
         return adapter ^ body
 
 

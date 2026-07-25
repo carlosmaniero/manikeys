@@ -15,7 +15,7 @@ class SwitchThumbHoleCAD(ManifoldObject):
     model: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
-        hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
+        hole = self.deps.stls["build/switches/cad/switch_hole.stl"]
         positions = self.model.get_positions()
 
         holes = [hole.translate(pos) for pos in positions]

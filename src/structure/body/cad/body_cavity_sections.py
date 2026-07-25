@@ -57,7 +57,7 @@ class BodyInnerSections(ManifoldObject):
         )
 
         body = (
-            load_stl_to_manifold("build/structure/body/cad/body_cavity.stl")
+            self.deps.stls["build/structure/body/cad/body_cavity.stl"]
             - side_mask
         )
 

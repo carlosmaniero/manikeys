@@ -38,9 +38,9 @@ class BasePlateMainCAD(ManifoldObject):
             ]
         )
 
-        base_plate = load_stl_to_manifold(
+        base_plate = self.deps.stls[
             "build/assembly/base_plate/cad/base_plate.stl"
-        )
+        ]
 
         return base_plate ^ mask
 

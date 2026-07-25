@@ -38,7 +38,7 @@ class SideAssemblyCAD(ManifoldObject):
             ]
         )
 
-        body = load_stl_to_manifold("build/assembly/cad/full_keyboard.stl")
+        body = self.deps.stls["build/assembly/cad/full_keyboard.stl"]
 
         return body ^ mask
 

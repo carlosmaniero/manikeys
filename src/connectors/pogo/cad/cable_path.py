@@ -51,9 +51,9 @@ class CablePath(ManifoldObject):
 
     @property
     def pogo_adapter(self):
-        return load_stl_to_manifold(
+        return self.deps.stls[
             "build/connectors/pogo/cad/pogo_pin_adapter.stl"
-        ).rotate([90, 0, 180])
+        ].rotate([90, 0, 180])
 
     @property
     def pogo_adapters(self) -> manifold3d.Manifold:

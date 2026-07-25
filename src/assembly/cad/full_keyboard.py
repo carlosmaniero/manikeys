@@ -4,7 +4,6 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from core.loader import load_many_stl_to_manifold
 from switches.socket.mount.models import MountCavityModel
 from core.manifold_ext.object import ManifoldObject
 
@@ -16,75 +15,39 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
     model: MountCavityModel
 
     def assemble(self) -> manifold3d.Manifold:
-        paths = [
-            "build/structure/body/shape.stl",
-            "build/structure/body/cad/body_cavity_sections.stl",
-            "build/structure/body/screws/cad/placement.stl",
-            "build/switches/cad/switch_hole_decorator_grid.stl",
-            "build/switches/cad/switch_hole_grid.stl",
-            "build/switches/cad/switch_decorator_thumb_grid.stl",
-            "build/switches/cad/switch_thumb_hole.stl",
-            "build/connectors/pogo/cad/cable_path.stl",
-            "build/structure/body/screws/cad/hole.stl",
-            "build/connectors/rj45/cad/masks/body.stl",
-            "build/connectors/rj45/cad/placement.stl",
-            "build/connectors/usbc/cad/masks/usbc.stl",
-            "build/connectors/usbc/cad/adapter_trimmed.stl",
-            "build/connectors/magnet/cad/snap.stl",
-            "build/components/light_indicator/cad/masks/body.stl",
-            "build/components/light_indicator/cad/panel_frame.stl",
-            "build/components/oled_096/cad/masks/body.stl",
-            "build/components/oled_096/cad/placement.stl",
-            "build/assembly/base_plate/cad/masks/base_plate.stl",
-        ]
-
-        manifolds = load_many_stl_to_manifold(paths)
-
-        (
-            body,
-            body_cavity_sections,
-            body_screw_placement,
-            switch_grid,
-            switch_hole_grid,
-            switch_thumb,
-            switch_thumb_hole,
-            cable_path,
-            body_screw_hole,
-            rj45_mask,
-            rj45_adapter_placement,
-            usbc_mask,
-            usbc_adapter,
-            magnet_snap,
-            light_indicator_body_mask,
-            light_indicator_panel_frame,
-            oled_placement_body_mask,
-            oled_placement,
-            base_plate_mask,
-        ) = manifolds
-
-        body = body - body_cavity_sections
-        body = body - base_plate_mask
-        body = body + switch_grid
-        body = body - switch_hole_grid
-        body = body + switch_thumb
-        body = body - switch_thumb_hole
-        body = body - cable_path
-        body = body - magnet_snap
-
-        body = body - rj45_mask
-        body = body + rj45_adapter_placement
-
-        body = body - usbc_mask
-        body = body + usbc_adapter
-
-        body = body - light_indicator_body_mask
-        body = body + light_indicator_panel_frame
-
-        body = body - oled_placement_body_mask
-        body = body + oled_placement
-
-        body = body + body_screw_placement
-        body = body - body_screw_hole
+        body = (
+            self.deps.stls["build/structure/body/shape.stl"]
+            - self.deps.stls[
+                "build/structure/body/cad/body_cavity_sections.stl"
+            ]
+            - self.deps.stls[
+                "build/assembly/base_plate/cad/masks/base_plate.stl"
+            ]
+            + self.deps.stls[
+                "build/switches/cad/switch_hole_decorator_grid.stl"
+            ]
+            - self.deps.stls["build/switches/cad/switch_hole_grid.stl"]
+            + self.deps.stls[
+                "build/switches/cad/switch_decorator_thumb_grid.stl"
+            ]
+            - self.deps.stls["build/switches/cad/switch_thumb_hole.stl"]
+            - self.deps.stls["build/connectors/pogo/cad/cable_path.stl"]
+            - self.deps.stls["build/connectors/magnet/cad/snap.stl"]
+            - self.deps.stls["build/connectors/rj45/cad/masks/body.stl"]
+            + self.deps.stls["build/connectors/rj45/cad/placement.stl"]
+            - self.deps.stls["build/connectors/usbc/cad/masks/usbc.stl"]
+            + self.deps.stls["build/connectors/usbc/cad/adapter_trimmed.stl"]
+            - self.deps.stls[
+                "build/components/light_indicator/cad/masks/body.stl"
+            ]
+            + self.deps.stls[
+                "build/components/light_indicator/cad/panel_frame.stl"
+            ]
+            - self.deps.stls["build/components/oled_096/cad/masks/body.stl"]
+            + self.deps.stls["build/components/oled_096/cad/placement.stl"]
+            + self.deps.stls["build/structure/body/screws/cad/placement.stl"]
+            - self.deps.stls["build/structure/body/screws/cad/hole.stl"]
+        )
 
         return body
 

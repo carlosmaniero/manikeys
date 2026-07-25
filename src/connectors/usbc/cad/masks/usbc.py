@@ -47,11 +47,10 @@ class USBCMaskCAD(ManifoldObject):
 
     @property
     def body(self) -> manifold3d.Manifold:
-        return load_stl_to_manifold(
-            "build/connectors/usbc/cad/masks/connector.stl"
-        )
+        return self.deps.stls["build/connectors/usbc/cad/masks/connector.stl"]
 
     def assemble(self) -> manifold3d.Manifold:
+        _ = self.body
         return self.main_block.translate(self.model.body_offset)
 
 

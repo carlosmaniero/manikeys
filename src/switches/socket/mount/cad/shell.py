@@ -66,45 +66,53 @@ class MountShellCAD(ManifoldObject):
             ]
         )
 
-        paths = [
-            "build/switches/socket/mount/cad/body.stl",
-            "build/switches/socket/mount/cad/screw_clearance_cavity.stl",
-            "build/switches/socket/mount/cad/cavity_sections.stl",
-            "build/connectors/rj45/cad/masks/placement.stl",
-            "build/connectors/usbc/cad/masks/placement.stl",
-            "build/switches/socket/mount/cad/screw_clearance.stl",
-            "build/switches/cad/switch_hole_decorator_shell_grid.stl",
-            "build/switches/cad/switch_hole_grid.stl",
-            "build/switches/cad/switch_thumb_hole.stl",
-            "build/connectors/pogo/cad/cable_path.stl",
-            "build/components/light_indicator/cad/masks/body_shell.stl",
-            "build/components/oled_096/cad/masks/shell.stl",
-            "build/components/oled_096/cad/masks/shell_cavity.stl",
-            "build/components/oled_096/cad/masks/cable.stl",
-            "build/assembly/base_plate/cad/masks/base_plate.stl",
-            "build/switches/socket/mount/cad/col_cable_path.stl",
-            "build/switches/socket/mount/cad/row_cable_path.stl",
+        body = self.deps.stls["build/switches/socket/mount/cad/body.stl"]
+        screw_clearance_cavity = self.deps.stls[
+            "build/switches/socket/mount/cad/screw_clearance_cavity.stl"
         ]
-
-        (
-            body,
-            screw_clearance_cavity,
-            cavity_sections,
-            rj45_placement,
-            usbc_placement,
-            screw_clearance,
-            switch_hole_decorator_shell_grid,
-            switch_hole_grid,
-            switch_thumb_hole,
-            cable_path,
-            light_indicator_body_shell,
-            oled_shell,
-            oled_shell_cavity,
-            oled_cable,
-            base_plate_mask,
-            col_cable_path,
-            row_cable_path,
-        ) = load_many_stl_to_manifold(paths)
+        cavity_sections = self.deps.stls[
+            "build/switches/socket/mount/cad/cavity_sections.stl"
+        ]
+        rj45_placement = self.deps.stls[
+            "build/connectors/rj45/cad/masks/placement.stl"
+        ]
+        usbc_placement = self.deps.stls[
+            "build/connectors/usbc/cad/masks/placement.stl"
+        ]
+        screw_clearance = self.deps.stls[
+            "build/switches/socket/mount/cad/screw_clearance.stl"
+        ]
+        switch_hole_decorator_shell_grid = self.deps.stls[
+            "build/switches/cad/switch_hole_decorator_shell_grid.stl"
+        ]
+        switch_hole_grid = self.deps.stls[
+            "build/switches/cad/switch_hole_grid.stl"
+        ]
+        switch_thumb_hole = self.deps.stls[
+            "build/switches/cad/switch_thumb_hole.stl"
+        ]
+        cable_path = self.deps.stls["build/connectors/pogo/cad/cable_path.stl"]
+        light_indicator_body_shell = self.deps.stls[
+            "build/components/light_indicator/cad/masks/body_shell.stl"
+        ]
+        oled_shell = self.deps.stls[
+            "build/components/oled_096/cad/masks/shell.stl"
+        ]
+        oled_shell_cavity = self.deps.stls[
+            "build/components/oled_096/cad/masks/shell_cavity.stl"
+        ]
+        oled_cable = self.deps.stls[
+            "build/components/oled_096/cad/masks/cable.stl"
+        ]
+        base_plate_mask = self.deps.stls[
+            "build/assembly/base_plate/cad/masks/base_plate.stl"
+        ]
+        col_cable_path = self.deps.stls[
+            "build/switches/socket/mount/cad/col_cable_path.stl"
+        ]
+        row_cable_path = self.deps.stls[
+            "build/switches/socket/mount/cad/row_cable_path.stl"
+        ]
 
         screw_walls = screw_clearance_cavity ^ body
         oled_walls = oled_shell_cavity ^ body

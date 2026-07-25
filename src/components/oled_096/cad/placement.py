@@ -16,7 +16,7 @@ class Oled096PlacementCAD(ManifoldObject):
     model: Oled096PlacementModel
 
     def assemble(self) -> manifold3d.Manifold:
-        oled = load_stl_to_manifold("build/components/oled_096/cad/oled.stl")
+        oled = self.deps.stls["build/components/oled_096/cad/oled.stl"]
         return oled.rotate([0, 0, 180]).translate(self.model.placement_position)
 
 

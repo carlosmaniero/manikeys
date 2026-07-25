@@ -15,9 +15,9 @@ class SwitchDecoratorThumbGridCAD(ManifoldObject):
     model: SwitchThumbModel
 
     def assemble(self) -> manifold3d.Manifold:
-        decorator = load_stl_to_manifold(
+        decorator = self.deps.stls[
             "build/switches/cad/switch_hole_decorator.stl"
-        )
+        ]
         positions = self.model.get_positions()
 
         decorators = [decorator.translate(pos) for pos in positions]

@@ -56,9 +56,7 @@ class MountCavitySectionsCAD(ManifoldObject):
             ]
         )
 
-        body = load_stl_to_manifold(
-            "build/switches/socket/mount/cad/cavity.stl"
-        )
+        body = self.deps.stls["build/switches/socket/mount/cad/cavity.stl"]
 
         return body - (divider + side_section)
 

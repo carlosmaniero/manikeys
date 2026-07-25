@@ -22,9 +22,9 @@ class HotSwapGridCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
-        hot_swap = load_stl_to_manifold(
+        hot_swap = self.deps.stls[
             "build/switches/socket/cad/hot_swap.stl"
-        ).rotate([180, 0, 180])
+        ].rotate([180, 0, 180])
 
         decorator_top = self.switches_parameters.outer.thickness
         main_offset = [0, 0, decorator_top + self.mount_model.offset]

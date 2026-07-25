@@ -16,7 +16,7 @@ class SwitchHoleGridCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         holes = []
-        switch_hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
+        switch_hole = self.deps.stls["build/switches/cad/switch_hole.stl"]
 
         for column in self.layout.grid:
             for key in column:

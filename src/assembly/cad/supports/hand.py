@@ -63,11 +63,9 @@ class HandWithSupportsAssemblyCAD(ManifoldObject):
         )
 
     def assemble(self) -> manifold3d.Manifold:
-        hand = load_stl_to_manifold("build/assembly/cad/hand.stl")
-        inner = load_stl_to_manifold("build/structure/body/cad/body_cavity.stl")
-        screw_holes = load_stl_to_manifold(
-            "build/structure/body/screws/cad/hole.stl"
-        )
+        hand = self.deps.stls["build/assembly/cad/hand.stl"]
+        inner = self.deps.stls["build/structure/body/cad/body_cavity.stl"]
+        screw_holes = self.deps.stls["build/structure/body/screws/cad/hole.stl"]
         mask = self._create_mask()
 
         x_range = self.model.end_x() - self.model.hand_support_end_x

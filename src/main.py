@@ -14,24 +14,17 @@ import trimesh
 @dataclass
 class Keyboard(TrimeshObject):
     def assemble(self) -> Iterator[trimesh.Trimesh]:
-        paths = [
-            "build/assembly/cad/full_keyboard.stl",
-            "build/assembly/base_plate/cad/base_plate.stl",
-            "build/switches/socket/mount/cad/shell.stl",
-            "build/switches/socket/cad/hot_swap_grid.stl",
-            "build/switches/cad/keycap_grid.stl",
-            "build/connectors/rj11/cad/rj11.stl",
-            "build/connectors/rj11/cad/adapter_trimmed.stl",
+        body_part = self.deps.stls["build/assembly/cad/full_keyboard.stl"]
+        bottom = self.deps.stls["build/assembly/base_plate/cad/base_plate.stl"]
+        socket_shell = self.deps.stls[
+            "build/switches/socket/mount/cad/shell.stl"
         ]
-        (
-            body_part,
-            bottom,
-            socket_shell,
-            sockets,
-            switches,
-            rj11,
-            rj11_adapter,
-        ) = load_many_stl_to_trimesh(paths)
+        sockets = self.deps.stls["build/switches/socket/cad/hot_swap_grid.stl"]
+        switches = self.deps.stls["build/switches/cad/keycap_grid.stl"]
+        rj11 = self.deps.stls["build/connectors/rj11/cad/rj11.stl"]
+        rj11_adapter = self.deps.stls[
+            "build/connectors/rj11/cad/adapter_trimmed.stl"
+        ]
 
         def hex_to_rgba(hex_str: str) -> list[int]:
             hex_str = hex_str.lstrip("#")

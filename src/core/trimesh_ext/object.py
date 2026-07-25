@@ -7,7 +7,12 @@ from core.object import Object
 from core.three_mf import get_mesh_color, inject_3mf_metadata
 
 
+from core.loader import load_many_stl_to_trimesh
+
+
 class TrimeshObject(Object[Union[trimesh.Trimesh, trimesh.Scene]]):
+    load_deps_fn = staticmethod(load_many_stl_to_trimesh)
+
     def save(self, path: str):
         obj = self.assemble()
         if isinstance(obj, Iterator):

@@ -8,7 +8,12 @@ from core.object import Object
 import sys
 
 
+from core.loader import load_many_stl_to_manifold
+
+
 class ManifoldObject(Object[manifold3d.Manifold]):
+    load_deps_fn = staticmethod(load_many_stl_to_manifold)
+
     def save(self, path: str):
         manifold = self.assemble()
         mesh = manifold.to_mesh()

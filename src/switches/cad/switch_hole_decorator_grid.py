@@ -16,9 +16,9 @@ class SwitchHoleDecoratorGridCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         grid = []
-        decorator = load_stl_to_manifold(
+        decorator = self.deps.stls[
             "build/switches/cad/switch_hole_decorator.stl"
-        )
+        ]
 
         for column in self.layout.grid:
             for key in column:

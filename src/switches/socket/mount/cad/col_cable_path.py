@@ -20,9 +20,9 @@ class ColCablePathCAD(ManifoldObject):
     wall_parameters: WallParameters
 
     def assemble(self) -> manifold3d.Manifold:
-        cable_hook = load_stl_to_manifold(
+        cable_hook = self.deps.stls[
             "build/components/cable_hook/cad/cable_hook.stl"
-        )
+        ]
         result = manifold3d.Manifold()
 
         for x, y, z_min, height in self.model.path:

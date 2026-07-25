@@ -39,7 +39,7 @@ class SwitchHoleDecoratorCAD(ManifoldObject):
 
         obj = obj.translate([0, 0, -(p.thickness / 2 - p.outer.thickness)])
 
-        switch_hole = load_stl_to_manifold("build/switches/cad/switch_hole.stl")
+        switch_hole = self.deps.stls["build/switches/cad/switch_hole.stl"]
         return obj - switch_hole
 
 
