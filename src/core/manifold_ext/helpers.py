@@ -292,3 +292,29 @@ def path_extrude(
 
     mesh = manifold3d.Mesh(vert_properties=vertices, tri_verts=triangles)
     return manifold3d.Manifold(mesh)
+
+
+def extrude(
+    points: list[list[float]], height: float, center: bool = False
+) -> manifold3d.Manifold:
+    if center and points:
+        xs = [p[0] for p in points]
+        ys = [p[1] for p in points]
+        cx = (min(xs) + max(xs)) / 2.0
+        cy = (min(ys) + max(ys)) / 2.0
+        points = [[p[0] - cx, p[1] - cy] for p in points]
+
+    if len(points) >= 3:
+        s = 0.0
+        n = len(points)
+        for i in range(n):
+            x1, y1 = points[i]
+            x2, y2 = points[(i + 1) % n]
+            s += x1 * y2 - x2 * y1
+        if s < 0:
+            points = points[::-1]
+    cs = manifold3d.CrossSection([points])
+    res = manifold3d.Manifold.extrude(cs, height)
+    if center:
+        res = res.translate([0.0, 0.0, -height / 2.0])
+    return res
