@@ -19,13 +19,12 @@ class DependencyManager(Generic[T]):
         self._used: set[str] = set()
         self._load_fn = load_fn
         self._cache: Dict[str, T] = {}
-        self.stls: MagicDependencyMap[T] | None = None
+        self.stls: MagicDependencyMap[T] = MagicDependencyMap(self)
 
         if self._deps:
             loaded = self._load_fn(self._deps)
             for path, obj in zip(self._deps, loaded):
                 self._cache[path] = obj
-            self.resolve()
 
     def resolve(
         self, stls: str | List[str] | None = None
@@ -40,8 +39,6 @@ class DependencyManager(Generic[T]):
                 loaded = self._load_fn(self._deps)
                 for path, obj in zip(self._deps, loaded):
                     self._cache[path] = obj
-        if not hasattr(self, "stls") or self.stls is None:
-            self.stls = MagicDependencyMap(self)
         return self.stls
 
     def get(self, dep_path: str) -> T:
