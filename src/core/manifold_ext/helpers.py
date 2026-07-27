@@ -295,7 +295,9 @@ def path_extrude(
 
 
 def extrude(
-    points: list[list[float]], height: float, center: bool = False
+    points: list[list[float]] | list[tuple[float, float]],
+    height: float,
+    center: bool = False,
 ) -> manifold3d.Manifold:
     if center and points:
         xs = [p[0] for p in points]
