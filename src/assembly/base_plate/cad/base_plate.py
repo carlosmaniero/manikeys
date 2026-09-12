@@ -65,8 +65,14 @@ class BasePlateCAD(ManifoldObject):
             .translate(self.model.nano_case_coords)
         )
 
+        divider = manifold3d.Manifold.cube(
+            self.model.divider_dimensions,
+            center=False,
+        ).translate(self.model.divider_coords)
+
         return (
             bottom
+            - divider
             - self.screw_holes()
             - self.screw_head_holes()
             + pro_case

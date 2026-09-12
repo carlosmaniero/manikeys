@@ -15,10 +15,17 @@ class BasePlateMaskCAD(ManifoldObject):
     model: BasePlateModel
 
     def assemble(self) -> manifold3d.Manifold:
-        return manifold3d.Manifold.cube(
+        base_mask = manifold3d.Manifold.cube(
             self.model.mask_dimensions,
             center=False,
         ).translate(self.model.mask_coords)
+
+        divider = manifold3d.Manifold.cube(
+            self.model.mask_divider_dimensions,
+            center=False,
+        ).translate(self.model.mask_divider_coords)
+
+        return base_mask - divider
 
 
 if __name__ == "__main__":

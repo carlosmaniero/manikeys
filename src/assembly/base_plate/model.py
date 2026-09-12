@@ -136,7 +136,7 @@ class BasePlateModel:
             - self.wall_parameters.thickness * 2,
             self.screw_placement_model.body.depth
             - self.wall_parameters.thickness * 2,
-            self.parameters.thickness + 2.0,
+            self.parameters.thickness,
         ]
 
     @property
@@ -149,6 +149,45 @@ class BasePlateModel:
             -(
                 self.body_parameters.height
                 + self.screw_placement_model.bottom_thickness
-                + 1.0
             ),
+        ]
+
+    @property
+    def divider_dimensions(self) -> list[float]:
+        divider_size = self.wall_parameters.thickness * 2
+        return [
+            self.screw_placement_model.body.width,
+            divider_size,
+            self.dimensions[2],
+        ]
+
+    @property
+    def divider_coords(self) -> list[float]:
+        divider_size = self.divider_dimensions[1]
+        divider_y = self.screw_placement_model.body.divider_y - divider_size / 2
+        return [
+            self.screw_placement_model.body.start_x(),
+            divider_y,
+            self.coords[2],
+        ]
+
+    @property
+    def mask_divider_dimensions(self) -> list[float]:
+        divider_size = (
+            self.wall_parameters.thickness * 2 - self.parameters.clearance
+        )
+        return [
+            self.screw_placement_model.body.width,
+            divider_size,
+            self.mask_dimensions[2],
+        ]
+
+    @property
+    def mask_divider_coords(self) -> list[float]:
+        divider_size = self.mask_divider_dimensions[1]
+        divider_y = self.screw_placement_model.body.divider_y - divider_size / 2
+        return [
+            self.screw_placement_model.body.start_x(),
+            divider_y,
+            self.mask_coords[2],
         ]
