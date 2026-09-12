@@ -33,7 +33,7 @@ class HandAssemblyCAD(ManifoldObject):
             [
                 self.model.hand_support_end_x,
                 self.model.start_y(),
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 

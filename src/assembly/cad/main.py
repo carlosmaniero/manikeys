@@ -32,7 +32,7 @@ class MainAssemblyCAD(ManifoldObject):
             [
                 self.model.start_x(),
                 divider_y,
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 

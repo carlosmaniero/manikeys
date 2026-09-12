@@ -40,7 +40,9 @@ class MagnetSnapModel:
             )[0]
             - self.thickness * 3
         )
-        bottom_z = self.model.bottom_z + self.thickness * 2
+        bottom_z = (
+            self.model.bottom_z + self.thickness * 3 + self.magnet_diameter / 2
+        )
         return top_z, bottom_z
 
     def get_main_hand_positions(self) -> list[list[float]]:

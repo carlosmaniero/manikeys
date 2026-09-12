@@ -58,21 +58,21 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
             [
                 self.model.start_x(),
                 divider_y,
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 
     def assemble(self) -> manifold3d.Manifold:
         body = self.deps.stls["build/assembly/cad/main.stl"]
-        inner = self.deps.stls["build/structure/body/cad/body_cavity.stl"]
+        shape = self.deps.stls["build/structure/body/shape.stl"]
         screw_holes = self.deps.stls["build/structure/body/screws/cad/hole.stl"]
         mask = self._create_mask()
 
         x_range = self.model.width
         y_range = self.model.end_y() - self.model.divider_y
 
-        num_supports_y = int(x_range / 5)
-        num_supports_x = int(y_range / 5)
+        num_supports_y = int(x_range / 20)
+        num_supports_x = int(y_range / 20)
 
         supports = manifold3d.Manifold()
 
@@ -88,7 +88,7 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
             )
             supports += self._create_support_x(y_pos)
 
-        support = (supports ^ (inner ^ mask)) - screw_holes
+        support = (supports ^ shape ^ mask) - screw_holes
 
         return body + support
 

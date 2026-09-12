@@ -33,7 +33,7 @@ class SideAssemblyCAD(ManifoldObject):
             [
                 self.model.start_x(),
                 self.model.start_y(),
-                -self.body_parameters.height,
+                self.model.bottom_z,
             ]
         )
 
