@@ -1,6 +1,7 @@
 from globals.wall.parameters import WallParameters
 from globals.screw.parameters import ScrewParameters
 from structure.body.parameters import BodyParameters
+from assembly.base_plate.parameters import BasePlateParameters
 from dataclasses import dataclass
 from injector import inject, singleton
 from structure.body.models import BodyModel
@@ -14,6 +15,7 @@ class ScrewPlacementModel:
     wall_parameters: WallParameters
     screw_parameters: ScrewParameters
     body_parameters: BodyParameters
+    base_plate_parameters: BasePlateParameters
 
     @property
     def standoff_size(self) -> float:
@@ -35,7 +37,7 @@ class ScrewPlacementModel:
 
     @property
     def z(self) -> float:
-        return self.bottom_z + self.bottom_thickness
+        return self.bottom_z + self.base_plate_parameters.thickness
 
     @property
     def mask_z(self) -> float:

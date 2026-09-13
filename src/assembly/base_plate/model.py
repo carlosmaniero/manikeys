@@ -146,10 +146,7 @@ class BasePlateModel:
             + self.wall_parameters.thickness,
             self.screw_placement_model.body.start_y()
             + self.wall_parameters.thickness,
-            -(
-                self.body_parameters.height
-                + self.screw_placement_model.bottom_thickness
-            ),
+            self.screw_placement_model.bottom_z,
         ]
 
     @property
