@@ -206,7 +206,10 @@ class SwitchHoleDecoratorShellModel:
 
     @property
     def height(self) -> float:
-        return self.switches_parameters.thickness
+        return (
+            self.switches_parameters.thickness
+            - self.switches_parameters.clearance
+        )
 
     @property
     def cube_size(self) -> list[float]:
@@ -214,13 +217,14 @@ class SwitchHoleDecoratorShellModel:
 
     @property
     def translation(self) -> list[float]:
+        bottom_z = -(
+            self.switches_parameters.thickness
+            - self.switches_parameters.outer.thickness
+        )
         return [
             0.0,
             0.0,
-            -(
-                self.switches_parameters.thickness / 2
-                - self.switches_parameters.outer.thickness
-            ),
+            bottom_z + self.height / 2,
         ]
 
     @property

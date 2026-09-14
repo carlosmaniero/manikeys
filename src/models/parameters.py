@@ -14,7 +14,8 @@ class SwitchesParameters:
     border_shell: float = 3.0
     outer: CapsOuterParameters = field(default_factory=CapsOuterParameters)
     gap: float = 5.0
-    cable_radius: float = 0.5
+    clearance: float = 0.2
+    cable_radius: float = 1.5 / 2
 
     cable_path_wall_thickness: float = 0.25
     col_cable_path_wall_thickness: float = 3.0
