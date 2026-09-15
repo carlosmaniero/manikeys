@@ -43,11 +43,11 @@ jobs:
       - name: Run Linter
         run: make -j $(nproc) lint
 
-      - name: Run Tests
-        run: make -j $(nproc) test
-
       - name: Build STL
         run: make -j $(nproc) build
+
+      - name: Run Tests
+        run: make -j $(nproc) test
 
       - name: Generate PNG
         run: xvfb-run make -j $(nproc) render

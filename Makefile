@@ -109,6 +109,8 @@ build/assembly/cad/supports/main.stl: src/assembly/cad/supports/main.py src/glob
 build/assembly/cad/hand.stl: src/assembly/cad/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
 build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/hand.stl build/structure/body/shape.stl build/structure/body/screws/cad/hole.stl
 build/assembly/cad/side.stl: src/assembly/cad/side.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
+build/switches/socket/mount/cad/main.stl: src/switches/socket/mount/cad/main.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/shell.stl
+build/switches/socket/mount/cad/hand.stl: src/switches/socket/mount/cad/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/shell.stl
 
 COMMA := ,
 empty :=
