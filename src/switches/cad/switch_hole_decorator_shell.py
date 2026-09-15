@@ -39,9 +39,11 @@ class SwitchHoleDecoratorShellCAD(ManifoldObject):
 
     @property
     def block_hole(self) -> manifold3d.Manifold:
-        return manifold3d.Manifold.cube(
-            self.model.block_hole_size, center=True
-        ).translate(self.model.block_translation)
+        hole = manifold3d.Manifold.cube(self.model.block_hole_size, center=True)
+        return manifold3d.Manifold.batch_boolean(
+            [hole.translate(pos) for pos in self.model.block_hole_translations],
+            manifold3d.OpType.Add,
+        )
 
     def assemble(self) -> manifold3d.Manifold:
         return (

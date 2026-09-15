@@ -15,3 +15,8 @@ class HotSwapParameters:
     switch_socket_width: float = 17.6
     center_hole_radius: float = 1.9
     mask_clearance: float = 0.2
+
+
+@dataclass
+class HotSwapV2Parameters(HotSwapParameters):
+    pass

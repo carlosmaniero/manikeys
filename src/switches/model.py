@@ -305,3 +305,17 @@ class SwitchHoleDecoratorShellModel:
             + self.y_cable_path_cube_size[2] / 2
             + self.block_size[2] / 2,
         ]
+
+    @property
+    def block_hole_translations(self) -> list[list[float]]:
+        z_pos = (
+            self.y_cable_path_translation[2]
+            + self.y_cable_path_cube_size[2] / 2
+            + self.block_size[2] / 2
+        )
+        x_off = self.y_cable_path_translation[0]
+        y_pos = self.y_cable_path_translation[1]
+        return [
+            [x_off, y_pos, z_pos],
+            [-x_off, y_pos, z_pos],
+        ]
