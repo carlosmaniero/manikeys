@@ -112,6 +112,9 @@ class MountShellCAD(ManifoldObject):
         row_cable_path = self.deps.stls[
             "build/switches/socket/mount/cad/row_cable_path.stl"
         ]
+        shell_side_mask = self.deps.stls[
+            "build/switches/socket/mount/cad/shell_side_mask.stl"
+        ]
 
         screw_walls = screw_clearance_cavity ^ body
         oled_walls = oled_shell_cavity ^ body
@@ -134,6 +137,7 @@ class MountShellCAD(ManifoldObject):
             - oled_shell
             - oled_cable
             - base_plate_mask
+            - shell_side_mask
             + col_cable_path
             + row_cable_path
         )
