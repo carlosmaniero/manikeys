@@ -42,7 +42,10 @@ class USBCModel:
         max_y = full_length / 2
 
         return [
-            self.body_model.start_x() + self.wall_parameters.fillet + max_x,
+            self.body_model.start_x()
+            + self.wall_parameters.fillet
+            + max_x
+            + thickness * 2,
             self.body_model.end_y() - max_y + self.inner_offset,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
