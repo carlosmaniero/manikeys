@@ -226,13 +226,13 @@ class BodyModel:
                     ratio=lerp.y_factor,
                 ),
                 Interpolator(
-                    start=self.start_x(),
-                    end=self.start_x() + self.wall_parameters.fillet,
+                    start=self.start_x_fillet_start,
+                    end=self.start_x_fillet_end,
                     base=base,
                 ),
                 Interpolator(
-                    start=self.end_x(),
-                    end=self.end_x() - self.wall_parameters.fillet,
+                    start=self.end_x_fillet_start,
+                    end=self.end_x_fillet_end,
                     base=base,
                 ),
             ]
@@ -242,6 +242,22 @@ class BodyModel:
         z = self.sphere.z(x, y, self.offset)
 
         return self.low_bottom_interpolations([x, y]).interpolate([x, y], z)
+
+    @property
+    def start_x_fillet_start(self) -> float:
+        return self.start_x()
+
+    @property
+    def start_x_fillet_end(self) -> float:
+        return self.start_x() + self.wall_parameters.fillet
+
+    @property
+    def end_x_fillet_start(self) -> float:
+        return self.end_x()
+
+    @property
+    def end_x_fillet_end(self) -> float:
+        return self.end_x() - self.wall_parameters.fillet
 
     def start_x(self) -> float:
         return self.sphere.start_x() - self.offset

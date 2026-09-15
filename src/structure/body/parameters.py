@@ -11,6 +11,7 @@ class BodyParameters:
     clearance: float = 2.0
     bottom_thickness: float = 5.0
     connectors_bottom_offset: float = 10.0
+    mount_cavity_fillet_reduction: float = 5.0
 
     @property
     def bottom_z(self) -> float:

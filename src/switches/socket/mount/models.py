@@ -28,6 +28,18 @@ class MountCavityModel(MountModel):
     def offset(self) -> float:
         return super().offset - self.wall_parameters.thickness
 
+    @property
+    def start_x_fillet_end(self) -> float:
+        reduction = self.body_parameters.mount_cavity_fillet_reduction
+        return self.start_x() + max(
+            0.0, self.wall_parameters.fillet - reduction
+        )
+
+    @property
+    def end_x_fillet_end(self) -> float:
+        reduction = self.body_parameters.mount_cavity_fillet_reduction
+        return self.end_x() - max(0.0, self.wall_parameters.fillet - reduction)
+
 
 @singleton
 @inject
