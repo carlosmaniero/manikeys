@@ -8,7 +8,9 @@ build: build/main.stl build/main.3mf \
 	build/assembly/cad/supports/main.stl \
 	build/assembly/cad/hand.stl \
 	build/assembly/cad/supports/hand.stl \
-	build/assembly/cad/side.stl
+	build/assembly/cad/side.stl \
+	build/switches/socket/mount/cad/main.stl \
+	build/switches/socket/mount/cad/hand.stl
 
 build_watch:
 	@target="$(filter-out $@,$(MAKECMDGOALS))"; \
