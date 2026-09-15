@@ -188,7 +188,7 @@ build/%_angle270.png: build/%.3mf
 build/%_angle315.png: build/%.3mf
 	f3d --output=$@ $(F3D_RENDER_FLAGS) --camera-elevation-angle=60 --camera-azimuth-angle=315 $<
 
-test:
+test: build/assembly/cad/full_keyboard.stl build/switches/socket/mount/cad/main.stl build/switches/socket/mount/cad/hand.stl
 	uv run pytest
 
 lint:
