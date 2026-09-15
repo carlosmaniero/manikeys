@@ -24,4 +24,4 @@ class CableHookModel:
 
     @property
     def offset_x(self) -> float:
-        return self.wall_parameters.thickness
+        return self.wall_parameters.thickness + self.parameters.extra_offset_x
