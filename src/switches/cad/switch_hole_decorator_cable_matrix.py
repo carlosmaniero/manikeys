@@ -19,6 +19,7 @@ class SwitchHoleDecoratorCableMatrixCAD(ManifoldObject):
     def y_cable_path(self) -> manifold3d.Manifold:
         body = half_rounded(
             self.model.y_cable_path_cube_size,
+            circular_segments=8,
         ).rotate([180, 0, 0])
         return body.translate(self.model.y_cable_path_translation)
 
@@ -27,6 +28,7 @@ class SwitchHoleDecoratorCableMatrixCAD(ManifoldObject):
         body = (
             half_rounded(
                 self.model.x_cable_path_cube_size,
+                circular_segments=8,
             )
             .rotate([0, 0, 90])
             .rotate([180, 0, 0])
@@ -39,7 +41,7 @@ class SwitchHoleDecoratorCableMatrixCAD(ManifoldObject):
             self.model.cable_hole_length,
             self.model.cable_hole_radius,
             center=True,
-            circular_segments=32,
+            circular_segments=8,
         )
         return hole.rotate([90, 0, 0]).translate(
             self.model.y_cable_path_translation
@@ -51,15 +53,22 @@ class SwitchHoleDecoratorCableMatrixCAD(ManifoldObject):
             self.model.x_cable_hole_length,
             self.model.cable_hole_radius,
             center=True,
-            circular_segments=32,
+            circular_segments=8,
         )
         return hole.rotate([0, 90, 0]).translate(
             self.model.x_cable_hole_translation
         )
 
+    @property
+    def block(self) -> manifold3d.Manifold:
+        return manifold3d.Manifold.cube(
+            self.model.block_size, center=True
+        ).translate(self.model.block_translation)
+
     def assemble(self) -> manifold3d.Manifold:
         return (
             manifold3d.Manifold.hull(self.y_cable_path + self.x_cable_path)
+            + self.block
             - self.cable_hole
             - self.x_cable_hole
         )

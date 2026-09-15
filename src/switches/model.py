@@ -278,3 +278,30 @@ class SwitchHoleDecoratorShellModel:
             self.x_cable_path_translation[1],
             self.x_cable_path_translation[2] - self.x_boder_size / 2,
         ]
+
+    @property
+    def block_size(self) -> list[float]:
+        return [
+            self.y_cable_path_cube_size[0] / 2,
+            self.y_cable_path_cube_size[1],
+            self.x_boder_size / 2,
+        ]
+
+    @property
+    def block_hole_size(self) -> list[float]:
+        clearance = self.switches_parameters.pin_clearance
+        return [
+            self.block_size[0] + clearance,
+            self.block_size[1] + clearance,
+            self.block_size[2] + clearance,
+        ]
+
+    @property
+    def block_translation(self) -> list[float]:
+        return [
+            self.y_cable_path_translation[0],
+            self.y_cable_path_translation[1],
+            self.y_cable_path_translation[2]
+            + self.y_cable_path_cube_size[2] / 2
+            + self.block_size[2] / 2,
+        ]

@@ -15,10 +15,12 @@ class SwitchesParameters:
     outer: CapsOuterParameters = field(default_factory=CapsOuterParameters)
     gap: float = 5.0
     clearance: float = 0.2
-    cable_radius: float = 1.5 / 2
+    cable_radius: float = 1.25 / 2
 
     cable_path_wall_thickness: float = 0.25
     col_cable_path_wall_thickness: float = 3.0
+    pin_margin: float = 0.75
+    pin_clearance: float = 0.05
 
     @property
     def full_offset(self) -> float:
