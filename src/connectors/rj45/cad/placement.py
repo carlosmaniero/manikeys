@@ -17,7 +17,9 @@ class RJ45AdapterFrontPlacementCAD(ManifoldObject):
         front = self.deps.stls["build/connectors/rj45/cad/adapter_front.stl"]
         body = self.deps.stls["build/structure/body/shape.stl"]
 
-        placement = front.translate(self.model.translation_coords)
+        placement = front.rotate([0, 0, -90]).translate(
+            self.model.translation_coords
+        )
 
         screw_holes = M()
         for coords in self.model.rj45_model.front_screw_hole_coords:
@@ -34,7 +36,9 @@ class RJ45AdapterFrontPlacementCAD(ManifoldObject):
             )
             screw_holes += hole
 
-        screw_holes = screw_holes.translate(self.model.translation_coords)
+        screw_holes = screw_holes.rotate([0, 0, -90]).translate(
+            self.model.translation_coords
+        )
 
         return (placement - screw_holes) ^ body
 

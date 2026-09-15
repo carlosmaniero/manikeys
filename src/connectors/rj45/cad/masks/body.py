@@ -21,7 +21,9 @@ class RJ45AdapterBodyMaskCAD(ManifoldObject):
         ).translate(self.model.rj45_model.housing_coords)
 
     def assemble(self) -> M:
-        mask = self.housing.translate(self.model.translation_coords)
+        mask = self.housing.rotate([0, 0, -90]).translate(
+            self.model.translation_coords
+        )
         return mask
 
 

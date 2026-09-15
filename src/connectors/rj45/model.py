@@ -202,20 +202,20 @@ class RJ45PlacementModel:
 
     @property
     def max_x(self) -> float:
-        return self.rj45_model.screw_tabs[0] / 2
+        return self.rj45_model.body[1] / 2
 
     @property
     def max_y(self) -> float:
-        return self.rj45_model.body[1] / 2
+        return self.rj45_model.screw_tabs[0] / 2
 
     @property
     def translation_coords(self) -> list[float]:
         return [
-            self.body_model.end_x()
+            self.body_model.end_x() - self.max_x,
+            self.body_model.end_y()
             - self.wall_parameters.fillet
-            - self.max_x
-            - self.wall_parameters.thickness,
-            self.body_model.end_y() - self.max_y,
+            - self.max_y
+            - self.wall_parameters.thickness * 3,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
             - self.rj45_model.thickness / 2

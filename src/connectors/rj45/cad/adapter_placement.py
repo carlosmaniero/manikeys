@@ -16,8 +16,10 @@ class RJ45AdapterPlacementCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         adapter = self.deps.stls["build/connectors/rj45/cad/adapter.stl"]
-        return adapter.rotate([0, 180, 0]).translate(
-            self.model.translation_coords
+        return (
+            adapter.rotate([0, 180, 0])
+            .rotate([0, 0, -90])
+            .translate(self.model.translation_coords)
         )
 
 
