@@ -10,8 +10,10 @@ from switches.socket.mount.models import (
     MountCavityModel,
     ColCablePathModel,
     RowCablePathModel,
+    MountScrewCylinderModel,
 )
 from structure.body.models import BodyModel
+from structure.body.screws.models import ScrewPlacementModel
 from core.manifold_ext.object import ManifoldObject
 
 
@@ -25,6 +27,8 @@ class MountShellCAD(ManifoldObject):
     body_parameters: BodyParameters
     col_cable_path_model: ColCablePathModel
     row_cable_path_model: RowCablePathModel
+    screw_placement_model: ScrewPlacementModel
+    screw_cylinder_model: MountScrewCylinderModel
 
     def assemble(self) -> manifold3d.Manifold:
         divider_size = (
@@ -119,6 +123,44 @@ class MountShellCAD(ManifoldObject):
         screw_walls = screw_clearance_cavity ^ body
         oled_walls = oled_shell_cavity ^ body
 
+        base_cylinder = manifold3d.Manifold.cylinder(
+            self.screw_cylinder_model.height,
+            self.screw_cylinder_model.radius,
+            circular_segments=100,
+            center=False,
+        )
+        base_cube = manifold3d.Manifold.cube(
+            [
+                self.screw_cylinder_model.radius,
+                self.screw_cylinder_model.radius,
+                self.screw_cylinder_model.height,
+            ],
+            center=False,
+        )
+        base_quarter = base_cylinder ^ base_cube
+
+        screw_cylinders = []
+        for (
+            center_x,
+            center_y,
+            rotation_deg,
+        ) in self.screw_cylinder_model.placements:
+            cylinder = base_quarter.rotate([0, 0, rotation_deg]).translate(
+                [
+                    center_x,
+                    center_y,
+                    self.screw_cylinder_model.z,
+                ]
+            )
+            screw_cylinders.append(cylinder)
+
+        main_screw_cylinders = (
+            manifold3d.Manifold.batch_boolean(
+                screw_cylinders, manifold3d.OpType.Add
+            )
+            - screw_clearance_cavity
+        )
+
         return (
             body
             - cavity_sections
@@ -138,6 +180,7 @@ class MountShellCAD(ManifoldObject):
             - oled_cable
             - base_plate_mask
             - shell_side_mask
+            + main_screw_cylinders
             + col_cable_path
             + row_cable_path
         )

@@ -1,7 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from injector import inject, singleton
-from structure.body.models import BodyInnerModel
+from structure.body.models import BodyInnerModel, BodyModel
+from structure.body.screws.models import ScrewPlacementModel
 from globals.wall.parameters import WallParameters
 from switches.model import Layout
 from models.parameters import SwitchesParameters
@@ -148,3 +149,60 @@ class RowCablePathModel:
     @property
     def path(self) -> list[tuple[float, float, float, float]]:
         return []
+
+
+@singleton
+@inject
+@dataclass
+class MountScrewCylinderModel:
+    mount_cavity_model: MountCavityModel
+    screw_placement_model: ScrewPlacementModel
+    wall_parameters: WallParameters
+    body: BodyModel
+
+    @property
+    def cavity_radius(self) -> float:
+        return (
+            self.screw_placement_model.mask_size / 2
+            + self.wall_parameters.thickness / 2
+        )
+
+    @property
+    def radius(self) -> float:
+        return (
+            self.cavity_radius + self.screw_placement_model.screw_diameter * 4
+        )
+
+    @property
+    def height(self) -> float:
+        return self.wall_parameters.thickness
+
+    @property
+    def z(self) -> float:
+        return self.screw_placement_model.z + self.wall_parameters.thickness
+
+    @property
+    def center_main(self) -> tuple[float, float]:
+        x = (self.body.start_x() + self.body.end_x()) / 2
+        y = (self.body.divider_y + self.body.end_y()) / 2
+        return (x, y)
+
+    @property
+    def placements(self) -> list[tuple[float, float, float]]:
+        center_main_x, center_main_y = self.center_main
+        placements = []
+        for x, y in self.screw_placement_model.main_points:
+            center_x = x + self.screw_placement_model.standoff_size / 2
+            center_y = y + self.screw_placement_model.standoff_size / 2
+
+            if center_x < center_main_x and center_y < center_main_y:
+                rotation_deg = 0.0
+            elif center_x >= center_main_x and center_y < center_main_y:
+                rotation_deg = 90.0
+            elif center_x >= center_main_x and center_y >= center_main_y:
+                rotation_deg = 180.0
+            else:
+                rotation_deg = 270.0
+
+            placements.append((center_x, center_y, rotation_deg))
+        return placements
