@@ -3,6 +3,9 @@
 - **Code Comments**: Do NOT add code comments unless explicitly asked by the user.
 - **Dataclasses**: Prefer using `@dataclass` for data-holding classes to reduce boilerplate (like `__init__` and `__repr__`).
 - **Factory Methods**: When complex initialization is required, prefer using `@classmethod` factory methods (e.g., `from_x`) to keep the primary constructor simple and the class's purpose clear.
+- **Variable Names**: Use full descriptive names instead of abbreviations (e.g., use `height` and `width` instead of `h` and `w`).
+- **No Magic Numbers**: Avoid raw/magic numbers in `cad/` and `model.py` files. Move numerical parameters into `parameters.py` or explicit configuration constants.
+- **No Math in CAD Files**: Keep CAD files (`cad/`) clean of mathematical computations. All calculations, derived dimensions, and geometric math belong in `model.py` (or data structures), leaving `cad/` purely responsible for model assembly/construction.
 
 # Operational Requirements
 
@@ -12,6 +15,7 @@ Before performing any change in the code:
 After completing any code modifications:
 1.  **Format**: Run `uv run ruff format .` to ensure consistent styling.
 2.  **Verify**: Run `uv run pytest` to ensure no regressions were introduced.
+3.  **No `make` Execution**: Never execute `make` commands to build targets. Always delegate running `make` commands to the user.
 
 # CAD File Generation
 
@@ -61,15 +65,14 @@ To create a new CAD component:
     ```
     This automatically creates the standard structure, component folder, and injectable boilerplate code. Pass `--with-model` and `--with-parameters` if the component requires data separation via `model.py` and `parameters.py`.
 
-2.  **Implement the CAD Class**: Inside `cad/my_part.py`, define your logic in `assemble()`.
-    - For `manifold3d`-based models (recommended for CSG), `assemble()` should return a `manifold3d.Manifold` object.
-
-3.  **Update Makefile**:
-    - For simple cases where `src/components/my_part/cad/my_part.py` generates `build/components/my_part/cad/my_part.stl`, the existing generic rules might be sufficient.
-    - If your script depends on other generated files (e.g., it uses `load_stl("build/cad/dependency.stl")`), declare this dependency in the `Makefile`:
+2. **Update Makefile First**:
+    - If your script will depend on other generated files or STL models (e.g., using `load_stl("build/cad/dependency.stl")`), declare this dependency in the `Makefile` **before** introducing the import/dependency in the Python script. This ensures the project build graph remains consistent and does not break during iterations:
       ```makefile
       build/components/my_part/cad/my_part.stl: src/components/my_part/cad/my_part.py build/cad/dependency.stl
       ```
+
+3. **Implement the CAD Class**: Inside `cad/my_part.py`, define your logic in `assemble()`.
+    - For `manifold3d`-based models (recommended for CSG), `assemble()` should return a `manifold3d.Manifold` object.
 
 4.  **Build the File**: Run `make` with the path to the desired output file in the `build/` directory:
 
