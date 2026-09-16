@@ -97,6 +97,7 @@ class PcbsPlacementModel:
         depth = (
             self.pro_model.dimensions[0]
             + self.nano_model.dimensions[0]
+            + self.parameters.wall_margin * 2
             + margin
         )
         height = self.parameters.thickness
@@ -106,12 +107,13 @@ class PcbsPlacementModel:
     def pro_case_coords(self) -> list[float]:
         pro_y_size = self.pro_model.dimensions[0]
         nano_y_size = self.nano_model.dimensions[0]
-        arduinos_depth = pro_y_size + nano_y_size
+        gap = self.parameters.wall_margin * 2
+        arduinos_depth = pro_y_size + nano_y_size + gap
 
         start_y = self.inner_cut_center[1] - arduinos_depth / 2
 
         x = self.inner_cut_center[0]
-        y = start_y + nano_y_size + pro_y_size / 2
+        y = start_y + nano_y_size + gap + pro_y_size / 2
         z = (
             self.coords[2]
             - self.pro_model.dimensions[2] / 2
@@ -123,7 +125,8 @@ class PcbsPlacementModel:
     def nano_case_coords(self) -> list[float]:
         pro_y_size = self.pro_model.dimensions[0]
         nano_y_size = self.nano_model.dimensions[0]
-        arduinos_depth = pro_y_size + nano_y_size
+        gap = self.parameters.wall_margin * 2
+        arduinos_depth = pro_y_size + nano_y_size + gap
 
         start_y = self.inner_cut_center[1] - arduinos_depth / 2
 
