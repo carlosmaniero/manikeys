@@ -147,5 +147,56 @@ class PcbsPlacementModel:
         )
 
     @property
+    def path_fillet_radius(self) -> float:
+        return self.wall_parameters.fillet
+
+    @property
+    def connection_paths_control_points(self) -> list[list[list[float]]]:
+        pcb_z = self.coords[2] + self.parameters.thickness / 2
+        base_z = self.cases_base_center[2]
+        center_x = self.inner_cut_center[0]
+        center_y = self.inner_cut_center[1]
+
+        pcb_left_x = center_x - self.inner_cut_dimensions[0] / 2
+        pcb_right_x = center_x + self.inner_cut_dimensions[0] / 2
+        pcb_front_y = center_y - self.inner_cut_dimensions[1] / 2
+        pcb_back_y = center_y + self.inner_cut_dimensions[1] / 2
+
+        half_thick = self.parameters.thickness / 2
+
+        base_left_x = center_x - self.cases_base_dimensions[0] / 2 + half_thick
+        base_right_x = center_x + self.cases_base_dimensions[0] / 2 - half_thick
+        base_front_y = center_y - self.cases_base_dimensions[1] / 2 + half_thick
+        base_back_y = center_y + self.cases_base_dimensions[1] / 2 - half_thick
+
+        fillet_r = self.path_fillet_radius
+
+        left_path = [
+            [pcb_left_x, center_y, pcb_z, fillet_r],
+            [base_left_x, center_y, pcb_z, fillet_r],
+            [base_left_x, center_y, base_z, 0.0],
+        ]
+
+        right_path = [
+            [pcb_right_x, center_y, pcb_z, fillet_r],
+            [base_right_x, center_y, pcb_z, fillet_r],
+            [base_right_x, center_y, base_z, 0.0],
+        ]
+
+        front_path = [
+            [center_x, pcb_front_y, pcb_z, fillet_r],
+            [center_x, base_front_y, pcb_z, fillet_r],
+            [center_x, base_front_y, base_z, 0.0],
+        ]
+
+        back_path = [
+            [center_x, pcb_back_y, pcb_z, fillet_r],
+            [center_x, base_back_y, pcb_z, fillet_r],
+            [center_x, base_back_y, base_z, 0.0],
+        ]
+
+        return [left_path, right_path, front_path, back_path]
+
+    @property
     def fillet_radius(self) -> float:
         return self.wall_parameters.fillet

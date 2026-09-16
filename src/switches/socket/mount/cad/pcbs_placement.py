@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
 from core.manifold_ext.object import ManifoldObject
-from core.manifold_ext.helpers import rounded_box
+from core.manifold_ext.helpers import rounded_box, path_extrude
 from switches.socket.mount.model import PcbsPlacementModel
 
 
@@ -14,6 +14,20 @@ from switches.socket.mount.model import PcbsPlacementModel
 @dataclass
 class PcbsPlacementCAD(ManifoldObject):
     model: PcbsPlacementModel
+
+    def connecting_paths(self) -> manifold3d.Manifold:
+        cross_section = manifold3d.CrossSection.square(
+            [
+                self.model.parameters.thickness,
+                self.model.parameters.wall_margin,
+            ],
+            center=True,
+        )
+        paths = []
+        for ctrl_pts in self.model.connection_paths_control_points:
+            paths.append(path_extrude(cross_section, ctrl_pts))
+
+        return manifold3d.Manifold.batch_boolean(paths, manifold3d.OpType.Add)
 
     def arduinos_assembly(self) -> manifold3d.Manifold:
         pro_case = (
@@ -90,7 +104,14 @@ class PcbsPlacementCAD(ManifoldObject):
             center=True,
         ).translate(self.model.inner_cut_center)
 
-        return pcb - holes - cavity_masks - inner_cut + self.arduinos_assembly()
+        return (
+            pcb
+            - holes
+            - cavity_masks
+            - inner_cut
+            + self.connecting_paths()
+            + self.arduinos_assembly()
+        )
 
 
 if __name__ == "__main__":
