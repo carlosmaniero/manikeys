@@ -9,6 +9,7 @@ from models.parameters import SwitchesParameters
 from connectors.pogo.models import PogoPinModel
 from components.female_pin_header.model import FemalePinHeaderModel
 from structure.body.parameters import BodyParameters
+from switches.socket.mount.parameters import MountScrewCylinderParameters
 
 
 @singleton
@@ -159,6 +160,7 @@ class MountScrewCylinderModel:
     screw_placement_model: ScrewPlacementModel
     wall_parameters: WallParameters
     body: BodyModel
+    parameters: MountScrewCylinderParameters
 
     @property
     def cavity_radius(self) -> float:
@@ -179,7 +181,11 @@ class MountScrewCylinderModel:
 
     @property
     def z(self) -> float:
-        return self.screw_placement_model.z + self.wall_parameters.thickness
+        return (
+            self.screw_placement_model.z
+            + self.wall_parameters.thickness
+            + self.parameters.clearance
+        )
 
     @property
     def center_main(self) -> tuple[float, float]:
