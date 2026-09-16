@@ -154,11 +154,33 @@ class MountShellCAD(ManifoldObject):
             )
             screw_cylinders.append(cylinder)
 
+        hole_cylinders = []
+        for hx, hy in self.screw_cylinder_model.hole_placements:
+            hole_cyl = manifold3d.Manifold.cylinder(
+                self.screw_cylinder_model.height * 3,
+                self.screw_cylinder_model.hole_radius,
+                circular_segments=100,
+                center=True,
+            ).translate(
+                [
+                    hx,
+                    hy,
+                    self.screw_cylinder_model.z
+                    + self.screw_cylinder_model.height / 2,
+                ]
+            )
+            hole_cylinders.append(hole_cyl)
+
+        main_screw_holes = manifold3d.Manifold.batch_boolean(
+            hole_cylinders, manifold3d.OpType.Add
+        )
+
         main_screw_cylinders = (
             manifold3d.Manifold.batch_boolean(
                 screw_cylinders, manifold3d.OpType.Add
             )
             - screw_clearance_cavity
+            - main_screw_holes
         )
 
         return (

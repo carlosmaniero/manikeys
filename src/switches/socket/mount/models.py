@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from injector import inject, singleton
+import math
 from structure.body.models import BodyInnerModel, BodyModel
 from structure.body.screws.models import ScrewPlacementModel
 from globals.wall.parameters import WallParameters
@@ -212,3 +213,26 @@ class MountScrewCylinderModel:
 
             placements.append((center_x, center_y, rotation_deg))
         return placements
+
+    @property
+    def hole_radius(self) -> float:
+        return self.screw_placement_model.screw_diameter / 2
+
+    @property
+    def hole_distance(self) -> float:
+        return (self.cavity_radius + self.radius) / 2
+
+    @property
+    def hole_placements(self) -> list[tuple[float, float]]:
+        center_main_x, center_main_y = self.center_main
+        holes = []
+        for center_x, center_y, rotation_deg in self.placements:
+            dx = center_main_x - center_x
+            dy = center_main_y - center_y
+            target_angle = math.degrees(math.atan2(dy, dx))
+            rad = math.radians(target_angle)
+
+            hx = center_x + self.hole_distance * math.cos(rad)
+            hy = center_y + self.hole_distance * math.sin(rad)
+            holes.append((hx, hy))
+        return holes
