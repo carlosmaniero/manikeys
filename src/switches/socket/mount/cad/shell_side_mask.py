@@ -21,19 +21,26 @@ class ShellSideMaskModel:
     screw_placement_model: ScrewPlacementModel
 
     @property
-    def size(self) -> tuple[float, float, float]:
-        width = (
-            self.mount_model.width
-            - self.screw_placement_model.standoff_size * 4
+    def start_x(self) -> float:
+        return (
+            self.mount_model.start_x()
+            + self.screw_placement_model.standoff_size * 2
         )
+
+    @property
+    def end_x(self) -> float:
+        return self.mount_model.start_fixed_x - self.wall_parameters.fillet
+
+    @property
+    def size(self) -> tuple[float, float, float]:
+        width = self.end_x - self.start_x
         depth = self.wall_parameters.fillet
         return (width, depth, self.mount_model.height)
 
     @property
     def coords(self) -> list[float]:
         return [
-            self.mount_model.start_x()
-            + self.screw_placement_model.standoff_size * 2,
+            self.start_x,
             self.mount_model.end_y() - self.size[1],
             self.mount_model.bottom_z,
         ]
