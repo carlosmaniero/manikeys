@@ -215,7 +215,7 @@ class RJ45PlacementModel:
             self.body_model.end_y()
             - self.wall_parameters.fillet
             - self.max_y
-            - self.wall_parameters.thickness * 3,
+            - self.wall_parameters.thickness * 4,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
             - self.rj45_model.thickness / 2
