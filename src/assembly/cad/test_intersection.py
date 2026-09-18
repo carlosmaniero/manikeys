@@ -50,8 +50,26 @@ class IntersectionTestCAD(ManifoldObject):
 
         return full_keyboard ^ shell_hand
 
+    @property
+    def hot_swap_v2_grid_shell(self) -> manifold3d.Manifold:
+        hot_swap_path = "build/switches/socket/cad/hot_swap_v2_grid.stl"
+        shell_path = "build/switches/socket/mount/cad/shell.stl"
+
+        hot_swap_v2_grid = (
+            self.deps.stls[hot_swap_path]
+            if hot_swap_path in self.deps.stls
+            else load_stl_to_manifold(hot_swap_path)
+        )
+        shell = (
+            self.deps.stls[shell_path]
+            if shell_path in self.deps.stls
+            else load_stl_to_manifold(shell_path)
+        )
+
+        return hot_swap_v2_grid ^ shell
+
     def assemble(self) -> manifold3d.Manifold:
-        result = self.shell_main + self.shell_hand
+        result = self.shell_main + self.shell_hand + self.hot_swap_v2_grid_shell
         if result.is_empty():
             return load_stl_to_manifold("dist/test_passed.stl")
         return result

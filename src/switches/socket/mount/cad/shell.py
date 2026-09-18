@@ -88,6 +88,9 @@ class MountShellCAD(ManifoldObject):
         switch_hole_decorator_shell_grid = self.deps.stls[
             "build/switches/cad/switch_hole_decorator_shell_grid.stl"
         ]
+        hot_swap_placement_mask_grid = self.deps.stls[
+            "build/switches/socket/cad/hot_swap_placement_mask_grid.stl"
+        ]
         switch_hole_grid = self.deps.stls[
             "build/switches/cad/switch_hole_grid.stl"
         ]
@@ -192,6 +195,7 @@ class MountShellCAD(ManifoldObject):
             + screw_walls
             - screw_clearance
             + switch_hole_decorator_shell_grid
+            - hot_swap_placement_mask_grid
             - switch_hole_grid
             - switch_thumb_hole
             - cable_path
