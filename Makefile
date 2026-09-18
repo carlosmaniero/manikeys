@@ -114,7 +114,7 @@ build/assembly/cad/supports/hand.stl: src/assembly/cad/supports/hand.py src/glob
 build/assembly/cad/side.stl: src/assembly/cad/side.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/assembly/cad/full_keyboard.stl
 build/switches/socket/mount/cad/main.stl: src/switches/socket/mount/cad/main.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/shell.stl
 build/switches/socket/mount/cad/hand.stl: src/switches/socket/mount/cad/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/shell.stl
-build/assembly/cad/main_intersection.stl: src/assembly/cad/main_intersection.py build/assembly/cad/full_keyboard.stl build/switches/socket/mount/cad/main.stl
+build/assembly/cad/test_intersection.stl: src/assembly/cad/test_intersection.py build/assembly/cad/full_keyboard.stl build/switches/socket/mount/cad/main.stl build/switches/socket/mount/cad/hand.stl
 
 COMMA := ,
 empty :=
