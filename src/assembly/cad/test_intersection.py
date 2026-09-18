@@ -68,8 +68,33 @@ class IntersectionTestCAD(ManifoldObject):
 
         return hot_swap_v2_grid ^ shell
 
+    @property
+    def cable_matrix_grid_shell(self) -> manifold3d.Manifold:
+        matrix_path = (
+            "build/switches/cad/switch_hole_decorator_cable_matrix_grid.stl"
+        )
+        shell_path = "build/switches/socket/mount/cad/shell.stl"
+
+        cable_matrix_grid = (
+            self.deps.stls[matrix_path]
+            if matrix_path in self.deps.stls
+            else load_stl_to_manifold(matrix_path)
+        )
+        shell = (
+            self.deps.stls[shell_path]
+            if shell_path in self.deps.stls
+            else load_stl_to_manifold(shell_path)
+        )
+
+        return cable_matrix_grid ^ shell
+
     def assemble(self) -> manifold3d.Manifold:
-        result = self.shell_main + self.shell_hand + self.hot_swap_v2_grid_shell
+        result = (
+            self.shell_main
+            + self.shell_hand
+            + self.hot_swap_v2_grid_shell
+            + self.cable_matrix_grid_shell
+        )
         if result.is_empty():
             return load_stl_to_manifold("dist/test_passed.stl")
         return result
