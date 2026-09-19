@@ -33,8 +33,8 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             - self.deps.stls["build/switches/cad/switch_thumb_hole.stl"]
             - self.deps.stls["build/connectors/pogo/cad/cable_path.stl"]
             - self.deps.stls["build/connectors/magnet/cad/snap.stl"]
-            - self.deps.stls["build/connectors/rj45/cad/masks/body.stl"]
-            + self.deps.stls["build/connectors/rj45/cad/placement.stl"]
+            - self.deps.stls["build/connectors/rj45_tabs/cad/masks/body.stl"]
+            + self.deps.stls["build/connectors/rj45_tabs/cad/placement.stl"]
             - self.deps.stls["build/connectors/usbc/cad/masks/usbc.stl"]
             + self.deps.stls["build/connectors/usbc/cad/adapter_trimmed.stl"]
             - self.deps.stls[

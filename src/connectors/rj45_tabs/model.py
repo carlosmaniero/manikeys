@@ -33,7 +33,7 @@ class AdapterModel:
         return [
             self.full_body_size[0],
             self.full_body_size[1],
-            self.wall_parameters.thickness * 2,
+            self.wall_parameters.thickness * 10,
         ]
 
     @property
