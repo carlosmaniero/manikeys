@@ -1,4 +1,4 @@
-SIMPLIFY ?= 1
+SIMPLIFY ?= 0
 
 .PHONY: build test lint render clean build_watch viewer
 

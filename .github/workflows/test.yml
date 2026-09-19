@@ -45,7 +45,7 @@ jobs:
         run: make -j $(nproc) lint
 
       - name: Build STL
-        run: make -j $(nproc) build
+        run: make SIMPLIFY=1 -j $(nproc) build
 
       - name: Run Tests
         run: make -j $(nproc) test
