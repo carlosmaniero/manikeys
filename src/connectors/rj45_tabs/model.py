@@ -29,6 +29,14 @@ class AdapterModel:
         return size
 
     @property
+    def mask_body_size(self) -> list[float]:
+        return [
+            self.full_body_size[0],
+            self.full_body_size[1],
+            self.wall_parameters.thickness * 2,
+        ]
+
+    @property
     def body_pocket(self) -> list[float]:
         return [
             self.parameters.body_size,
