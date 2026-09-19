@@ -77,7 +77,7 @@ class MountShellCAD(ManifoldObject):
             "build/switches/socket/mount/cad/cavity_sections.stl"
         ]
         rj45_placement = self.deps.stls[
-            "build/connectors/rj45_tabs/cad/masks/body.stl"
+            "build/connectors/rj45_tabs/cad/masks/shell.stl"
         ]
         usbc_placement = self.deps.stls[
             "build/connectors/usbc/cad/masks/placement.stl"

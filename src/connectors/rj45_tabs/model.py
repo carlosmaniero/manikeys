@@ -19,7 +19,7 @@ class AdapterModel:
             + self.tabs_pocket_radius * 2
             + self.wall_parameters.thickness,
             self.parameters.body_size,
-            self.wall_parameters.thickness * 2,
+            self.parameters.body_depth
         ]
 
     @property
@@ -33,6 +33,14 @@ class AdapterModel:
         return [
             self.full_body_size[0],
             self.full_body_size[1],
+            self.wall_parameters.thickness * 10,
+        ]
+
+    @property
+    def mask_shell_size(self) -> list[float]:
+        return [
+            self.full_body_size[0] + self.wall_parameters.thickness,
+            self.full_body_size[1] + self.wall_parameters.thickness,
             self.wall_parameters.thickness * 10,
         ]
 
@@ -151,12 +159,11 @@ class AdapterPlacementModel:
     @property
     def translation_coords(self) -> list[float]:
         return [
-            self.body_model.end_x()
-            - self.max_x,
+            self.body_model.end_x() - self.max_x,
             self.body_model.end_y()
             - self.wall_parameters.fillet
             - self.max_y
-            - self.wall_parameters.thickness * 4,
+            - self.wall_parameters.thickness * 2,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
             - self.wall_parameters.thickness / 2
