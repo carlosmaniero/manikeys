@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from connectors.rj45_tabs.parameters import AdapterParameters
 from globals.wall.parameters import WallParameters
+from structure.body.models import BodyModel
 
 
 @singleton
@@ -121,3 +122,34 @@ class AdapterModel:
             self.full_body_size[2] / 2 - self.parameters.screw_head_depth / 2
         )
         return coords
+
+
+@singleton
+@inject
+@dataclass
+class AdapterPlacementModel:
+    wall_parameters: WallParameters
+    adapter_model: AdapterModel
+    body_model: BodyModel
+
+    @property
+    def max_x(self) -> float:
+        return self.adapter_model.full_body_size[2] / 2
+
+    @property
+    def max_y(self) -> float:
+        return self.adapter_model.full_body_size[0] / 2
+
+    @property
+    def translation_coords(self) -> list[float]:
+        return [
+            self.body_model.end_x() - self.max_x,
+            self.body_model.end_y()
+            - self.wall_parameters.fillet
+            - self.max_y
+            - self.wall_parameters.thickness * 4,
+            self.body_model.bottom_z
+            + self.body_model.connectors_bottom_offset
+            - self.wall_parameters.thickness / 2
+            + self.adapter_model.parameters.exposed_body_height / 2,
+        ]
