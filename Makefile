@@ -128,7 +128,7 @@ build/assembly/cad/test_intersection.stl: src/assembly/cad/test_intersection.py 
 COMMA := ,
 empty :=
 space := $(empty) $(empty)
-ALL_STLS = $(filter-out pin_headers,$(filter %.stl,$^))
+ALL_STLS = $(filter-out $(PIN_HEADERS_STLS),$(filter %.stl,$^))
 ALL_PY_DEPS = $(filter-out $<,$(filter %.py,$^))
 ALL_MODELS = $(ALL_PY_DEPS)
 ALL_PARAMS =
