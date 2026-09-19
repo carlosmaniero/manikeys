@@ -52,32 +52,12 @@ class BasePlateCAD(ManifoldObject):
             center=False,
         ).translate(self.model.coords)
 
-        pro_case = (
-            self.deps.stls[
-                "build/components/arduino_pro_micro_case/cad/housing.stl"
-            ]
-            .rotate([0, 0, 90])
-            .translate(self.model.pro_case_coords)
-        )
-        nano_case = (
-            self.deps.stls["build/components/arduino_nano_case/cad/case.stl"]
-            .rotate([0, 0, 90])
-            .translate(self.model.nano_case_coords)
-        )
-
         divider = manifold3d.Manifold.cube(
             self.model.divider_dimensions,
             center=False,
         ).translate(self.model.divider_coords)
 
-        return (
-            bottom
-            - divider
-            - self.screw_holes()
-            - self.screw_head_holes()
-            + pro_case
-            + nano_case
-        )
+        return bottom - divider - self.screw_holes() - self.screw_head_holes()
 
 
 if __name__ == "__main__":

@@ -4,8 +4,6 @@ from structure.body.screws.models import ScrewPlacementModel
 from structure.body.parameters import BodyParameters
 from globals.wall.parameters import WallParameters
 from assembly.base_plate.parameters import BasePlateParameters
-from components.arduino_nano_case.model import ArduinoNanoCaseModel
-from components.arduino_pro_micro_case.model import ArduinoProMicroCaseModel
 
 
 @singleton
@@ -16,8 +14,6 @@ class BasePlateModel:
     body_parameters: BodyParameters
     wall_parameters: WallParameters
     parameters: BasePlateParameters
-    nano_model: ArduinoNanoCaseModel
-    pro_model: ArduinoProMicroCaseModel
 
     @property
     def dimensions(self) -> list[float]:
@@ -43,6 +39,7 @@ class BasePlateModel:
             -(
                 self.body_parameters.height
                 + self.screw_placement_model.bottom_thickness
+                + self.parameters.z_offset
             ),
         ]
 
@@ -57,8 +54,9 @@ class BasePlateModel:
     @property
     def screw_head_coords(self) -> list[list[float]]:
         coords = []
+        z = self.coords[2]
         for x, y in self.screw_placement_model.get_centered_points():
-            coords.append([x, y, self.screw_placement_model.bottom_z])
+            coords.append([x, y, z])
         return coords
 
     @property
@@ -72,62 +70,10 @@ class BasePlateModel:
     @property
     def screw_hole_coords(self) -> list[list[float]]:
         coords = []
-        z = self.screw_placement_model.bottom_z + self.screw_head_height
+        z = self.coords[2] + self.screw_head_height
         for x, y in self.screw_placement_model.get_centered_points():
             coords.append([x, y, z])
         return coords
-
-    @property
-    def pro_case_coords(self) -> list[float]:
-        pro_y_size = self.pro_model.dimensions[0]
-        nano_y_size = self.nano_model.dimensions[0]
-
-        standoff_size = self.screw_placement_model.standoff_size
-        start_y = self.screw_placement_model.body.divider_y + standoff_size
-        end_y = self.screw_placement_model.body.end_y() - standoff_size
-        available_depth = end_y - start_y
-        gap = (available_depth - pro_y_size - nano_y_size) / 3.0
-
-        end_x = self.coords[0] + self.dimensions[0]
-        x = (
-            end_x
-            - self.pro_model.dimensions[1] / 2
-            - self.wall_parameters.thickness * 2
-        )
-
-        y = start_y + gap + nano_y_size + gap + pro_y_size / 2
-        z = (
-            self.coords[2]
-            + self.parameters.thickness
-            + self.pro_model.dimensions[2] / 2
-        )
-        return [x, y, z]
-
-    @property
-    def nano_case_coords(self) -> list[float]:
-        pro_y_size = self.pro_model.dimensions[0]
-        nano_y_size = self.nano_model.dimensions[0]
-
-        standoff_size = self.screw_placement_model.standoff_size
-        start_y = self.screw_placement_model.body.divider_y + standoff_size
-        end_y = self.screw_placement_model.body.end_y() - standoff_size
-        available_depth = end_y - start_y
-        gap = (available_depth - pro_y_size - nano_y_size) / 3.0
-
-        end_x = self.coords[0] + self.dimensions[0]
-        x = (
-            end_x
-            - self.nano_model.dimensions[1] / 2
-            - self.wall_parameters.thickness * 2
-        )
-
-        y = start_y + gap + nano_y_size / 2
-        z = (
-            self.coords[2]
-            + self.parameters.thickness
-            + self.nano_model.dimensions[2] / 2
-        )
-        return [x, y, z]
 
     @property
     def mask_dimensions(self) -> list[float]:

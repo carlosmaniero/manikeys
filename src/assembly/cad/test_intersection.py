@@ -108,6 +108,42 @@ class IntersectionTestCAD(ManifoldObject):
 
         return cable_matrix_grid ^ hot_swap_v2_grid
 
+    @property
+    def base_plate_keyboard(self) -> manifold3d.Manifold:
+        base_plate_path = "build/assembly/base_plate/cad/base_plate.stl"
+        full_keyboard_path = "build/assembly/cad/full_keyboard.stl"
+
+        base_plate = (
+            self.deps.stls[base_plate_path]
+            if base_plate_path in self.deps.stls
+            else load_stl_to_manifold(base_plate_path)
+        )
+        full_keyboard = (
+            self.deps.stls[full_keyboard_path]
+            if full_keyboard_path in self.deps.stls
+            else load_stl_to_manifold(full_keyboard_path)
+        )
+
+        return base_plate ^ full_keyboard
+
+    @property
+    def base_plate_shell(self) -> manifold3d.Manifold:
+        base_plate_path = "build/assembly/base_plate/cad/base_plate.stl"
+        shell_path = "build/switches/socket/mount/cad/shell.stl"
+
+        base_plate = (
+            self.deps.stls[base_plate_path]
+            if base_plate_path in self.deps.stls
+            else load_stl_to_manifold(base_plate_path)
+        )
+        shell = (
+            self.deps.stls[shell_path]
+            if shell_path in self.deps.stls
+            else load_stl_to_manifold(shell_path)
+        )
+
+        return base_plate ^ shell
+
     def assemble(self) -> manifold3d.Manifold:
         result = (
             self.shell_main
@@ -115,6 +151,8 @@ class IntersectionTestCAD(ManifoldObject):
             + self.hot_swap_v2_grid_shell
             + self.cable_matrix_grid_shell
             + self.cable_matrix_grid_hot_swap_v2_grid
+            + self.base_plate_keyboard
+            + self.base_plate_shell
         )
         if result.is_empty():
             return load_stl_to_manifold("dist/test_passed.stl")
