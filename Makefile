@@ -57,8 +57,9 @@ PIN_HEADERS_STLS = build/components/female_pin_header/cad/female_pin_header_wire
 pin_headers: $(PIN_HEADERS_STLS)
 
 build/components/female_pin_header/cad/female_pin_header_%.stl: src/components/female_pin_header/cad/female_pin_header_%.py src/components/female_pin_header/model.py src/components/female_pin_header/parameters.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@echo "STL\t$@"
+	@mkdir -p $(dir $@)
+	@+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 
@@ -139,21 +140,23 @@ PARAMS_FLAG = $(if $(strip $(ALL_PARAMS)),--parameters $(subst $(space),$(COMMA)
 DEPS_FLAG = $(STLS_FLAG) $(PY_DEPS_FLAG)
 
 build/structure/%/shape.3mf: src/structure/%/cad/shape.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@mkdir -p $(dir $@)
+	@+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 
 build/structure/%/shape.stl: src/structure/%/cad/shape.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@echo "STL\t$@"
+	@mkdir -p $(dir $@)
+	@+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 build/%.3mf: src/%.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@mkdir -p $(dir $@)
+	@+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 
 build/%.stl: src/%.py
-	mkdir -p $(dir $@)
-	+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
+	@echo "STL\t$@"
+	@mkdir -p $(dir $@)
+	@+PYTHONPATH=src uv run python $< -o $@ $(DEPS_FLAG)
 	@if [ "$(SIMPLIFY)" = "1" ]; then uv run python simplify.py -i $@ -o $@; fi
 
 
