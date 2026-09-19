@@ -47,6 +47,17 @@ class AdapterCAD(ManifoldObject):
         return cylinder + cylinder.mirror([-1, 0, 0])
 
     @property
+    def screw_heads_pocket(self):
+        cylinder = M.cylinder(
+            self.model.screw_head_depth,
+            self.model.screw_head_radius,
+            circular_segments=32,
+            center=True,
+        ).translate(self.model.screw_head_coords)
+
+        return cylinder + cylinder.mirror([-1, 0, 0])
+
+    @property
     def body_pocket(self):
         return M.cube(self.model.body_pocket_full_size, center=True).translate(
             self.model.body_pocket_coords
@@ -58,6 +69,7 @@ class AdapterCAD(ManifoldObject):
             - self.exposed_hole
             - self.tabs_pocket
             - self.screws_pocket
+            - self.screw_heads_pocket
             - self.body_pocket
         )
 

@@ -104,4 +104,20 @@ class AdapterModel:
 
     @property
     def screw_radius(self) -> float:
-        return 1.25  # TODO: replace with the m2.5 hole
+        return self.parameters.screw_radius
+
+    @property
+    def screw_head_depth(self) -> float:
+        return self.parameters.screw_head_depth
+
+    @property
+    def screw_head_radius(self) -> float:
+        return self.parameters.screw_head_radius
+
+    @property
+    def screw_head_coords(self) -> list[float]:
+        coords = self.screw_coords
+        coords[2] = (
+            self.full_body_size[2] / 2 - self.parameters.screw_head_depth / 2
+        )
+        return coords
