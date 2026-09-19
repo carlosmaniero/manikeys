@@ -19,7 +19,7 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
     def _create_support_y(self, x_pos: float) -> manifold3d.Manifold:
         length = self.model.end_y() - self.model.divider_y
         return manifold3d.Manifold.cube(
-            [1.5, length, 1.5],
+            [0.5, length, 0.5],
             center=False,
         ).translate(
             [
@@ -32,7 +32,7 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
     def _create_support_x(self, y_pos: float) -> manifold3d.Manifold:
         width = self.model.width
         return manifold3d.Manifold.cube(
-            [width, 1.5, 1.5],
+            [width, 0.5, 0.5],
             center=False,
         ).translate(
             [
@@ -66,13 +66,16 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
         body = self.deps.stls["build/assembly/cad/main.stl"]
         shape = self.deps.stls["build/structure/body/shape.stl"]
         screw_holes = self.deps.stls["build/structure/body/screws/cad/hole.stl"]
+        base_plate_main = self.deps.stls[
+            "build/assembly/base_plate/cad/main.stl"
+        ]
         mask = self._create_mask()
 
         x_range = self.model.width
         y_range = self.model.end_y() - self.model.divider_y
 
         num_supports_y = int(x_range / 20)
-        num_supports_x = int(y_range / 20)
+        num_supports_x = int(y_range / 10)
 
         supports = manifold3d.Manifold()
 
@@ -90,7 +93,7 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
 
         support = (supports ^ shape ^ mask) - screw_holes
 
-        return body + support
+        return body + support + base_plate_main
 
 
 if __name__ == "__main__":
