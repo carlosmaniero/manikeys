@@ -12,8 +12,8 @@ class AdapterParameters:
     tab_radius: float = 5
     exposed_body_width: float = 16
     exposed_body_height: float = 13
-    exposed_body_depth: float = 1
+    exposed_body_depth: float = 3
     clearance: float = 0.2
     screw_radius: float = 1.25
-    screw_head_depth: float = 1.0
+    screw_head_depth: float = 2.0
     screw_head_radius: float = 2.25

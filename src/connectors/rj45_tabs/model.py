@@ -19,7 +19,7 @@ class AdapterModel:
             + self.tabs_pocket_radius * 2
             + self.wall_parameters.thickness,
             self.parameters.body_size,
-            self.wall_parameters.thickness,
+            self.wall_parameters.thickness * 2,
         ]
 
     @property
@@ -41,7 +41,7 @@ class AdapterModel:
         return [
             self.parameters.body_size,
             self.parameters.body_size,
-            self.parameters.exposed_body_depth,
+            self.body_size[2] - self.parameters.exposed_body_depth,
         ]
 
     @property
@@ -89,7 +89,7 @@ class AdapterModel:
 
     @property
     def tabs_pocket_depth(self) -> float:
-        return self.parameters.exposed_body_depth + self.parameters.clearance
+        return self.body_pocket_full_size[2]
 
     @property
     def screw_coords(self) -> list[float]:
@@ -151,7 +151,8 @@ class AdapterPlacementModel:
     @property
     def translation_coords(self) -> list[float]:
         return [
-            self.body_model.end_x() - self.max_x,
+            self.body_model.end_x()
+            - self.max_x,
             self.body_model.end_y()
             - self.wall_parameters.fillet
             - self.max_y
