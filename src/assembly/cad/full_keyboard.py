@@ -32,7 +32,6 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             ]
             - self.deps.stls["build/switches/cad/switch_thumb_hole.stl"]
             - self.deps.stls["build/connectors/pogo/cad/cable_path.stl"]
-            - self.deps.stls["build/connectors/magnet/cad/snap.stl"]
             - self.deps.stls["build/connectors/rj45_tabs/cad/masks/body.stl"]
             + self.deps.stls["build/connectors/rj45_tabs/cad/placement.stl"]
             - self.deps.stls["build/connectors/usbc/cad/masks/usbc.stl"]
@@ -47,6 +46,7 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             + self.deps.stls["build/components/oled_096/cad/placement.stl"]
             + self.deps.stls["build/structure/body/screws/cad/placement.stl"]
             - self.deps.stls["build/structure/body/screws/cad/hole.stl"]
+            - self.deps.stls["build/connectors/magnet/cad/snap.stl"]
         )
 
         return body
