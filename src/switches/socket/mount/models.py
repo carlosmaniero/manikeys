@@ -66,14 +66,40 @@ class MountModel(BodyInnerModel):
             self.main_mask_start_y + self.main_mask_depth - corner_margin
         )
 
-        corner_z = self.bottom_z
         corner_rotation = [0.0, 0.0, 0.0]
+        corner_y_mid = (corner_y_min + corner_y_max) / 2
 
         corners = [
-            (corner_x_min, corner_y_min, corner_z, corner_rotation),
-            (corner_x_max, corner_y_min, corner_z, corner_rotation),
-            (corner_x_min, corner_y_max, corner_z, corner_rotation),
-            (corner_x_max, corner_y_max, corner_z, corner_rotation),
+            (
+                corner_x_min,
+                corner_y_min,
+                float(self.z(corner_x_min, corner_y_min)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_min,
+                float(self.z(corner_x_max, corner_y_min)),
+                corner_rotation,
+            ),
+            (
+                corner_x_min,
+                corner_y_max,
+                float(self.z(corner_x_min, corner_y_max)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_max,
+                float(self.z(corner_x_max, corner_y_max)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_mid,
+                float(self.z(corner_x_max, corner_y_mid)),
+                corner_rotation,
+            ),
         ]
         placements.extend(corners)
 

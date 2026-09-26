@@ -64,6 +64,9 @@ class PcbShellMainCAD(ManifoldObject):
         switch_hole_decorator_shell_grid = self.deps.stls[
             "build/switches/cad/switch_hole_decorator_shell_grid.stl"
         ]
+        light_indicator_body_shell = self.deps.stls[
+            "build/components/light_indicator/cad/masks/body_shell.stl"
+        ]
 
         screw_holes = []
         hole_radius = self.mount_model.screw_parameters.m2_diameter / 2
@@ -90,6 +93,7 @@ class PcbShellMainCAD(ManifoldObject):
             - hole_mask
             + switch_hole_decorator_shell_grid
             - screw_hole_mask
+            - light_indicator_body_shell
         )
 
 
