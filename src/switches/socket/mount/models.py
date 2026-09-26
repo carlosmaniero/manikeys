@@ -13,14 +13,71 @@ from structure.body.parameters import BodyParameters
 from switches.socket.mount.parameters import MountScrewCylinderParameters
 
 
+from switches.model import Layout
+from globals.screw.parameters import ScrewParameters
+
+
 @singleton
 @inject
 @dataclass
 class MountModel(BodyInnerModel):
+    layout: Layout
+    screw_parameters: ScrewParameters
+
     @property
     def offset(self) -> float:
         # TODO: it also should have an error margin
         return super().offset - self.body_parameters.clearance
+
+    @property
+    def screw_hole_placements(
+        self,
+    ) -> list[tuple[float, float, float, list[float]]]:
+        placements = []
+        p = self.switches_parameters
+        half_decorator_depth = p.size / 2 + p.border
+        offset_y = half_decorator_depth + self.screw_parameters.m2_diameter
+
+        for col_idx, col in enumerate(self.layout.grid):
+            if not col:
+                continue
+
+            if col_idx % 2 == 0:
+                # Odd column (0-indexed 0, 2, 4): hole before first key (top)
+                first_key = col[0]
+                x, y, z = first_key.position
+                placements.append((x, y - offset_y, z, first_key.rotation))
+            else:
+                # Even column (0-indexed 1, 3, 5): hole after last key (bottom)
+                last_key = col[-1]
+                x, y, z = last_key.position
+                placements.append((x, y + offset_y, z, last_key.rotation))
+
+        # 4 extra screw holes, one for each corner of the whole thing
+        screw_radius = self.screw_parameters.m2_diameter / 2
+        corner_margin = screw_radius + self.wall_parameters.thickness
+
+        corner_x_min = self.main_mask_start_x + corner_margin
+        corner_x_max = (
+            self.main_mask_start_x + self.main_mask_width - corner_margin
+        )
+        corner_y_min = self.main_mask_start_y + corner_margin
+        corner_y_max = (
+            self.main_mask_start_y + self.main_mask_depth - corner_margin
+        )
+
+        corner_z = self.bottom_z
+        corner_rotation = [0.0, 0.0, 0.0]
+
+        corners = [
+            (corner_x_min, corner_y_min, corner_z, corner_rotation),
+            (corner_x_max, corner_y_min, corner_z, corner_rotation),
+            (corner_x_min, corner_y_max, corner_z, corner_rotation),
+            (corner_x_max, corner_y_max, corner_z, corner_rotation),
+        ]
+        placements.extend(corners)
+
+        return placements
 
     @property
     def main_mask_start_x(self) -> float:

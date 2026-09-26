@@ -4,6 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
+from globals.screw.parameters import ScrewParameters
 from structure.body.parameters import BodyParameters
 from switches.model import Layout
 from switches.socket.mount.models import MountModel
@@ -64,7 +65,32 @@ class PcbShellMainCAD(ManifoldObject):
             "build/switches/cad/switch_hole_decorator_shell_grid.stl"
         ]
 
-        return (pcb_shell ^ mask) - hole_mask + switch_hole_decorator_shell_grid
+        screw_holes = []
+        hole_radius = self.mount_model.screw_parameters.m2_diameter / 2
+        hole_height = self.mount_model.main_mask_height
+        for x, y, z, rot in self.mount_model.screw_hole_placements:
+            hole = (
+                manifold3d.Manifold.cylinder(
+                    height=hole_height,
+                    radius_low=hole_radius,
+                    circular_segments=100,
+                    center=True,
+                )
+                .rotate(rot)
+                .translate([x, y, z])
+            )
+            screw_holes.append(hole)
+
+        screw_hole_mask = manifold3d.Manifold.batch_boolean(
+            screw_holes, manifold3d.OpType.Add
+        )
+
+        return (
+            (pcb_shell ^ mask)
+            - hole_mask
+            + switch_hole_decorator_shell_grid
+            - screw_hole_mask
+        )
 
 
 if __name__ == "__main__":
