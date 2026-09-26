@@ -30,8 +30,9 @@ class PcbShellMainCAD(ManifoldObject):
         fillet = self.mount_model.wall_parameters.fillet
 
         start_x = self.mount_model.start_x() + fillet
+        start_y = self.mount_model.divider_y + fillet
         width = self.mount_model.width - fillet * 2
-        depth = (self.mount_model.end_y() - fillet) - divider_y
+        depth = self.mount_model.end_y() - fillet - start_y
 
         mask = manifold3d.Manifold.cube(
             [
@@ -43,7 +44,7 @@ class PcbShellMainCAD(ManifoldObject):
         ).translate(
             [
                 start_x,
-                divider_y,
+                start_y,
                 self.mount_model.bottom_z,
             ]
         )
