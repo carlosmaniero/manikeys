@@ -19,7 +19,7 @@ class AdapterModel:
             + self.tabs_pocket_radius * 2
             + self.wall_parameters.thickness,
             self.parameters.body_size,
-            self.parameters.body_depth
+            self.parameters.body_depth,
         ]
 
     @property

@@ -124,10 +124,10 @@ class HotSwapV2CAD(ManifoldObject):
         )
 
     def center_hole(self) -> Manifold:
-        return self.countersink(
-            self.hot_swap_parameters.center_hole_radius + 0.5,
-            self.hot_swap_parameters.center_hole_radius,
+        return Manifold.cylinder(
             self.hot_swap_parameters.body_thickness,
+            self.hot_swap_parameters.center_hole_radius,
+            circular_segments=64,
         )
 
     @property
@@ -140,55 +140,77 @@ class HotSwapV2CAD(ManifoldObject):
 
     @property
     def pin_hole_diameter(self) -> float:
-        return 1.2
+        return 1.4
 
     def create_pin_hole(self, point: list[float]) -> Manifold:
         diameter = self.pin_hole_diameter
         error = 0.01
 
-        return (
-            self.countersink(
-                diameter / 2 + error + 0.5,
-                diameter / 2 + error,
-                self.hot_swap_parameters.body_thickness,
-            )
+        return Manifold.cylinder(
+            self.hot_swap_parameters.body_thickness,
+            diameter / 2 + error,
+            circular_segments=64,
         ).translate([point[0], point[1], 0])
 
+    def create_pin_cable_pocket(
+        self, pin_point: list[float], cable_point: list[float]
+    ) -> Manifold:
+        radius = self.pin_hole_diameter
+
+        pocket_depth = 2.0
+
+        c_pin = Manifold.cylinder(
+            pocket_depth, radius, circular_segments=64
+        ).translate([pin_point[0], pin_point[1], 0])
+
+        c_cable = Manifold.cylinder(
+            pocket_depth, radius, circular_segments=64
+        ).translate([cable_point[0], cable_point[1], 0])
+
+        return Manifold.hull(c_pin + c_cable)
+
     def pin_holes(self) -> Manifold:
+        left_cable_point = [
+            self.hot_swap_parameters.diode_x,
+            self.left_pin_hole[1],
+        ]
+        right_cable_point = [
+            self.right_pin_hole[0],
+            self.right_pin_hole[1] + 2,
+        ]
         return (
             self.create_pin_hole(self.left_pin_hole)
             + self.create_pin_hole(self.right_pin_hole)
-            + self.create_wire_hole(
-                [
-                    self.hot_swap_parameters.diode_x,
-                    self.left_pin_hole[1],
-                ]
-            )
-            + self.create_wire_hole(
-                [
-                    self.right_pin_hole[0],
-                    self.right_pin_hole[1] + 2,
-                ]
-            )
+            + self.create_wire_hole(left_cable_point)
+            + self.create_wire_hole(right_cable_point)
             + self.create_wire_hole(
                 [
                     self.left_pin_hole[0],
                     self.left_pin_hole[1],
                 ]
             )
+            + self.create_pin_cable_pocket(self.left_pin_hole, left_cable_point)
+            + self.create_pin_cable_pocket(
+                self.right_pin_hole, right_cable_point
+            )
         )
 
     def create_wire_hole(self, point: list[float]) -> Manifold:
         cylinder = Manifold.cylinder(
             self.hot_swap_parameters.body_thickness,
-            self.pin_hole_diameter / 3,
+            self.pin_hole_diameter / 2,
             circular_segments=64,
         )
 
         end_position = cylinder.translate([point[0], point[1], 0])
 
         start_position = cylinder.translate(
-            [point[0], self.hot_swap_parameters.cube_size, 0]
+            [
+                point[0],
+                self.hot_swap_parameters.cube_size / 2
+                - self.pin_hole_diameter / 3,
+                0,
+            ]
         )
 
         return Manifold.hull(end_position + start_position)

@@ -13,7 +13,7 @@ class HotSwapParameters:
     body_thickness: float = 10.0
     switch_socket_height: float = 1.0
     switch_socket_width: float = 17.6
-    center_hole_radius: float = 1.9
+    center_hole_radius: float = 2.0
     mask_clearance: float = 0.2
 
 
