@@ -142,12 +142,6 @@ class HotSwapV2CAD(ManifoldObject):
     def pin_hole_diameter(self) -> float:
         return 1.2
 
-    @property
-    def soldering_placement(self) -> Manifold:
-        return Manifold.sphere(3, circular_segments=64).translate(
-            [0, 0, self.hot_swap_parameters.body_thickness + 2]
-        )
-
     def create_pin_hole(self, point: list[float]) -> Manifold:
         diameter = self.pin_hole_diameter
         error = 0.01
@@ -158,7 +152,6 @@ class HotSwapV2CAD(ManifoldObject):
                 diameter / 2 + error,
                 self.hot_swap_parameters.body_thickness,
             )
-            + self.soldering_placement
         ).translate([point[0], point[1], 0])
 
     def pin_holes(self) -> Manifold:
