@@ -28,11 +28,12 @@ class PcbShellMainCAD(ManifoldObject):
         height = self.mount_model.sphere.highest + self.body_parameters.height
 
         fillet = self.mount_model.wall_parameters.fillet
+        thickness = self.mount_model.wall_parameters.thickness
 
         start_x = self.mount_model.start_x() + fillet
-        start_y = self.mount_model.divider_y + fillet
+        start_y = self.mount_model.divider_y + fillet - thickness
         width = self.mount_model.width - fillet * 2
-        depth = self.mount_model.end_y() - fillet - start_y
+        depth = self.mount_model.end_y() - fillet - start_y + thickness
 
         mask = manifold3d.Manifold.cube(
             [
