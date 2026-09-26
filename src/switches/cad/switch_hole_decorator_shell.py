@@ -19,8 +19,8 @@ class SwitchHoleDecoratorShellCAD(ManifoldObject):
 
     @property
     def body(self) -> manifold3d.Manifold:
-        return rounded_box(
-            self.model.cube_size, self.wall_parameters.thickness
+        return manifold3d.Manifold.cube(
+            self.model.cube_size, center=True
         ).translate(self.model.translation)
 
     @property

@@ -189,6 +189,7 @@ class SwitchHoleDecoratorShellModel:
             self.switches_parameters.size
             + self.switches_parameters.border
             + self.switches_parameters.border_shell
+            + self.switches_parameters.clearance * 2
         )
 
     @property
@@ -201,7 +202,9 @@ class SwitchHoleDecoratorShellModel:
     @property
     def depth(self) -> float:
         return (
-            self.switches_parameters.size + self.switches_parameters.border * 2
+            self.switches_parameters.size
+            + self.switches_parameters.border * 2
+            + self.switches_parameters.clearance * 2
         )
 
     @property
