@@ -22,6 +22,35 @@ class MountModel(BodyInnerModel):
         # TODO: it also should have an error margin
         return super().offset - self.body_parameters.clearance
 
+    @property
+    def main_mask_start_x(self) -> float:
+        return self.start_x() + self.wall_parameters.fillet
+
+    @property
+    def main_mask_start_y(self) -> float:
+        return (
+            self.divider_y
+            + self.wall_parameters.fillet
+            - self.wall_parameters.thickness
+        )
+
+    @property
+    def main_mask_width(self) -> float:
+        return self.width - self.wall_parameters.fillet * 2
+
+    @property
+    def main_mask_depth(self) -> float:
+        return (
+            self.end_y()
+            - self.wall_parameters.fillet
+            - self.main_mask_start_y
+            + self.wall_parameters.thickness
+        )
+
+    @property
+    def main_mask_height(self) -> float:
+        return (self.sphere.highest + self.body_parameters.height) * 2
+
 
 @singleton
 @inject

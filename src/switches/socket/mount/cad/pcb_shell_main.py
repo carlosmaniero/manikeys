@@ -24,28 +24,17 @@ class PcbShellMainCAD(ManifoldObject):
 
         pcb_shell = body_cavity - mount_body
 
-        divider_y = self.mount_model.divider_y
-        height = self.mount_model.sphere.highest + self.body_parameters.height
-
-        fillet = self.mount_model.wall_parameters.fillet
-        thickness = self.mount_model.wall_parameters.thickness
-
-        start_x = self.mount_model.start_x() + fillet
-        start_y = self.mount_model.divider_y + fillet - thickness
-        width = self.mount_model.width - fillet * 2
-        depth = self.mount_model.end_y() - fillet - start_y + thickness
-
         mask = manifold3d.Manifold.cube(
             [
-                width,
-                depth,
-                height * 2,
+                self.mount_model.main_mask_width,
+                self.mount_model.main_mask_depth,
+                self.mount_model.main_mask_height,
             ],
             center=False,
         ).translate(
             [
-                start_x,
-                start_y,
+                self.mount_model.main_mask_start_x,
+                self.mount_model.main_mask_start_y,
                 self.mount_model.bottom_z,
             ]
         )
@@ -59,7 +48,8 @@ class PcbShellMainCAD(ManifoldObject):
             for key in column:
                 cube = (
                     manifold3d.Manifold.cube(
-                        [cube_w, cube_d, height * 2], center=True
+                        [cube_w, cube_d, self.mount_model.main_mask_height],
+                        center=True,
                     )
                     .rotate(key.rotation)
                     .translate(key.position)
