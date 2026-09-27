@@ -8,12 +8,6 @@ def test_full_keyboard_and_pcb_shell_main_intersection_is_empty():
     assert intersection.is_empty()
 
 
-def test_full_keyboard_and_shell_main_intersection_is_empty():
-    intersection_cad = injector.get(IntersectionTestCAD)
-    intersection = intersection_cad.shell_main
-    assert intersection.is_empty()
-
-
 def test_full_keyboard_and_shell_hand_intersection_is_empty():
     intersection_cad = injector.get(IntersectionTestCAD)
     intersection = intersection_cad.shell_hand

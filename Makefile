@@ -129,7 +129,7 @@ build/switches/socket/mount/cad/pcb_shell_main_guide.stl: src/switches/socket/mo
 
 build/switches/socket/mount/cad/screw_hole_main.stl: src/switches/socket/mount/cad/screw_hole_main.py src/globals/screw/parameters.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py src/switches/socket/mount/models.py src/switches/socket/mount/parameters.py
 build/switches/socket/mount/cad/hand.stl: src/switches/socket/mount/cad/hand.py src/globals/wall/parameters.py src/models/parameters.py src/structure/body/models.py src/structure/body/parameters.py src/switches/model.py build/switches/socket/mount/cad/shell.stl
-build/assembly/cad/test_intersection.stl: src/assembly/cad/test_intersection.py build/assembly/base_plate/cad/base_plate.stl build/assembly/cad/full_keyboard.stl build/switches/socket/mount/cad/main.stl build/switches/socket/mount/cad/hand.stl build/switches/socket/cad/hot_swap_v2_grid.stl build/switches/socket/mount/cad/shell.stl build/switches/cad/switch_hole_decorator_cable_matrix_grid.stl build/switches/socket/mount/cad/pcb_shell_main.stl
+build/assembly/cad/test_intersection.stl: src/assembly/cad/test_intersection.py build/assembly/base_plate/cad/base_plate.stl build/assembly/cad/full_keyboard.stl build/switches/socket/mount/cad/hand.stl build/switches/socket/cad/hot_swap_v2_grid.stl build/switches/socket/mount/cad/shell.stl build/switches/cad/switch_hole_decorator_cable_matrix_grid.stl build/switches/socket/mount/cad/pcb_shell_main.stl
 
 COMMA := ,
 empty :=

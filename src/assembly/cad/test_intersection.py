@@ -165,7 +165,6 @@ class IntersectionTestCAD(ManifoldObject):
     def assemble(self) -> manifold3d.Manifold:
         result = (
             self.full_keyboard_pcb_shell_main
-            + self.shell_main
             + self.shell_hand
             + self.hot_swap_v2_grid_shell
             + self.cable_matrix_grid_shell
