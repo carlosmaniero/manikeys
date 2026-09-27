@@ -460,7 +460,9 @@ class MountScrewCylinderModel:
     @property
     def radius(self) -> float:
         return (
-            self.cavity_radius + self.screw_placement_model.screw_diameter * 4
+            self.cavity_radius
+            + self.screw_placement_model.screw_diameter * 4
+            + self.parameters.extra_radius
         )
 
     @property
@@ -483,23 +485,20 @@ class MountScrewCylinderModel:
 
     @property
     def placements(self) -> list[tuple[float, float, float]]:
-        center_main_x, center_main_y = self.center_main
-        placements = []
-        for x, y in self.screw_placement_model.main_points:
-            center_x = x + self.screw_placement_model.standoff_size / 2
-            center_y = y + self.screw_placement_model.standoff_size / 2
+        radius = self.radius
+        start_x = self.body.start_x()
+        end_x = self.body.end_x()
+        divider_y = self.body.divider_y
+        end_y = self.body.end_y()
 
-            if center_x < center_main_x and center_y < center_main_y:
-                rotation_deg = 0.0
-            elif center_x >= center_main_x and center_y < center_main_y:
-                rotation_deg = 90.0
-            elif center_x >= center_main_x and center_y >= center_main_y:
-                rotation_deg = 180.0
-            else:
-                rotation_deg = 270.0
-
-            placements.append((center_x, center_y, rotation_deg))
-        return placements
+        # (center_x, center_y, rotation_deg)
+        # Position the quarter cylinders flush against the outer boundaries of the main body
+        return [
+            (start_x, divider_y, 0.0),
+            (end_x, divider_y, 90.0),
+            (end_x, end_y, 180.0),
+            (start_x, end_y, 270.0),
+        ]
 
     @property
     def hole_radius(self) -> float:

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class MountScrewCylinderParameters:
     clearance: float = 0.2
+    extra_radius: float = 6.0
 
 
 @dataclass
