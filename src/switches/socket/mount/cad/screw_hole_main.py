@@ -4,7 +4,7 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from switches.socket.mount.models import MountModel
+from switches.socket.mount.models import MountCavityPcbShellMainBottomModel
 from switches.socket.mount.parameters import (
     MountScrewHoleParameters,
     PcbShellMainParameters,
@@ -16,7 +16,7 @@ from core.manifold_ext.object import ManifoldObject
 @inject
 @dataclass
 class MountScrewHoleMainCAD(ManifoldObject):
-    mount_model: MountModel
+    mount_model: MountCavityPcbShellMainBottomModel
     screw_hole_parameters: MountScrewHoleParameters
     pcb_shell_main_parameters: PcbShellMainParameters
 
@@ -24,20 +24,8 @@ class MountScrewHoleMainCAD(ManifoldObject):
         screw_holes = []
         hole_radius = self.mount_model.screw_parameters.m2_diameter / 2
         hole_height = self.screw_hole_parameters.height
-        extra_offset_y = (
-            self.pcb_shell_main_parameters.cutout_extra_size / 2 + 1.0
-        )
 
-        for col_idx, (x, y, z, rot) in enumerate(
-            self.mount_model.screw_hole_placements
-        ):
-            # The first N placements correspond to the column screw holes (top/bottom alternating)
-            if col_idx < len(self.mount_model.layout.grid):
-                if col_idx % 2 == 0:
-                    y -= extra_offset_y
-                else:
-                    y += extra_offset_y
-
+        for x, y, z, rot in self.mount_model.screw_hole_placements:
             hole = (
                 manifold3d.Manifold.cylinder(
                     height=hole_height,

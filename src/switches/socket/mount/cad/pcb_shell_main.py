@@ -22,9 +22,11 @@ class PcbShellMainCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         body_cavity = self.deps.stls["build/structure/body/cad/body_cavity.stl"]
-        mount_body = self.deps.stls["build/switches/socket/mount/cad/body.stl"]
+        mount_cavity = self.deps.stls[
+            "build/switches/socket/mount/cad/cavity_pcb_shell_main_bottom.stl"
+        ]
 
-        pcb_shell = body_cavity - mount_body
+        pcb_shell = body_cavity - mount_cavity
 
         mask = manifold3d.Manifold.cube(
             [

@@ -10,8 +10,11 @@ from models.parameters import SwitchesParameters
 from connectors.pogo.models import PogoPinModel
 from components.female_pin_header.model import FemalePinHeaderModel
 from structure.body.parameters import BodyParameters
+from core.interpolation import lerp, Interpolator, InterpolationChain
+import numpy as np
 from switches.socket.mount.parameters import (
     MountScrewCylinderParameters,
+    PcbShellMainParameters,
 )
 
 
@@ -169,6 +172,163 @@ class MountCavityModel(MountModel):
     def end_x_fillet_end(self) -> float:
         reduction = self.body_parameters.mount_cavity_fillet_reduction
         return self.end_x() - max(0.0, self.wall_parameters.fillet - reduction)
+
+
+@singleton
+@inject
+@dataclass
+class MountCavityPcbShellMainBottomModel(MountCavityModel):
+    pcb_shell_main_parameters: PcbShellMainParameters
+
+    @property
+    def offset(self) -> float:
+        return (
+            BodyInnerModel.offset.fget(self)
+            - self.pcb_shell_main_parameters.thickness
+        )
+
+    @property
+    def screw_hole_placements(
+        self,
+    ) -> list[tuple[float, float, float, list[float]]]:
+        placements = []
+        p = self.switches_parameters
+        half_decorator_depth = p.size / 2 + p.border
+        offset_y = (
+            half_decorator_depth
+            + self.screw_parameters.m2_diameter
+            + self.pcb_shell_main_parameters.cutout_extra_size / 2
+            + 1.0
+        )
+
+        for col_idx, col in enumerate(self.layout.grid):
+            if not col:
+                continue
+
+            if col_idx % 2 == 0:
+                first_key = col[0]
+                key_x, key_y, _ = first_key.position
+                hole_y = key_y - offset_y
+                placements.append(
+                    (
+                        key_x,
+                        hole_y,
+                        float(self.z(key_x, hole_y)),
+                        first_key.rotation,
+                    )
+                )
+            else:
+                last_key = col[-1]
+                key_x, key_y, _ = last_key.position
+                hole_y = key_y + offset_y
+                placements.append(
+                    (
+                        key_x,
+                        hole_y,
+                        float(self.z(key_x, hole_y)),
+                        last_key.rotation,
+                    )
+                )
+
+        # Include corners using self.z
+        screw_radius = self.screw_parameters.m2_diameter / 2
+        corner_margin = screw_radius + self.wall_parameters.thickness
+
+        corner_x_min = self.main_mask_start_x + corner_margin
+        corner_x_max = (
+            self.main_mask_start_x + self.main_mask_width - corner_margin
+        )
+        corner_y_min = self.main_mask_start_y + corner_margin
+        corner_y_max = (
+            self.main_mask_start_y + self.main_mask_depth - corner_margin
+        )
+
+        corner_rotation = [0.0, 0.0, 0.0]
+        corner_y_mid = (corner_y_min + corner_y_max) / 2
+
+        corners = [
+            (
+                corner_x_min,
+                corner_y_min,
+                float(self.z(corner_x_min, corner_y_min)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_min,
+                float(self.z(corner_x_max, corner_y_min)),
+                corner_rotation,
+            ),
+            (
+                corner_x_min,
+                corner_y_max,
+                float(self.z(corner_x_min, corner_y_max)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_max,
+                float(self.z(corner_x_max, corner_y_max)),
+                corner_rotation,
+            ),
+            (
+                corner_x_min,
+                corner_y_mid,
+                float(self.z(corner_x_min, corner_y_mid)),
+                corner_rotation,
+            ),
+            (
+                corner_x_max,
+                corner_y_mid,
+                float(self.z(corner_x_max, corner_y_mid)),
+                corner_rotation,
+            ),
+        ]
+        placements.extend(corners)
+
+        return placements
+
+    def low_bottom_interpolations(
+        self, coords: list[np.ndarray]
+    ) -> InterpolationChain:
+        x, y = coords
+        base = self.low_bottom.z(x, y)
+
+        return InterpolationChain(
+            [
+                # Y: from sphere to hand support
+                Interpolator(
+                    start=self.sphere.start_y() + self.offset,
+                    end=self.sphere.start_y()
+                    + self.wall_parameters.fillet
+                    + self.offset,
+                    base=self.hand_support_z(coords),
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.start_y(),
+                    end=self.start_y() + self.hand_support_parameters.fillet,
+                    base=base,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.end_y(),
+                    end=self.end_y() - 0.01,
+                    base=base,
+                    ratio=lerp.y_factor,
+                ),
+                Interpolator(
+                    start=self.start_x_fillet_start,
+                    end=self.start_x_fillet_end,
+                    base=base,
+                ),
+                Interpolator(
+                    start=self.end_x_fillet_start,
+                    end=self.end_x_fillet_end,
+                    base=base,
+                ),
+            ]
+        )
 
 
 @singleton

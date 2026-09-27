@@ -23,3 +23,4 @@ class MountScrewHoleParameters:
 @dataclass
 class PcbShellMainParameters:
     cutout_extra_size: float = 3.0
+    thickness: float = 3.0
