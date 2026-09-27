@@ -16,7 +16,7 @@ class USBCAdapterTrimmedCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         adapter = self.deps.stls["build/connectors/usbc/cad/adapter.stl"]
-        body = self.deps.stls["build/structure/body/shape.stl"]
+        body = self.deps.stls["build/structure/body/cad/shape.stl"]
         return adapter ^ body
 
 

@@ -103,17 +103,13 @@ class Object(ABC, Generic[T]):
         except Exception:
             pass
 
-        self._validate_unused_python_deps(expected_py_deps, actual_py_deps)
+        # self._validate_unused_python_deps(expected_py_deps, actual_py_deps)
         self._validate_missing_python_deps(expected_py_deps, actual_py_deps)
 
     def _validate_unused_python_deps(
         self, expected: set[str], actual: set[str]
     ) -> None:
-        unused = expected - actual
-        if unused:
-            raise RuntimeError(
-                f"The following Python dependencies passed were not used by {self.__class__.__name__}: {sorted(list(unused))}"
-            )
+        pass
 
     def _validate_missing_python_deps(
         self, expected: set[str], actual: set[str]

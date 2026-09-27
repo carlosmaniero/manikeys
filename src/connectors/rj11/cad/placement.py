@@ -102,7 +102,7 @@ class RJ11AdapterPlacementCAD(ManifoldObject):
             ]
         )
 
-        body = self.deps.stls["build/structure/body/shape.stl"]
+        body = self.deps.stls["build/structure/body/cad/shape.stl"]
         return placement ^ body
 
 

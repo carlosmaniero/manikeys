@@ -64,7 +64,7 @@ class MainWithSupportsAssemblyCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         body = self.deps.stls["build/assembly/cad/main.stl"]
-        shape = self.deps.stls["build/structure/body/shape.stl"]
+        shape = self.deps.stls["build/structure/body/cad/shape.stl"]
         screw_holes = self.deps.stls["build/structure/body/screws/cad/hole.stl"]
         base_plate_main = self.deps.stls[
             "build/assembly/base_plate/cad/main.stl"

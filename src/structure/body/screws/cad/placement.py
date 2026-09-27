@@ -31,7 +31,7 @@ class ScrewPlacementCAD(ManifoldObject):
 
             standoffs.append(standoff)
 
-        body = self.deps.stls["build/structure/body/shape.stl"]
+        body = self.deps.stls["build/structure/body/cad/shape.stl"]
 
         return (
             manifold3d.Manifold.batch_boolean(standoffs, manifold3d.OpType.Add)

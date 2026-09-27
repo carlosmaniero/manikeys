@@ -15,7 +15,7 @@ class RJ45AdapterFrontPlacementCAD(ManifoldObject):
 
     def assemble(self) -> M:
         front = self.deps.stls["build/connectors/rj45/cad/adapter_front.stl"]
-        body = self.deps.stls["build/structure/body/shape.stl"]
+        body = self.deps.stls["build/structure/body/cad/shape.stl"]
 
         placement = front.rotate([0, 0, -90]).translate(
             self.model.translation_coords

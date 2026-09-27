@@ -16,7 +16,7 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         body = (
-            self.deps.stls["build/structure/body/shape.stl"]
+            self.deps.stls["build/structure/body/cad/shape.stl"]
             - self.deps.stls[
                 "build/structure/body/cad/body_cavity_sections.stl"
             ]

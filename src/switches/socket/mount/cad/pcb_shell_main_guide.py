@@ -17,7 +17,7 @@ class PcbShellMainGuideCAD(ManifoldObject):
     parameters: PcbShellMainGuideParameters
 
     def assemble(self) -> manifold3d.Manifold:
-        shape = self.deps.stls["build/structure/body/shape.stl"]
+        shape = self.deps.stls["build/structure/body/cad/shape.stl"]
         mount_cavity = self.deps.stls[
             "build/switches/socket/mount/cad/cavity_pcb_shell_main_bottom.stl"
         ]

@@ -16,7 +16,7 @@ class AdapterPlacementCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         adapter = self.deps.stls["build/connectors/rj45_tabs/cad/adapter.stl"]
-        body = self.deps.stls["build/structure/body/shape.stl"]
+        body = self.deps.stls["build/structure/body/cad/shape.stl"]
         placement = (
             adapter.rotate([0, 180, 0])
             .rotate([90, 0, -90])
