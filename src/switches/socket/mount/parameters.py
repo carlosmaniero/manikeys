@@ -17,4 +17,4 @@ class PcbsPlacementParameters:
 @dataclass
 class MountScrewHoleParameters:
     offset_z: float = -0.1
-    height: float = 6.0
+    height: float = 4.0

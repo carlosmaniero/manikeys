@@ -47,6 +47,9 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             + self.deps.stls["build/structure/body/screws/cad/placement.stl"]
             - self.deps.stls["build/structure/body/screws/cad/hole.stl"]
             - self.deps.stls["build/connectors/magnet/cad/snap.stl"]
+            - self.deps.stls[
+                "build/switches/socket/mount/cad/screw_hole_main.stl"
+            ]
         )
 
         return body
