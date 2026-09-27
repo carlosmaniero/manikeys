@@ -49,14 +49,24 @@ class MountModel(BodyInnerModel):
                 key_x, key_y, _ = first_key.position
                 hole_y = key_y - offset_y
                 placements.append(
-                    (key_x, hole_y, float(self.z(key_x, hole_y)), first_key.rotation)
+                    (
+                        key_x,
+                        hole_y,
+                        float(self.z(key_x, hole_y)),
+                        first_key.rotation,
+                    )
                 )
             else:
                 last_key = col[-1]
                 key_x, key_y, _ = last_key.position
                 hole_y = key_y + offset_y
                 placements.append(
-                    (key_x, hole_y, float(self.z(key_x, hole_y)), last_key.rotation)
+                    (
+                        key_x,
+                        hole_y,
+                        float(self.z(key_x, hole_y)),
+                        last_key.rotation,
+                    )
                 )
 
         screw_radius = self.screw_parameters.m2_diameter / 2

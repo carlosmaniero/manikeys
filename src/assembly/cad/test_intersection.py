@@ -15,6 +15,24 @@ class IntersectionTestCAD(ManifoldObject):
     __test__ = False
 
     @property
+    def full_keyboard_pcb_shell_main(self) -> manifold3d.Manifold:
+        path = "build/switches/socket/mount/cad/pcb_shell_main.stl"
+        full_keyboard_path = "build/assembly/cad/full_keyboard.stl"
+
+        full_keyboard = (
+            self.deps.stls[full_keyboard_path]
+            if full_keyboard_path in self.deps.stls
+            else load_stl_to_manifold(full_keyboard_path)
+        )
+        pcb_shell_main = (
+            self.deps.stls[path]
+            if path in self.deps.stls
+            else load_stl_to_manifold(path)
+        )
+
+        return full_keyboard ^ pcb_shell_main
+
+    @property
     def shell_main(self) -> manifold3d.Manifold:
         path = "build/switches/socket/mount/cad/main.stl"
         full_keyboard_path = "build/assembly/cad/full_keyboard.stl"
@@ -146,7 +164,8 @@ class IntersectionTestCAD(ManifoldObject):
 
     def assemble(self) -> manifold3d.Manifold:
         result = (
-            self.shell_main
+            self.full_keyboard_pcb_shell_main
+            + self.shell_main
             + self.shell_hand
             + self.hot_swap_v2_grid_shell
             + self.cable_matrix_grid_shell

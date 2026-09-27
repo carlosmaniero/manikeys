@@ -18,3 +18,8 @@ class PcbsPlacementParameters:
 class MountScrewHoleParameters:
     offset_z: float = -0.1
     height: float = 4.0
+
+
+@dataclass
+class PcbShellMainParameters:
+    cutout_extra_size: float = 3.0
