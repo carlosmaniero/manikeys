@@ -11,6 +11,9 @@ from switches.socket.mount.models import (
 )
 
 
+from structure.body.models import BodyInnerModel, BodyModel
+
+
 @singleton
 @inject
 @dataclass
@@ -22,20 +25,19 @@ class PcbsPlacementModel:
     body_parameters: BodyParameters
     nano_model: ArduinoNanoCaseModel
     pro_model: ArduinoProMicroCaseModel
+    body: BodyModel
+    body_inner: BodyInnerModel
 
     @property
     def main_cavity_start_y(self) -> float:
-        divider_size = (
-            self.wall_parameters.thickness * 4
-            + self.body_parameters.clearance * 2
-        )
-        return self.mount_cavity_model.divider_y + divider_size / 2
+        divider_size = self.wall_parameters.thickness * 2
+        return self.body_inner.divider_y + divider_size / 2
 
     @property
     def dimensions(self) -> tuple[float, float, float]:
-        width = self.mount_cavity_model.width - self.parameters.clearance * 2
+        width = self.body_inner.width - self.parameters.clearance * 2
         depth = (
-            self.mount_cavity_model.end_y()
+            self.body_inner.end_y()
             - self.main_cavity_start_y
             - self.parameters.clearance * 2
         )
@@ -44,7 +46,7 @@ class PcbsPlacementModel:
 
     @property
     def coords(self) -> tuple[float, float, float]:
-        x = self.mount_cavity_model.start_x() + self.parameters.clearance
+        x = self.body_inner.start_x() + self.parameters.clearance
         y = self.main_cavity_start_y + self.parameters.clearance
         z = self.screw_cylinder_model.z - self.parameters.thickness
         return (x, y, z)
@@ -52,28 +54,13 @@ class PcbsPlacementModel:
     @property
     def cavity_mask_radius(self) -> float:
         return (
-            self.screw_cylinder_model.cavity_radius + self.parameters.clearance
+            self.screw_cylinder_model.screw_placement_model.standoff_size
+            + self.parameters.clearance
         )
 
     @property
     def cavity_mask_placements(self) -> list[tuple[float, float]]:
-        placements = []
-        for (
-            x,
-            y,
-        ) in self.screw_cylinder_model.screw_placement_model.main_points:
-            center_x = (
-                x
-                + self.screw_cylinder_model.screw_placement_model.standoff_size
-                / 2
-            )
-            center_y = (
-                y
-                + self.screw_cylinder_model.screw_placement_model.standoff_size
-                / 2
-            )
-            placements.append((center_x, center_y))
-        return placements
+        return self.screw_cylinder_model.screw_placement_model.get_centered_points()
 
     @property
     def inner_cut_dimensions(self) -> tuple[float, float, float]:
