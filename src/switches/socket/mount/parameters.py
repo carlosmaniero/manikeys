@@ -9,10 +9,11 @@ class MountScrewCylinderParameters:
 
 @dataclass
 class PcbsPlacementParameters:
-    clearance: float = 0.2
+    clearance: float = 0.5
     thickness: float = 2
     wall_margin: float = 5.0
     arduinos_offset_z: float = -15.0
+    offset_z: float = -0.01
 
 
 @dataclass

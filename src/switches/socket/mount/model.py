@@ -48,7 +48,11 @@ class PcbsPlacementModel:
     def coords(self) -> tuple[float, float, float]:
         x = self.body_inner.start_x() + self.parameters.clearance
         y = self.main_cavity_start_y + self.parameters.clearance
-        z = self.screw_cylinder_model.z - self.parameters.thickness
+        z = (
+            self.screw_cylinder_model.z
+            - self.parameters.thickness
+            + self.parameters.offset_z
+        )
         return (x, y, z)
 
     @property
