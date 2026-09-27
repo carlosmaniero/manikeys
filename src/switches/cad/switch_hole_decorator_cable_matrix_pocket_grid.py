@@ -20,9 +20,14 @@ class SwitchHoleDecoratorCableMatrixPocketGridCAD(ManifoldObject):
 
     @property
     def pocket(self) -> manifold3d.Manifold:
-        hole = manifold3d.Manifold.cube(self.model.block_hole_size, center=True)
+        hole = manifold3d.Manifold.cube(
+            self.model.cable_matrix_pocket_size, center=True
+        )
         return manifold3d.Manifold.batch_boolean(
-            [hole.translate(pos) for pos in self.model.block_hole_translations],
+            [
+                hole.translate(pos)
+                for pos in self.model.cable_matrix_pocket_translations
+            ],
             manifold3d.OpType.Add,
         )
 

@@ -300,6 +300,14 @@ class SwitchHoleDecoratorShellModel:
         ]
 
     @property
+    def cable_matrix_pocket_size(self) -> list[float]:
+        return [
+            self.block_hole_size[0],
+            self.block_hole_size[1],
+            self.switches_parameters.cable_matrix_pocket_height,
+        ]
+
+    @property
     def block_translation(self) -> list[float]:
         return [
             self.y_cable_path_translation[0],
@@ -315,6 +323,25 @@ class SwitchHoleDecoratorShellModel:
             self.y_cable_path_translation[2]
             + self.y_cable_path_cube_size[2] / 2
             + self.block_size[2] / 2
+        )
+        x_off = self.y_cable_path_translation[0]
+        y_pos = self.y_cable_path_translation[1]
+        return [
+            [x_off, y_pos, z_pos],
+            [-x_off, y_pos, z_pos],
+        ]
+
+    @property
+    def cable_matrix_pocket_translations(self) -> list[list[float]]:
+        original_bottom_z = (
+            self.y_cable_path_translation[2]
+            + self.y_cable_path_cube_size[2] / 2
+            + self.block_size[2] / 2
+            - self.block_hole_size[2] / 2
+        )
+        z_pos = (
+            original_bottom_z
+            + self.switches_parameters.cable_matrix_pocket_height / 2
         )
         x_off = self.y_cable_path_translation[0]
         y_pos = self.y_cable_path_translation[1]

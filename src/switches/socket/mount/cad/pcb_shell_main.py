@@ -104,6 +104,9 @@ class PcbShellMainCAD(ManifoldObject):
         switch_hole_decorator_shell_grid = self.deps.stls[
             "build/switches/cad/switch_hole_decorator_shell_grid.stl"
         ]
+        switch_hole_decorator_cable_matrix_pocket_grid = self.deps.stls[
+            "build/switches/cad/switch_hole_decorator_cable_matrix_pocket_grid.stl"
+        ]
         light_indicator_body_shell = self.deps.stls[
             "build/components/light_indicator/cad/masks/body_shell.stl"
         ]
@@ -116,6 +119,7 @@ class PcbShellMainCAD(ManifoldObject):
             - top_hole_mask
             - full_hole_mask
             + switch_hole_decorator_shell_grid
+            - switch_hole_decorator_cable_matrix_pocket_grid
             - screw_hole_mask
             - light_indicator_body_shell
         ).translate([0, 0, -0.1])

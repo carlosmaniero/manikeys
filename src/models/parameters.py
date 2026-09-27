@@ -21,6 +21,7 @@ class SwitchesParameters:
     col_cable_path_wall_thickness: float = 3.0
     pin_margin: float = 0.75
     pin_clearance: float = 0.05
+    cable_matrix_pocket_height: float = 2.0
 
     @property
     def full_offset(self) -> float:
