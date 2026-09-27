@@ -33,24 +33,6 @@ class IntersectionTestCAD(ManifoldObject):
         return full_keyboard ^ pcb_shell_main
 
     @property
-    def shell_main(self) -> manifold3d.Manifold:
-        path = "build/switches/socket/mount/cad/main.stl"
-        full_keyboard_path = "build/assembly/cad/full_keyboard.stl"
-
-        full_keyboard = (
-            self.deps.stls[full_keyboard_path]
-            if full_keyboard_path in self.deps.stls
-            else load_stl_to_manifold(full_keyboard_path)
-        )
-        shell_main = (
-            self.deps.stls[path]
-            if path in self.deps.stls
-            else load_stl_to_manifold(path)
-        )
-
-        return full_keyboard ^ shell_main
-
-    @property
     def shell_hand(self) -> manifold3d.Manifold:
         path = "build/switches/socket/mount/cad/hand.stl"
         full_keyboard_path = "build/assembly/cad/full_keyboard.stl"
