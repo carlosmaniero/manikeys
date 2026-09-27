@@ -24,16 +24,20 @@ class BodyShellMask(ManifoldObject):
         return 100
 
     @property
+    def extension(self) -> float:
+        return 100.0
+
+    @property
     def body_hull(self) -> manifold3d.Manifold:
         t = self.wall_parameters.thickness
         return rounded_box(
             [
-                self.indicator_model.width + t,
+                self.indicator_model.width + t + self.extension,
                 self.indicator_model.body_depth + t,
                 self.height,
             ],
-            self.indicator_model.body_depth / 2 + t / 2,
-        )
+            self.indicator_model.body_depth / 2 + t / 2 + t,
+        ).translate([self.extension / 2, 0, 0])
 
     def assemble(self) -> manifold3d.Manifold:
         return self.body_hull.rotate(
