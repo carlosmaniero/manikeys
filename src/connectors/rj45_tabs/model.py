@@ -166,6 +166,6 @@ class AdapterPlacementModel:
             - self.wall_parameters.thickness * 2,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
-            - self.wall_parameters.thickness / 2
+            + self.wall_parameters.thickness / 2
             + self.adapter_model.parameters.exposed_body_height / 2,
         ]

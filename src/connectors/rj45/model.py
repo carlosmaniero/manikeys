@@ -218,6 +218,6 @@ class RJ45PlacementModel:
             - self.wall_parameters.thickness * 4,
             self.body_model.bottom_z
             + self.body_model.connectors_bottom_offset
-            - self.rj45_model.thickness / 2
+            + self.wall_parameters.thickness / 2
             + self.rj45_model.rj45.height / 2,
         ]
