@@ -116,7 +116,7 @@ class PcbShellMainCAD(ManifoldObject):
             + switch_hole_decorator_shell_grid
             - screw_hole_mask
             - light_indicator_body_shell
-        )
+        ).translate([0, 0, -0.1])
 
 
 if __name__ == "__main__":
