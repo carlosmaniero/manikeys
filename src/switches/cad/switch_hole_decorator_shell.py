@@ -5,7 +5,6 @@ import manifold3d
 from injector import inject, singleton
 from switches.model import SwitchHoleDecoratorShellModel
 from globals.wall.parameters import WallParameters
-from core.manifold_ext.helpers import rounded_box
 from core.manifold_ext.object import ManifoldObject
 from core.context import injector
 

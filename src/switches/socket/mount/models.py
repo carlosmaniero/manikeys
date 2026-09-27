@@ -18,7 +18,6 @@ from switches.socket.mount.parameters import (
 )
 
 
-from switches.model import Layout
 from globals.screw.parameters import ScrewParameters
 
 
@@ -485,7 +484,6 @@ class MountScrewCylinderModel:
 
     @property
     def placements(self) -> list[tuple[float, float, float]]:
-        radius = self.radius
         start_x = self.body.start_x()
         end_x = self.body.end_x()
         divider_y = self.body.divider_y
