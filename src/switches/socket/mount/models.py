@@ -10,7 +10,9 @@ from models.parameters import SwitchesParameters
 from connectors.pogo.models import PogoPinModel
 from components.female_pin_header.model import FemalePinHeaderModel
 from structure.body.parameters import BodyParameters
-from switches.socket.mount.parameters import MountScrewCylinderParameters
+from switches.socket.mount.parameters import (
+    MountScrewCylinderParameters,
+)
 
 
 from switches.model import Layout
@@ -43,17 +45,20 @@ class MountModel(BodyInnerModel):
                 continue
 
             if col_idx % 2 == 0:
-                # Odd column (0-indexed 0, 2, 4): hole before first key (top)
                 first_key = col[0]
-                x, y, z = first_key.position
-                placements.append((x, y - offset_y, z, first_key.rotation))
+                key_x, key_y, _ = first_key.position
+                hole_y = key_y - offset_y
+                placements.append(
+                    (key_x, hole_y, float(self.z(key_x, hole_y)), first_key.rotation)
+                )
             else:
-                # Even column (0-indexed 1, 3, 5): hole after last key (bottom)
                 last_key = col[-1]
-                x, y, z = last_key.position
-                placements.append((x, y + offset_y, z, last_key.rotation))
+                key_x, key_y, _ = last_key.position
+                hole_y = key_y + offset_y
+                placements.append(
+                    (key_x, hole_y, float(self.z(key_x, hole_y)), last_key.rotation)
+                )
 
-        # 4 extra screw holes, one for each corner of the whole thing
         screw_radius = self.screw_parameters.m2_diameter / 2
         corner_margin = screw_radius + self.wall_parameters.thickness
 

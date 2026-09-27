@@ -4,7 +4,6 @@ import manifold3d
 from dataclasses import dataclass
 from injector import inject, singleton
 from core.context import injector
-from globals.screw.parameters import ScrewParameters
 from structure.body.parameters import BodyParameters
 from switches.model import Layout
 from switches.socket.mount.models import MountModel
@@ -67,26 +66,9 @@ class PcbShellMainCAD(ManifoldObject):
         light_indicator_body_shell = self.deps.stls[
             "build/components/light_indicator/cad/masks/body_shell.stl"
         ]
-
-        screw_holes = []
-        hole_radius = self.mount_model.screw_parameters.m2_diameter / 2
-        hole_height = self.mount_model.main_mask_height
-        for x, y, z, rot in self.mount_model.screw_hole_placements:
-            hole = (
-                manifold3d.Manifold.cylinder(
-                    height=hole_height,
-                    radius_low=hole_radius,
-                    circular_segments=100,
-                    center=True,
-                )
-                .rotate(rot)
-                .translate([x, y, z])
-            )
-            screw_holes.append(hole)
-
-        screw_hole_mask = manifold3d.Manifold.batch_boolean(
-            screw_holes, manifold3d.OpType.Add
-        )
+        screw_hole_mask = self.deps.stls[
+            "build/switches/socket/mount/cad/screw_hole_main.stl"
+        ]
 
         return (
             (pcb_shell ^ mask)
