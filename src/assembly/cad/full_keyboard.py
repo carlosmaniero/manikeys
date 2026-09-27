@@ -53,6 +53,9 @@ class FullKeyboardAssemblyCAD(ManifoldObject):
             + self.deps.stls[
                 "build/switches/socket/mount/cad/pcb_shell_main_guide.stl"
             ]
+            + self.deps.stls[
+                "build/switches/socket/mount/cad/pcbs_placement_screws.stl"
+            ]
         )
 
         return body
