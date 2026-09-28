@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from injector import inject, singleton
 from manifold3d import Manifold
 from globals.wall.parameters import WallParameters
-from switches.socket.parameters import HotSwapV2Parameters
+from switches.socket.parameters import HotSwapV3Parameters
 from components.light_indicator.parameters import LedParameters
 from core.manifold_ext.helpers import rounded_box
 from core.manifold_ext.object import ManifoldObject
@@ -16,7 +16,7 @@ from core.context import injector
 @dataclass
 class HotSwapV3CAD(ManifoldObject):
     wall_parameters: WallParameters
-    hot_swap_parameters: HotSwapV2Parameters
+    hot_swap_parameters: HotSwapV3Parameters
     led: LedParameters
 
     def body(self) -> Manifold:
@@ -180,6 +180,51 @@ class HotSwapV3CAD(ManifoldObject):
             + self.wire_channels()
         )
 
+    def led_placement_pcb(self) -> Manifold:
+        return (
+            Manifold.cylinder(
+                self.led.pcb_height - self.led.pcb_actual_height,
+                self.led.pcb_radius,
+                self.led.pcb_enty_radius,
+                circular_segments=8,
+            ).translate([0, 0, self.led.pcb_actual_height])
+            + Manifold.cylinder(
+                self.led.pcb_height,
+                self.led.pcb_radius,
+                circular_segments=8,
+            )
+        ).rotate([0, 0, 22.5])
+
+    def led_placement_hole(self) -> Manifold:
+        return Manifold.cube(
+            [
+                self.led.led_size,
+                self.led.led_size,
+                self.hot_swap_parameters.body_thickness,
+            ],
+            center=True,
+        ).translate(
+            [
+                0,
+                0,
+                -(self.hot_swap_parameters.body_thickness) / 2,
+            ]
+        )
+
+    def centralize_led_object(self, obj: Manifold) -> Manifold:
+        return obj.translate(
+            [
+                0,
+                -self.hot_swap_parameters.cube_size / 2 + self.led.led_size / 2,
+                self.hot_swap_parameters.body_thickness - self.led.pcb_height,
+            ]
+        )
+
+    def led_placement(self) -> Manifold:
+        return self.centralize_led_object(
+            self.led_placement_pcb() + self.led_placement_hole()
+        )
+
     def assemble(self) -> Manifold:
         return (
             self.body()
@@ -187,6 +232,7 @@ class HotSwapV3CAD(ManifoldObject):
             - self.pin_holes()
             - self.center_hole()
             - self.wire_holes()
+            - self.led_placement()
         )
 
 
