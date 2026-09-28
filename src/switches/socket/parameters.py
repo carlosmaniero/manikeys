@@ -10,10 +10,10 @@ class HotSwapParameters:
     diode_l: float = 5.0
     diode_x: float = -4.54
     cube_size: float = 13.8
-    body_thickness: float = 10.0
+    body_thickness: float = 5.0
     switch_socket_height: float = 1.0
     switch_socket_width: float = 17.6
-    center_hole_radius: float = 2.0
+    center_hole_radius: float = 2.2
     mask_clearance: float = 0.2
 
 
