@@ -24,4 +24,4 @@ class HotSwapV2Parameters(HotSwapParameters):
 
 @dataclass
 class HotSwapV3Parameters(HotSwapParameters):
-    body_thickness: float = 5.0
+    pass

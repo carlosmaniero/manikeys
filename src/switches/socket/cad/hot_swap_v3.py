@@ -225,6 +225,46 @@ class HotSwapV3CAD(ManifoldObject):
             self.led_placement_pcb() + self.led_placement_hole()
         )
 
+    @property
+    def diode_wire_hole_center_x(self) -> float:
+        return (
+            -self.hot_swap_parameters.cube_size
+            + self.led.led_size
+            - self.hot_swap_parameters.diode_r / 2
+        ) / 2
+
+    def diode(self) -> Manifold:
+        border = (
+            self.hot_swap_parameters.border
+            + self.hot_swap_parameters.offset_fix
+        )
+
+        full_height = self.hot_swap_parameters.diode_l + border
+
+        d1 = Manifold.cylinder(
+            height=full_height,
+            radius_low=self.hot_swap_parameters.diode_r,
+            center=True,
+            circular_segments=64,
+        )
+
+        d2 = Manifold.cylinder(
+            height=100,
+            radius_low=self.hot_swap_parameters.diode_wire_r,
+            center=True,
+            circular_segments=64,
+        )
+
+        d = d1 + d2
+
+        return d.rotate([90, 0, 0]).translate(
+            [
+                self.diode_wire_hole_center_x,
+                -self.hot_swap_parameters.cube_size / 2 + full_height / 2,
+                self.hot_swap_parameters.diode_r + 1.0,
+            ]
+        )
+
     def assemble(self) -> Manifold:
         return (
             self.body()
@@ -233,6 +273,7 @@ class HotSwapV3CAD(ManifoldObject):
             - self.center_hole()
             - self.wire_holes()
             - self.led_placement()
+            - self.diode()
         )
 
 
