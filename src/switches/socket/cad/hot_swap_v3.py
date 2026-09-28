@@ -137,34 +137,63 @@ class HotSwapV3CAD(ManifoldObject):
             self.hot_swap_parameters.body_thickness
             + self.hot_swap_parameters.switch_socket_height * 2
         ) * 2
-        end_y = self.hot_swap_parameters.cube_size / 2
-        return Manifold.cylinder(
+        end_y = self.hot_swap_parameters.cube_size / 2 - self.awg22_wire_radius
+        r = self.awg22_wire_radius
+
+        cyl = Manifold.cylinder(
             height,
-            self.awg22_wire_radius,
+            r,
             center=True,
             circular_segments=64,
         ).translate([pin_point[0], end_y, height / 2])
+
+        cube = Manifold.cube(
+            [r * 2, r, height],
+            center=True,
+        ).translate([pin_point[0], end_y + r / 2, height / 2])
+
+        return cyl + cube
 
     def create_wire_channel(self, pin_point: list[float]) -> Manifold:
         height = self.awg22_wire_radius * 2
         wire_y = pin_point[1] + self.awg22_wire_radius
-        end_y = self.hot_swap_parameters.cube_size / 2
+        end_y = self.hot_swap_parameters.cube_size / 2 - self.awg22_wire_radius
+        r = self.awg22_wire_radius
 
-        start_cyl = Manifold.cylinder(
+        top_z = self.hot_swap_parameters.body_thickness
+
+        def end_shape(z: float) -> Manifold:
+            cyl = Manifold.cylinder(
+                height,
+                r,
+                center=True,
+                circular_segments=64,
+            ).translate([pin_point[0], end_y, z])
+            cube = Manifold.cube(
+                [r * 2, r, height],
+                center=True,
+            ).translate([pin_point[0], end_y + r / 2, z])
+            return cyl + cube
+
+        start_cyl_bottom = Manifold.cylinder(
             height,
-            self.awg22_wire_radius,
+            r,
             center=True,
             circular_segments=64,
-        ).translate([pin_point[0], wire_y, height / 2])
+        ).translate([pin_point[0], wire_y, 0])
 
-        end_cyl = Manifold.cylinder(
+        bottom_hull = Manifold.hull(start_cyl_bottom + end_shape(0))
+
+        start_cyl_top = Manifold.cylinder(
             height,
-            self.awg22_wire_radius,
+            r,
             center=True,
             circular_segments=64,
-        ).translate([pin_point[0], end_y, height / 2])
+        ).translate([pin_point[0], wire_y, top_z])
 
-        return Manifold.hull(start_cyl + end_cyl)
+        top_hull = Manifold.hull(start_cyl_top + end_shape(top_z))
+
+        return bottom_hull + top_hull
 
     def wire_channels(self) -> Manifold:
         return self.create_wire_channel(
@@ -172,11 +201,16 @@ class HotSwapV3CAD(ManifoldObject):
         ) + self.create_wire_channel(self.right_pin_hole)
 
     def wire_holes(self) -> Manifold:
+        diode_wire_point = [
+            self.diode_wire_hole_center_x,
+            self.left_pin_hole[1],
+        ]
         return (
             self.create_wire_hole(self.left_pin_hole)
             + self.create_wire_hole(self.right_pin_hole)
             + self.create_end_wire_hole(self.left_pin_hole)
             + self.create_end_wire_hole(self.right_pin_hole)
+            + self.create_end_wire_hole(diode_wire_point)
             + self.wire_channels()
         )
 
