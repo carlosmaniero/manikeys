@@ -25,18 +25,25 @@ class MountScrewHoleMainCAD(ManifoldObject):
         hole_radius = self.mount_model.screw_parameters.m2_diameter / 2
         hole_height = self.screw_hole_parameters.height
 
+        head_radius = self.mount_model.screw_parameters.m2_head_diameter / 2
+        head_height = self.mount_model.screw_parameters.m2_head_height
+
         for x, y, z, rot in self.mount_model.screw_hole_placements:
-            hole = (
-                manifold3d.Manifold.cylinder(
-                    height=hole_height,
-                    radius_low=hole_radius,
-                    circular_segments=100,
-                    center=False,
-                )
-                .rotate(rot)
-                .translate([x, y, z])
+            hole = manifold3d.Manifold.cylinder(
+                height=hole_height,
+                radius_low=hole_radius,
+                circular_segments=100,
+                center=False,
             )
-            screw_holes.append(hole)
+            head_pocket = manifold3d.Manifold.cylinder(
+                height=head_height,
+                radius_low=head_radius,
+                circular_segments=100,
+                center=False,
+            ).translate([0, 0, -head_height / 2])
+
+            full_hole = (hole + head_pocket).rotate(rot).translate([x, y, z])
+            screw_holes.append(full_hole)
 
         return manifold3d.Manifold.batch_boolean(
             screw_holes, manifold3d.OpType.Add

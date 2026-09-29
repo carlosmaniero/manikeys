@@ -1,0 +1,305 @@
+from __future__ import annotations
+import sys
+from dataclasses import dataclass
+from injector import inject, singleton
+from manifold3d import Manifold
+from globals.wall.parameters import WallParameters
+from switches.socket.parameters import HotSwapV4Parameters
+from components.light_indicator.parameters import LedParameters
+from core.manifold_ext.helpers import rounded_box
+from core.manifold_ext.object import ManifoldObject
+from core.context import injector
+
+
+@singleton
+@inject
+@dataclass
+class HotSwapV4CAD(ManifoldObject):
+    wall_parameters: WallParameters
+    hot_swap_parameters: HotSwapV4Parameters
+    led: LedParameters
+
+    def body(self) -> Manifold:
+        cube = Manifold.cube(
+            [
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.body_thickness,
+            ],
+            center=True,
+        )
+        return cube.translate(
+            [
+                0,
+                0,
+                self.hot_swap_parameters.body_thickness / 2,
+            ]
+        )
+
+    def switch_socket(self) -> Manifold:
+        body_holder = Manifold.cube(
+            [
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.cube_size,
+                self.hot_swap_parameters.switch_socket_height,
+            ],
+            center=True,
+        ).translate(
+            [
+                0,
+                0,
+                self.hot_swap_parameters.switch_socket_height,
+            ]
+        )
+        cube = (
+            Manifold.cube(
+                [
+                    self.hot_swap_parameters.switch_socket_width,
+                    self.hot_swap_parameters.cube_size,
+                    self.hot_swap_parameters.switch_socket_height,
+                ],
+                center=True,
+            )
+            + body_holder
+        )
+        return cube.translate(
+            [0, 0, self.hot_swap_parameters.switch_socket_height / 2]
+        )
+
+    @property
+    def left_pin_hole(self) -> list[float]:
+        return [-2.54, 5.08]
+
+    @property
+    def right_pin_hole(self) -> list[float]:
+        return [3.81, 2.54]
+
+    @property
+    def pin_hole_diameter(self) -> float:
+        return 1.4
+
+    @property
+    def pin_hole_depth(self) -> float:
+        return 0.5
+
+    def create_pin_hole(self, point: list[float]) -> Manifold:
+        width = self.pin_hole_diameter + 0.02
+        depth = self.pin_hole_depth
+        height = (
+            self.hot_swap_parameters.body_thickness
+            + self.hot_swap_parameters.switch_socket_height * 2
+        )
+        radius = min(depth / 2, width / 2)
+
+        return rounded_box(
+            [width, depth, height],
+            radius=radius,
+            circular_segments=64,
+            center=True,
+        ).translate([point[0], point[1], height / 2])
+
+    def pin_holes(self) -> Manifold:
+        return self.create_pin_hole(self.left_pin_hole) + self.create_pin_hole(
+            self.right_pin_hole
+        )
+
+    def center_hole(self) -> Manifold:
+        height = (
+            self.hot_swap_parameters.body_thickness
+            + self.hot_swap_parameters.switch_socket_height * 2
+        )
+        return Manifold.cylinder(
+            height,
+            self.hot_swap_parameters.center_hole_radius,
+            center=True,
+            circular_segments=64,
+        ).translate([0, 0, height / 2])
+
+    @property
+    def awg22_wire_radius(self) -> float:
+        return 0.35
+
+    def create_wire_hole(self, pin_point: list[float]) -> Manifold:
+        height = (
+            self.hot_swap_parameters.body_thickness
+            + self.hot_swap_parameters.switch_socket_height * 2
+        ) * 2
+        wire_y = pin_point[1] + self.awg22_wire_radius
+        return Manifold.cylinder(
+            height,
+            self.awg22_wire_radius,
+            center=True,
+            circular_segments=64,
+        ).translate([pin_point[0], wire_y, height / 2])
+
+    def create_end_wire_hole(self, pin_point: list[float]) -> Manifold:
+        height = (
+            self.hot_swap_parameters.body_thickness
+            + self.hot_swap_parameters.switch_socket_height * 2
+        ) * 2
+        end_y = self.hot_swap_parameters.cube_size / 2 - self.awg22_wire_radius
+        r = self.awg22_wire_radius
+
+        cyl = Manifold.cylinder(
+            height,
+            r,
+            center=True,
+            circular_segments=64,
+        ).translate([pin_point[0], end_y, height / 2])
+
+        cube = Manifold.cube(
+            [r * 2, r, height],
+            center=True,
+        ).translate([pin_point[0], end_y + r / 2, height / 2])
+
+        return cyl + cube
+
+    def create_wire_channel(self, pin_point: list[float]) -> Manifold:
+        height = self.awg22_wire_radius * 2
+        wire_y = pin_point[1] + self.awg22_wire_radius
+        end_y = self.hot_swap_parameters.cube_size / 2 - self.awg22_wire_radius
+        r = self.awg22_wire_radius
+
+        top_z = self.hot_swap_parameters.body_thickness
+
+        def end_shape(z: float) -> Manifold:
+            cyl = Manifold.cylinder(
+                height,
+                r,
+                center=True,
+                circular_segments=64,
+            ).translate([pin_point[0], end_y, z])
+            cube = Manifold.cube(
+                [r * 2, r, height],
+                center=True,
+            ).translate([pin_point[0], end_y + r / 2, z])
+            return cyl + cube
+
+        start_cyl_bottom = Manifold.cylinder(
+            height,
+            r,
+            center=True,
+            circular_segments=64,
+        ).translate([pin_point[0], wire_y, 0])
+
+        bottom_hull = Manifold.hull(start_cyl_bottom + end_shape(0))
+
+        start_cyl_top = Manifold.cylinder(
+            height,
+            r,
+            center=True,
+            circular_segments=64,
+        ).translate([pin_point[0], wire_y, top_z])
+
+        top_hull = Manifold.hull(start_cyl_top + end_shape(top_z))
+
+        return bottom_hull + top_hull
+
+    def wire_channels(self) -> Manifold:
+        return self.create_wire_channel(
+            self.left_pin_hole
+        ) + self.create_wire_channel(self.right_pin_hole)
+
+    def wire_holes(self) -> Manifold:
+        diode_wire_point = [
+            self.diode_wire_hole_center_x,
+            self.left_pin_hole[1],
+        ]
+        return (
+            self.create_wire_hole(self.left_pin_hole)
+            + self.create_wire_hole(self.right_pin_hole)
+            + self.create_end_wire_hole(self.left_pin_hole)
+            + self.create_end_wire_hole(self.right_pin_hole)
+            + self.create_end_wire_hole(diode_wire_point)
+            + self.wire_channels()
+        )
+
+    def led_placement_pcb(self) -> Manifold:
+        return (
+            Manifold.cylinder(
+                self.led.pcb_height - self.led.pcb_actual_height,
+                self.led.pcb_radius,
+                self.led.pcb_enty_radius,
+                circular_segments=8,
+            ).translate([0, 0, self.led.pcb_actual_height])
+            + Manifold.cylinder(
+                self.led.pcb_height,
+                self.led.pcb_radius,
+                circular_segments=8,
+            )
+        ).rotate([0, 0, 22.5])
+
+    def led_placement_hole(self) -> Manifold:
+        return Manifold.cube(
+            [
+                self.led.led_size,
+                self.led.led_size,
+                self.hot_swap_parameters.body_thickness,
+            ],
+            center=True,
+        ).translate(
+            [
+                0,
+                0,
+                -(self.hot_swap_parameters.body_thickness) / 2,
+            ]
+        )
+
+    def centralize_led_object(self, obj: Manifold) -> Manifold:
+        return obj.translate(
+            [
+                0,
+                -self.hot_swap_parameters.cube_size / 2 + self.led.led_size / 2,
+                self.hot_swap_parameters.body_thickness - self.led.pcb_height,
+            ]
+        )
+
+    def led_placement(self) -> Manifold:
+        return self.centralize_led_object(
+            self.led_placement_pcb() + self.led_placement_hole()
+        )
+
+    @property
+    def diode_wire_hole_center_x(self) -> float:
+        return (
+            -self.hot_swap_parameters.cube_size
+            + self.led.led_size
+            - self.hot_swap_parameters.diode_r / 2
+        ) / 2
+
+    def diode(self) -> Manifold:
+        full_height = self.hot_swap_parameters.diode_l
+
+        d = Manifold.cylinder(
+            height=full_height,
+            radius_low=self.hot_swap_parameters.diode_r,
+            center=True,
+            circular_segments=64,
+        )
+
+        wire_y = self.left_pin_hole[1] + self.awg22_wire_radius
+        top_z = self.hot_swap_parameters.body_thickness
+
+        return d.translate(
+            [
+                self.left_pin_hole[0],
+                wire_y,
+                top_z - full_height / 2,
+            ]
+        )
+
+    def assemble(self) -> Manifold:
+        return (
+            self.body()
+            + self.switch_socket()
+            - self.pin_holes()
+            - self.center_hole()
+            - self.wire_holes()
+            - self.led_placement()
+            - self.diode()
+        )
+
+
+if __name__ == "__main__":
+    hot_swap_v4 = injector.get(HotSwapV4CAD)
+    hot_swap_v4.program(sys.argv)
