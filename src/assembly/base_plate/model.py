@@ -24,7 +24,7 @@ class BasePlateModel:
             self.screw_placement_model.body.depth
             - self.wall_parameters.thickness * 2
             - self.parameters.clearance * 2,
-            self.parameters.thickness,
+            self.parameters.thickness - self.parameters.clearance,
         ]
 
     @property
@@ -45,7 +45,7 @@ class BasePlateModel:
 
     @property
     def screw_head_radius(self) -> float:
-        return self.screw_placement_model.screw_head_diameter / 2
+        return self.screw_placement_model.screw_head_diameter
 
     @property
     def screw_head_height(self) -> float:
