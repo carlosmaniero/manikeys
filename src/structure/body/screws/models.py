@@ -127,6 +127,14 @@ class ScrewPlacementModel:
         offset = self.standoff_size / 2
         return [(x + offset, y + offset) for x, y in self.points]
 
+    def get_centered_main_points(self) -> list[tuple[float, float]]:
+        offset = self.standoff_size / 2
+        return [(x + offset, y + offset) for x, y in self.main_points]
+
+    def get_centered_hand_points(self) -> list[tuple[float, float]]:
+        offset = self.standoff_size / 2
+        return [(x + offset, y + offset) for x, y in self.hand_points]
+
     def get_mask_points(self) -> list[tuple[float, float]]:
         offset = (self.mask_size - self.standoff_size) / 2
         return [(x - offset, y - offset) for x, y in self.points]

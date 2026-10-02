@@ -485,20 +485,42 @@ class MountScrewCylinderModel:
         return (x, y)
 
     @property
-    def placements(self) -> list[tuple[float, float, float]]:
+    def center_hand(self) -> tuple[float, float]:
+        x = (self.body.hand_support_end_x + self.body.end_x()) / 2
+        y = (self.body.start_y() + self.body.divider_y) / 2
+        return (x, y)
+
+    @property
+    def main_placements(self) -> list[tuple[float, float, float]]:
         start_x = self.body.start_x()
         end_x = self.body.end_x()
         divider_y = self.body.divider_y
         end_y = self.body.end_y()
 
-        # (center_x, center_y, rotation_deg)
-        # Position the quarter cylinders flush against the outer boundaries of the main body
         return [
             (start_x, divider_y, 0.0),
             (end_x, divider_y, 90.0),
             (end_x, end_y, 180.0),
             (start_x, end_y, 270.0),
         ]
+
+    @property
+    def hand_placements(self) -> list[tuple[float, float, float]]:
+        start_x = self.body.hand_support_end_x
+        end_x = self.body.end_x()
+        start_y = self.body.start_y()
+        divider_y = self.body.divider_y
+
+        return [
+            (start_x, start_y, 0.0),
+            (end_x, start_y, 90.0),
+            (end_x, divider_y, 180.0),
+            (start_x, divider_y, 270.0),
+        ]
+
+    @property
+    def placements(self) -> list[tuple[float, float, float]]:
+        return self.main_placements + self.hand_placements
 
     @property
     def hole_radius(self) -> float:
@@ -508,20 +530,39 @@ class MountScrewCylinderModel:
     def hole_distance(self) -> float:
         return (self.cavity_radius + self.radius) / 2
 
-    @property
-    def hole_placements(self) -> list[tuple[float, float]]:
-        center_main_x, center_main_y = self.center_main
+    def calculate_hole_placements(
+        self,
+        placements: list[tuple[float, float, float]],
+        center: tuple[float, float],
+    ) -> list[tuple[float, float]]:
+        center_x, center_y = center
         holes = []
-        for center_x, center_y, rotation_deg in self.placements:
-            dx = center_main_x - center_x
-            dy = center_main_y - center_y
+        for center_x_pos, center_y_pos, _ in placements:
+            dx = center_x - center_x_pos
+            dy = center_y - center_y_pos
             target_angle = math.degrees(math.atan2(dy, dx))
             rad = math.radians(target_angle)
 
-            hx = center_x + self.hole_distance * math.cos(rad)
-            hy = center_y + self.hole_distance * math.sin(rad)
+            hx = center_x_pos + self.hole_distance * math.cos(rad)
+            hy = center_y_pos + self.hole_distance * math.sin(rad)
             holes.append((hx, hy))
         return holes
+
+    @property
+    def main_hole_placements(self) -> list[tuple[float, float]]:
+        return self.calculate_hole_placements(
+            self.main_placements, self.center_main
+        )
+
+    @property
+    def hand_hole_placements(self) -> list[tuple[float, float]]:
+        return self.calculate_hole_placements(
+            self.hand_placements, self.center_hand
+        )
+
+    @property
+    def hole_placements(self) -> list[tuple[float, float]]:
+        return self.main_hole_placements + self.hand_hole_placements
 
 
 @singleton

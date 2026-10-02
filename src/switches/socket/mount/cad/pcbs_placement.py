@@ -58,7 +58,7 @@ class PcbsPlacementCAD(ManifoldObject):
         ).translate(self.model.coords)
 
         hole_cylinders = []
-        for hx, hy in self.model.screw_cylinder_model.hole_placements:
+        for hx, hy in self.model.hole_placements:
             hole_cyl = manifold3d.Manifold.cylinder(
                 self.model.parameters.thickness * 3,
                 self.model.screw_cylinder_model.hole_radius,

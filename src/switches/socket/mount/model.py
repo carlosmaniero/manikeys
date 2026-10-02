@@ -65,7 +65,11 @@ class PcbsPlacementModel:
 
     @property
     def cavity_mask_placements(self) -> list[tuple[float, float]]:
-        return self.screw_cylinder_model.screw_placement_model.get_centered_points()
+        return self.screw_cylinder_model.screw_placement_model.get_centered_main_points()
+
+    @property
+    def hole_placements(self) -> list[tuple[float, float]]:
+        return self.screw_cylinder_model.main_hole_placements
 
     @property
     def inner_cut_dimensions(self) -> tuple[float, float, float]:
@@ -341,7 +345,11 @@ class PcbsPlacementHandModel:
 
     @property
     def cavity_mask_placements(self) -> list[tuple[float, float]]:
-        return self.screw_cylinder_model.screw_placement_model.get_centered_points()
+        return self.screw_cylinder_model.screw_placement_model.get_centered_hand_points()
+
+    @property
+    def hole_placements(self) -> list[tuple[float, float]]:
+        return self.screw_cylinder_model.hand_hole_placements
 
     @property
     def fillet_radius(self) -> float:
