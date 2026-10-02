@@ -18,7 +18,7 @@ class Oled096LidCAD(ManifoldObject):
     def body(self) -> M:
         return M.cube(
             [
-                self.model.body[0],
+                self.model.lid_width,
                 self.model.parameters.panel[1],
                 self.model.thickness,
             ],

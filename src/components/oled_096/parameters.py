@@ -7,6 +7,7 @@ class Oled096Parameters:
     pcb: list[float] = field(default_factory=lambda: [24.7, 27.0, 1.5])
     panel: list[float] = field(default_factory=lambda: [24.74, 16.9, 1.5])
     clearance: float = 0.5
+    placement_body_clearance: float = 0.2
     screw_hole_offset: float = 2.0
     flat_cable_clearance: float = 0.25
     flat_cable_width: float = 9.0

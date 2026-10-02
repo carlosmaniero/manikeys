@@ -5,8 +5,10 @@ import math
 from structure.body.models import BodyInnerModel, BodyModel
 from structure.body.screws.models import ScrewPlacementModel
 from globals.wall.parameters import WallParameters
-from switches.model import Layout
+from switches.model import Layout, SwitchHoleDecoratorShellModel
 from models.parameters import SwitchesParameters
+from models.switch_thumb import SwitchThumbModel
+from components.oled_096.model import Oled096PlacementModel
 from connectors.pogo.models import PogoPinModel
 from components.female_pin_header.model import FemalePinHeaderModel
 from structure.body.parameters import BodyParameters
@@ -520,3 +522,122 @@ class MountScrewCylinderModel:
             hy = center_y + self.hole_distance * math.sin(rad)
             holes.append((hx, hy))
         return holes
+
+
+@singleton
+@inject
+@dataclass
+class PcbShellHandModel:
+    switch_thumb_model: SwitchThumbModel
+    switches_parameters: SwitchesParameters
+    wall_parameters: WallParameters
+    mount_model: MountModel
+    pcb_shell_main_parameters: PcbShellMainParameters
+    decorator_shell_model: SwitchHoleDecoratorShellModel
+    oled_placement_model: Oled096PlacementModel
+
+    @property
+    def key_size(self) -> float:
+        return (
+            self.switches_parameters.size + self.switches_parameters.border * 2
+        )
+
+    @property
+    def positions(self) -> list[list[float]]:
+        return self.switch_thumb_model.get_positions()
+
+    @property
+    def double_wall_thickness(self) -> float:
+        return self.wall_parameters.thickness * 2
+
+    @property
+    def min_x(self) -> float:
+        return (
+            self.oled_placement_model.placement_position[0]
+            - self.oled_placement_model.oled.body[0] / 2.0
+        )
+
+    @property
+    def max_x(self) -> float:
+        return (
+            self.positions[0][0]
+            + self.key_size / 2.0
+            + self.wall_parameters.thickness
+        )
+
+    @property
+    def width(self) -> float:
+        return self.max_x - self.min_x
+
+    @property
+    def depth(self) -> float:
+        positions = self.positions
+        first_position = positions[0]
+        last_position = positions[-1]
+        return (
+            (first_position[1] - last_position[1])
+            + self.key_size
+            + self.double_wall_thickness
+        )
+
+    @property
+    def size(self) -> list[float]:
+        height = self.mount_model.main_mask_height
+        return [self.width, self.depth, height]
+
+    @property
+    def position(self) -> list[float]:
+        positions = self.positions
+        first_position = positions[0]
+        last_position = positions[-1]
+        center_x = (self.min_x + self.max_x) / 2.0
+        center_y = (first_position[1] + last_position[1]) / 2.0
+        center_z = first_position[2]
+        return [center_x, center_y, center_z]
+
+    @property
+    def oled_lid_local_coords(self) -> list[float]:
+        return self.oled_placement_model.oled.lid_pocket_coords
+
+    @property
+    def oled_placement_position(self) -> list[float]:
+        return self.oled_placement_model.placement_position
+
+    @property
+    def cube_std_size(self) -> list[float]:
+        return [
+            self.decorator_shell_model.width,
+            self.decorator_shell_model.depth,
+            self.mount_model.main_mask_height,
+        ]
+
+    @property
+    def top_cutout_height(self) -> float:
+        p = self.switches_parameters
+        decorator_bottom_z = -(p.thickness - p.outer.thickness)
+        decorator_height = p.thickness - p.clearance
+        decorator_top_z = (
+            self.mount_model.offset + decorator_bottom_z + decorator_height
+        )
+        mask_top_z = (
+            self.mount_model.bottom_z + self.mount_model.main_mask_height
+        )
+        return mask_top_z - decorator_top_z
+
+    @property
+    def top_cutout_center_z(self) -> float:
+        p = self.switches_parameters
+        decorator_bottom_z = -(p.thickness - p.outer.thickness)
+        decorator_height = p.thickness - p.clearance
+        decorator_top_z = (
+            self.mount_model.offset + decorator_bottom_z + decorator_height
+        )
+        return decorator_top_z + self.top_cutout_height / 2.0
+
+    @property
+    def cube_top_size(self) -> list[float]:
+        return [
+            self.decorator_shell_model.width,
+            self.decorator_shell_model.depth,
+            self.top_cutout_height,
+        ]

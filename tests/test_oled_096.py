@@ -64,7 +64,7 @@ def test_oled_096_body():
     assert model.screw_holes_translation == [-20.25, 0.0, 0.0]
     assert model.cable_clearance == [10.0, 2.0, 6.5]
     assert model.cable_clearance_coords == [0.0, 16.25, -0.75]
-    assert model.lid_pocket == [40.5, 15.5, 5.0]
+    assert model.lid_pocket == [50.5, 15.5, 5.0]
     assert model.lid_pocket_coords == [0.0, 0.0, -1.5]
 
 

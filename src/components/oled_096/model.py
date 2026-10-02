@@ -107,9 +107,13 @@ class Oled096Model:
         ]
 
     @property
+    def lid_width(self) -> float:
+        return self.body[0] + self.thickness * 2
+
+    @property
     def lid_pocket(self) -> list[float]:
         return [
-            self.body[0],
+            self.lid_width,
             self.parameters.panel[1] + self.parameters.clearance,
             self.thickness,
         ]
@@ -206,3 +210,22 @@ class Oled096PlacementModel:
         y = self.placement_position[1] + rotated_y
         z = self.body_model.highest - height_z / 2
         return [x, y, z]
+
+    @property
+    def placement_body_mask_size(self) -> list[float]:
+        clearance = self.oled096_parameters.placement_body_clearance
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        return [
+            self.oled.body[0] + clearance * 2,
+            self.oled.body[1] + clearance * 2,
+            height_z,
+        ]
+
+    @property
+    def placement_body_mask_coords(self) -> list[float]:
+        height_z = self.body_model.highest - self.body_model.bottom_z
+        return [
+            self.placement_position[0],
+            self.placement_position[1],
+            self.body_model.highest - height_z / 2,
+        ]
