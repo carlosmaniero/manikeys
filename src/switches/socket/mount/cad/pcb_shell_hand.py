@@ -29,6 +29,9 @@ class PcbShellHandCAD(ManifoldObject):
         screw_clearance = self.deps.stls[
             "build/switches/socket/mount/cad/screw_clearance.stl"
         ]
+        screw_hole_hand = self.deps.stls[
+            "build/switches/socket/mount/cad/screw_hole_hand.stl"
+        ]
 
         pcb_shell = body_cavity - mount_cavity
 
@@ -73,6 +76,7 @@ class PcbShellHandCAD(ManifoldObject):
             - oled_placement_body_mask
             + positioned_oled_lid
             - screw_clearance
+            - screw_hole_hand
         ) ^ mask
 
 

@@ -641,3 +641,40 @@ class PcbShellHandModel:
             self.decorator_shell_model.depth,
             self.top_cutout_height,
         ]
+
+    @property
+    def oled_lid_screw_x_coords(self) -> tuple[float, float]:
+        oled = self.oled_placement_model.oled
+        first_col_x = oled.parameters.screw_hole_offset - oled.body[0] / 2.0
+        second_col_x = (
+            oled.body[0] - oled.parameters.screw_hole_offset
+        ) - oled.body[0] / 2.0
+        center_x = self.oled_placement_model.placement_position[0]
+        x1 = center_x - first_col_x
+        x2 = center_x - second_col_x
+        return (x1, x2)
+
+    @property
+    def screw_hole_placements(
+        self,
+    ) -> list[tuple[float, float, float, list[float]]]:
+        x1, x2 = self.oled_lid_screw_x_coords
+        center_y = self.oled_placement_model.placement_position[1]
+        half_oled_depth = self.oled_placement_model.oled.body[1] / 2.0
+        margin = self.mount_model.screw_parameters.m2_head_diameter
+        spacing = self.mount_model.screw_parameters.m2_head_diameter * 1.5
+
+        y_pair1 = center_y - (half_oled_depth + margin)
+        min_y_hand = self.position[1] - self.depth / 2.0
+        y_pair2 = min_y_hand + margin
+
+        rot = [0.0, 0.0, 0.0]
+
+        coords = [
+            (x1, y_pair1),
+            (x2, y_pair1),
+            (x1, y_pair2),
+            (x2, y_pair2),
+        ]
+
+        return [(x, y, float(self.mount_model.z(x, y)), rot) for x, y in coords]
