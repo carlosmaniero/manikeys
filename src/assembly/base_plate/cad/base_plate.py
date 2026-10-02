@@ -52,12 +52,23 @@ class BasePlateCAD(ManifoldObject):
             center=False,
         ).translate(self.model.coords)
 
-        divider = manifold3d.Manifold.cube(
-            self.model.divider_dimensions,
+        divider_y = manifold3d.Manifold.cube(
+            self.model.divider_y_dimensions,
             center=False,
-        ).translate(self.model.divider_coords)
+        ).translate(self.model.divider_y_coords)
 
-        return bottom - divider - self.screw_holes() - self.screw_head_holes()
+        divider_x = manifold3d.Manifold.cube(
+            self.model.divider_x_dimensions,
+            center=False,
+        ).translate(self.model.divider_x_coords)
+
+        return (
+            bottom
+            - divider_y
+            - divider_x
+            - self.screw_holes()
+            - self.screw_head_holes()
+        )
 
 
 if __name__ == "__main__":

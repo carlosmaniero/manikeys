@@ -96,7 +96,7 @@ class BasePlateModel:
         ]
 
     @property
-    def divider_dimensions(self) -> list[float]:
+    def divider_y_dimensions(self) -> list[float]:
         divider_size = self.wall_parameters.thickness * 2
         return [
             self.screw_placement_model.body.width,
@@ -105,8 +105,8 @@ class BasePlateModel:
         ]
 
     @property
-    def divider_coords(self) -> list[float]:
-        divider_size = self.divider_dimensions[1]
+    def divider_y_coords(self) -> list[float]:
+        divider_size = self.divider_y_dimensions[1]
         divider_y = self.screw_placement_model.body.divider_y - divider_size / 2
         return [
             self.screw_placement_model.body.start_x(),
@@ -115,7 +115,41 @@ class BasePlateModel:
         ]
 
     @property
-    def mask_divider_dimensions(self) -> list[float]:
+    def divider_x_dimensions(self) -> list[float]:
+        divider_size = self.wall_parameters.thickness * 2
+        divider_height = (
+            self.screw_placement_model.body.divider_y
+            - self.screw_placement_model.body.start_y()
+        )
+        return [
+            divider_size,
+            divider_height,
+            self.dimensions[2],
+        ]
+
+    @property
+    def divider_x_coords(self) -> list[float]:
+        divider_size = self.divider_x_dimensions[0]
+        divider_x = (
+            self.screw_placement_model.body.hand_support_end_x
+            - divider_size / 2
+        )
+        return [
+            divider_x,
+            self.screw_placement_model.body.start_y(),
+            self.coords[2],
+        ]
+
+    @property
+    def divider_dimensions(self) -> list[float]:
+        return self.divider_y_dimensions
+
+    @property
+    def divider_coords(self) -> list[float]:
+        return self.divider_y_coords
+
+    @property
+    def mask_divider_y_dimensions(self) -> list[float]:
         divider_size = (
             self.wall_parameters.thickness * 2 - self.parameters.clearance
         )
@@ -126,11 +160,47 @@ class BasePlateModel:
         ]
 
     @property
-    def mask_divider_coords(self) -> list[float]:
-        divider_size = self.mask_divider_dimensions[1]
+    def mask_divider_y_coords(self) -> list[float]:
+        divider_size = self.mask_divider_y_dimensions[1]
         divider_y = self.screw_placement_model.body.divider_y - divider_size / 2
         return [
             self.screw_placement_model.body.start_x(),
             divider_y,
             self.mask_coords[2],
         ]
+
+    @property
+    def mask_divider_x_dimensions(self) -> list[float]:
+        divider_size = (
+            self.wall_parameters.thickness * 2 - self.parameters.clearance
+        )
+        divider_height = (
+            self.screw_placement_model.body.divider_y
+            - self.screw_placement_model.body.start_y()
+        )
+        return [
+            divider_size,
+            divider_height,
+            self.mask_dimensions[2],
+        ]
+
+    @property
+    def mask_divider_x_coords(self) -> list[float]:
+        divider_size = self.mask_divider_x_dimensions[0]
+        divider_x = (
+            self.screw_placement_model.body.hand_support_end_x
+            - divider_size / 2
+        )
+        return [
+            divider_x,
+            self.screw_placement_model.body.start_y(),
+            self.mask_coords[2],
+        ]
+
+    @property
+    def mask_divider_dimensions(self) -> list[float]:
+        return self.mask_divider_y_dimensions
+
+    @property
+    def mask_divider_coords(self) -> list[float]:
+        return self.mask_divider_y_coords

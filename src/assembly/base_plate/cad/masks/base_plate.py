@@ -20,12 +20,17 @@ class BasePlateMaskCAD(ManifoldObject):
             center=False,
         ).translate(self.model.mask_coords)
 
-        divider = manifold3d.Manifold.cube(
-            self.model.mask_divider_dimensions,
+        divider_y = manifold3d.Manifold.cube(
+            self.model.mask_divider_y_dimensions,
             center=False,
-        ).translate(self.model.mask_divider_coords)
+        ).translate(self.model.mask_divider_y_coords)
 
-        return base_mask - divider
+        divider_x = manifold3d.Manifold.cube(
+            self.model.mask_divider_x_dimensions,
+            center=False,
+        ).translate(self.model.mask_divider_x_coords)
+
+        return base_mask - divider_y - divider_x
 
 
 if __name__ == "__main__":
