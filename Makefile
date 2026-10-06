@@ -5,6 +5,7 @@ SIMPLIFY ?= 0
 build: build/main.stl build/main.3mf \
 	build/assembly/cad/main.stl \
 	build/assembly/base_plate/cad/main.stl \
+	build/assembly/base_plate/cad/hand.stl \
 	build/assembly/cad/supports/main.stl \
 	build/assembly/cad/hand.stl \
 	build/assembly/cad/supports/hand.stl \
