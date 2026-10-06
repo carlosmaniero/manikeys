@@ -111,7 +111,7 @@ void loop() {
       break;
     }
 
-    if (resp->kind == MSG_KIND_HEARTBEAT) {
+    if (resp->kind == MSG_KIND_MASTER_HEARTBEAT) {
       last_heard_from_master = millis();
     } else {
       Serial.print("Received non-heartbeat message of kind: 0x");

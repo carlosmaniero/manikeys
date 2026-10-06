@@ -60,6 +60,7 @@ void comm_spi_end_transaction(uint8_t ss_pin) {
 // ==========================================
 
 void comm_set_slave() {
+  pinMode(SS, INPUT_PULLUP);
   pinMode(MISO, OUTPUT);
   SPCR |= (1 << SPE) | (1 << SPIE);
 }

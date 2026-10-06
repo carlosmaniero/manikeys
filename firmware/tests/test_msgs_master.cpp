@@ -11,7 +11,7 @@ TEST_START(test_msg_tick)
 
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 1);
-    assert(mock_sent_data[0] == MSG_HEARTBEAT_BYTE);
+    assert(mock_sent_data[0] == MSG_MASTER_HEARTBEAT_BYTE);
 TEST_END
 
 TEST_START(test_msg_produce_keys)
@@ -47,7 +47,7 @@ TEST_START(test_msg_produce_keys)
 
     msg_ctrl_tick();
     assert(mock_sent_data.size() == 6);
-    assert(mock_sent_data[5] == MSG_HEARTBEAT_BYTE);
+    assert(mock_sent_data[5] == MSG_MASTER_HEARTBEAT_BYTE);
 TEST_END
 
 TEST_START(test_msg_build_response)

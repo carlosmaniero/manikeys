@@ -83,17 +83,17 @@ TEST_START(test_msg_queue_multiple_responses)
     comm_mock_reset();
     msg_ctrl_init();
 
-    mock_received_data_return = MSG_KIND_HEARTBEAT;
+    mock_received_data_return = MSG_MASTER_HEARTBEAT_BYTE;
     msg_ctrl_tick();
     msg_t *msg1 = msg_ctrl_consume_response();
     assert(msg1 != NULL);
-    assert(msg1->kind == MSG_KIND_HEARTBEAT);
+    assert(msg1->kind == MSG_MASTER_HEARTBEAT_BYTE);
 
-    mock_received_data_return = MSG_KIND_HEARTBEAT;
+    mock_received_data_return = MSG_MASTER_HEARTBEAT_BYTE;
     msg_ctrl_tick();
     msg_t *msg2 = msg_ctrl_consume_response();
     assert(msg2 != NULL);
-    assert(msg2->kind == MSG_KIND_HEARTBEAT);
+    assert(msg2->kind == MSG_MASTER_HEARTBEAT_BYTE);
 TEST_END
 
 TEST_START(test_msg_buffer_overflow)

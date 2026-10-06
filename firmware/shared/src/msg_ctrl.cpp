@@ -10,7 +10,11 @@ inline void _msg_send_data() {
   msg_t *message = queue_get(&msg_ctrl.tx);
 
   if (message == NULL) {
+#if defined(IS_MASTER)
+    comm_send_data(MSG_MASTER_HEARTBEAT_BYTE);
+#else
     comm_send_data(MSG_HEARTBEAT_BYTE);
+#endif
     return;
   }
 
@@ -39,6 +43,15 @@ void msg_ctrl_build_response() {
   uint8_t received = comm_received_data();
 
   if (message->_cursor == 0) {
+#if defined(IS_MASTER)
+    if (received == MSG_MASTER_HEARTBEAT_BYTE) {
+      return;
+    }
+#else
+    if (received == MSG_HEARTBEAT_BYTE) {
+      return;
+    }
+#endif
     message->done = false;
   }
 
@@ -56,12 +69,20 @@ void msg_ctrl_build_response() {
 }
 
 void msg_ctrl_tick() {
+  if (comm_is_deselected()) {
+    return;
+  }
+
   msg_ctrl_build_response();
 
   _msg_send_data();
 }
 
 void msg_ctrl_tick_all() {
+  if (comm_is_deselected()) {
+    return;
+  }
+
   msg_ctrl_tick();
 
   while (true) {
