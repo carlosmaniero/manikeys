@@ -28,13 +28,7 @@ inline void _msg_send_data() {
 }
 
 void msg_ctrl_produce(msg_t msg) {
-  msg_t *prev_message = queue_get(&msg_ctrl.tx);
-
   queue_append(&msg_ctrl.tx, msg);
-
-  if (prev_message == NULL) {
-    _msg_send_data();
-  }
 }
 
 void msg_ctrl_build_response() {
@@ -43,15 +37,6 @@ void msg_ctrl_build_response() {
   uint8_t received = comm_received_data();
 
   if (message->_cursor == 0) {
-#if defined(IS_MASTER)
-    if (received == MSG_MASTER_HEARTBEAT_BYTE) {
-      return;
-    }
-#else
-    if (received == MSG_HEARTBEAT_BYTE) {
-      return;
-    }
-#endif
     message->done = false;
   }
 
