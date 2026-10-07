@@ -45,7 +45,7 @@ class MountScrewHoleHandCAD(ManifoldObject):
 
         return manifold3d.Manifold.batch_boolean(
             screw_holes, manifold3d.OpType.Add
-        ).translate([0, 0, self.screw_hole_parameters.offset_z])
+        ).translate([0, 0, self.screw_hole_parameters.hand_offset_z])
 
 
 if __name__ == "__main__":
