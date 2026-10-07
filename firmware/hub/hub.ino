@@ -33,12 +33,12 @@ void set_led_color(LedColor color) {
   pixels.show();
 }
 
-const char key_map[5][7] = {
-  {'-', '-', '1', '2', '3', '4', '5'},
-  {'-', '-', 'q', 'w', 'e', 'r', 't'},
-  {'-', '-', 'a', 's', 'd', 'f', 'g'},
-  {'-', '-', 'z', 'x', 'c', 'v', 'b'},
-  {'-', '-', '-', '-', '-', '-', '-'}
+const uint8_t key_map[5][7] = {
+  {KEY_BACKSPACE, '5', '4', '3', '2', '1', KEY_ESC},
+  {KEY_LEFT_ALT, 't', 'r', 'e', 'w', 'q', KEY_TAB},
+  {KEY_LEFT_SHIFT, 'g', 'f', 'd', 's', 'a', ' '},
+  {KEY_LEFT_CTRL, 'b', 'v', 'c', 'x', 'z', '-'},
+  {KEY_RETURN, KEY_RIGHT_ARROW, KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, '-', '-'}
 };
 
 const uint8_t LEFT_MATRIX_ROWS = 5;
@@ -118,13 +118,13 @@ void loop() {
           if (key_matrix_is_active(diff + r, c)) {
             if (key_matrix_is_active(resp->buffer + r, c)) {
               key_matrix_set_pressed(left_matrix + r, c);
-              char key = key_map[r][c];
+              uint8_t key = key_map[r][c];
               if (key != '-') {
                 Keyboard.press(key);
               }
             } else {
               key_matrix_set_released(left_matrix + r, c);
-              char key = key_map[r][c];
+              uint8_t key = key_map[r][c];
               if (key != '-') {
                 Keyboard.release(key);
               }
